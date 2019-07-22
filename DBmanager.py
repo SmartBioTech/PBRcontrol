@@ -1,61 +1,42 @@
 import mysql.connector as cn
 from time import sleep
-import interpreter
-import datetime
 from threading import Thread
-
-
-class Command:
-    def __init__(self, id, time, args):
-        self.id = id
-        self.time = time
-        self.args = args
-
-class Queue:
-    def __init__(self, lst=[]):
-        self.lst = lst
-
-    def get(self):
-        return self.lst.pop(0)
-
-    def add(self,element):
-        self.lst.append(element)
-
-    def notEmpty(self):
-        if self.lst:
-            return True
-        return False
+import queue
 
 
 
-def measure():
+
+def measure(t):
+### Add commands to queue every t seconds, will be used for periodical measuring
     while True:
         print('measuring')
-        sleep(60)
+        sleep(t)
 
 
 
 def db_change(queue):
-
-
+### Periodically check database and proccess queries one by one if any exist.
+### Add received commands to queue in the form of tuple.
+### sleep to avoid performance issues
+    mydb = cn.connect(user='PBRcontrol', database='localdb', autocommit=True)
+    cur = mydb.cursor(buffered=True)
     while True:
-        mydb = cn.connect(user='PBRcontrol', database='localdb',autocommit=True)
-        cur = mydb.cursor(buffered=True)
         cur.execute("SELECT * FROM commands")
         cmd = cur.fetchone()
-
         if cmd != None:
             cur.execute('DELETE FROM commands LIMIT 1')
             mydb.commit()
 
-            queue.add(cmd)
+            queue.put(cmd)
 
         sleep(2)
 
 
 def execute_cmd(queue):
+### check queue of raw commands, call interpreter to translate them and forward to bioreactor
+### sleep to avoid performance issues
     while True:
-        if queue.notEmpty():
+        if  not queue.empty():
             cmd = queue.get()
             print(cmd)
         sleep(2)
@@ -63,10 +44,10 @@ def execute_cmd(queue):
 
 
 if __name__ == '__main__':
-    queue = Queue()
-    ex_cmd= Thread(target=execute_cmd, args=(queue,)).start()
-    check_db = Thread(target=db_change, args=(queue,)).start()
-    measurement = Thread(target=measure).start()
+    q = queue.Queue()
+    ex_cmd= Thread(target=execute_cmd, args=(q,)).start()
+    check_db = Thread(target=db_change, args=(q,)).start()
+    measurement = Thread(target=measure, args=(60,)).start()
 
 
 
