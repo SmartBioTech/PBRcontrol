@@ -1,6 +1,7 @@
-from flask import Flask, request
+from flask import request, Flask
 from flask_restful import Resource, Api
 import mysql.connector as cn
+import queue
 
 
 class Database:
@@ -13,17 +14,17 @@ class Database:
         db = "localdb"
         self.con = cn.connect(host=host, user=user, password=password, db=db, autocommit=True)
         self.cur = self.con.cursor()
+        self.queue = queue.Queue()
 
     def post_command(self, id: int, t: str, args: str):
         """
-        Insert a command into table. TODO: rewrite so that the commands are stacked in queue, commands table is redundant
+        Insert a command into queue in the form of a tuple.
 
         :id: int, id of the command later to be used by interpreter
         :t: str, time the command was issued
         :args: str, arguments of the command
         """
-        query = ("INSERT INTO commands (id, t, args) VALUES ('%d', '%s', '%s')" % (id, t, args))
-        self.cur.execute(query)
+        self.queue.put((id, t, args))
 
     def get(self, table):
         """
@@ -35,7 +36,6 @@ class Database:
         select = ('SELECT * FROM %s LIMIT 1' % table)
         self.cur.execute(select)
         row = self.cur.fetchone()
-        print(row)
         if row != None:
             query = ('DELETE FROM %s LIMIT 1' % table)
             self.cur.execute(query)
@@ -59,7 +59,7 @@ class Command(Resource):
 
 class GetData(Resource):
     """
-    Parent class for Log and Measurement, its argument is the local database.
+    Parent class for Log and Measurement, its argument is the local database (object).
     """
     def __init__(self, db):
         self.db = db
@@ -80,28 +80,32 @@ class GetData(Resource):
 
 
 class Log(GetData):
+    """
+    :table: string, name of the table we want data from
+    """
     def __init__(self, db, table):
         super(Log, self).__init__(db)
         self.table = table
 
 
 class Measurement(GetData):
+    """
+    :table: string, name of the table we want data from
+    """
     def __init__(self, db, table):
         super(Measurement, self).__init__(db)
         self.table = table
 
 
-if __name__ == '__main__':
-    """
-    Initialize the Api, connect to database and add resources with corresponding endpoints
-    """
-    app = Flask(__name__)
-    api = Api(app)
+class ApiInit:
 
-    db = Database()
+    def run(self):
+        app = Flask(__name__)
+        api = Api(app)
+        db = Database()
 
-    api.add_resource(Command, '/command', resource_class_kwargs={'db': db})
-    api.add_resource(Log, '/log', resource_class_kwargs={'db': db, 'table': 'log'})
-    api.add_resource(Measurement, '/measure', resource_class_kwargs={'db': db, 'table': 'measurement'})
+        api.add_resource(Command, '/command', resource_class_kwargs={'db': db})
+        api.add_resource(Log, '/log', resource_class_kwargs={'db': db, 'table': 'log'})
+        api.add_resource(Measurement, '/measure', resource_class_kwargs={'db': db, 'table': 'measurement'})
 
-    app.run(debug=False)
+        app.run(debug=False)
