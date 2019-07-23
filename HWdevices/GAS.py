@@ -51,64 +51,52 @@ class GAS(AbstractGAS):
         result = self.scheme_manager.execute([command])[0].rstrip()
         return result == 'ok'
 
-    def get_flow(self):
-        '''
+    def get_flow(self, repeats: int) -> float:
+        """
         Actual flow being send from GAS to the PBR.
 
-        Returns:
-            float: The current flow in L/min.
-        '''
-        try:
-            return float(self.parent.execute(self, "get-flow", [1])[0].rstrip())
-        except Exception:
-            return None
+        :param repeats: the number of measurement repeats
+        :return: The current flow in L/min.
+        """
+        command = Command("get-flow", [repeats])
+        return float(self.scheme_manager.execute([command])[0].rstrip())
 
-    def get_flow_target(self):
-        '''
+    def get_flow_target(self) -> float:
+        """
         Actual desired flow.
 
-        Returns:
-            float: The desired flow in L/min.
-        '''
-        try:
-            return float(self.parent.execute(self, "get-flow-target")[0].rstrip())
-        except Exception:
-            return None
+        :return: The desired flow in L/min.
+        """
+        command = Command("get-flow-target")
+        return float(self.scheme_manager.execute([command])[0].rstrip())
 
-    def set_flow_target(self, flow):
-        '''
+    def set_flow_target(self, flow: float) -> bool:
+        """
         Set flow we want to achieve.
 
-        Args:
-            flow (float): flow in L/min we want to achieve (max given by get_flow_max)
-        Returns:
-            bool: True if was succesful, False otherwise.
-        '''
-        try:
-            return self.parent.execute(self, "set-flow-target", [flow])[0].rstrip() == 'ok'
-        except Exception:
-            return None
+        :param flow: flow in L/min we want to achieve (max given by get_flow_max)
+        :return: True if was successful, False otherwise.
+        """
+        command = Command("set-flow-target", [flow])
+        result = float(self.scheme_manager.execute([command])[0].rstrip())
+        return result == 'ok'
 
-    def get_flow_max(self):
-        '''
+    def get_flow_max(self) -> float:
+        """
         Maximal allowed flow.
 
-        Returns:
-            float: The maximal flow in L/min
-        '''
-        try:
-            return float(self.parent.execute(self, "get-flow-max")[0].rstrip())
-        except Exception:
-            return None
+        :return: The maximal flow in L/min
+        """
+        command = Command("get-flow-max")
+        return float(self.scheme_manager.execute([command])[0].rstrip())
 
-    def get_pressure(self, repeats=5, wait=0):
-        '''
+    def get_pressure(self, repeats: int = 5, wait: int = 0) -> float:
+        """
         Current pressure.
 
-        Returns:
-            float: Current pressure in ???
-        '''
-        try:
-            return float(self.parent.execute(self, "get-pressure", [repeats, wait])[0].rstrip())
-        except Exception:
-            return None
+        :param repeats: the number of measurement repeats
+        :param wait: waiting time between individual repeats
+        :return: Current pressure in ???
+        """
+        command = Command("get-pressure", [repeats, wait])
+        return float(self.scheme_manager.execute([command])[0].rstrip())
