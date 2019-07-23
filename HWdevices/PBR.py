@@ -235,6 +235,8 @@ class PBR(AbstractPBR):
         Measures all basic measurable values.
 
         channel for measure-ft ???
+        need to solve the case when one of the values wasn't measured
+        (could destroy whole measurement)
         """
         commands = [Command("get-pwm-settings"),
                     Command("get-actinic-continual-settings", [0]),
@@ -249,5 +251,6 @@ class PBR(AbstractPBR):
                     Command("measure-ft", [channel])]
 
         results = self.scheme_manager.execute(commands)
+        data = {'a': 5 }
 
         # manage results
