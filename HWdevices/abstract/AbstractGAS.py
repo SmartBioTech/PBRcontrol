@@ -8,7 +8,9 @@ class AbstractGAS(Device):
 
     def get_co2_air(self):
         """
-        Returns CO2 in air.
+        Measures CO2 in air.
+
+        :return: measured CO2 in air
         """
         raise NotImplementedError("The method not implemented")
 
@@ -20,8 +22,7 @@ class AbstractGAS(Device):
         vents indexed as in a picture scheme available here:
         https://i.imgur.com/jSeFFaO.jpg
 
-        Returns:
-            string: byte representation of vents settings.
+        :return: byte representation of vents settings.
         """
         raise NotImplementedError("The method not implemented")
 
@@ -38,10 +39,8 @@ class AbstractGAS(Device):
         Mode 2 - no gas input to PBR (249)
         Mode 3 - output of PBR goes to input of PBR (246)
 
-        Args:
-            mode (int): chosen mode (0 to 3)
-        Returns:
-            bool: True if was succesful, False otherwise.
+        :param mode: chosen mode (0 to 3)
+        :return: True if was successful, False otherwise.
         """
         raise NotImplementedError("The method not implemented")
 
@@ -49,8 +48,8 @@ class AbstractGAS(Device):
         """
         Actual flow being send from GAS to the PBR.
 
-        Returns:
-            float: The current flow in L/min.
+        :param repeats: the number of measurement repeats
+        :return: The current flow in L/min.
         """
         raise NotImplementedError("The method not implemented")
 
@@ -58,8 +57,7 @@ class AbstractGAS(Device):
         """
         Actual desired flow.
 
-        Returns:
-            float: The desired flow in L/min.
+        :return: The desired flow in L/min.
         """
         raise NotImplementedError("The method not implemented")
 
@@ -67,10 +65,8 @@ class AbstractGAS(Device):
         """
         Set flow we want to achieve.
 
-        Args:
-            flow (float): flow in L/min we want to achieve (max given by get_flow_max)
-        Returns:
-            bool: True if was succesful, False otherwise.
+        :param flow: flow in L/min we want to achieve (max given by get_flow_max)
+        :return: True if was successful, False otherwise.
         """
         raise NotImplementedError("The method not implemented")
 
@@ -78,8 +74,7 @@ class AbstractGAS(Device):
         """
         Maximal allowed flow.
 
-        Returns:
-            float: The maximal flow in L/min
+        :return: The maximal flow in L/min
         """
         raise NotImplementedError("The method not implemented")
 
@@ -87,7 +82,8 @@ class AbstractGAS(Device):
         """
         Current pressure.
 
-        Returns:
-            float: Current pressure in ???
+        :param repeats: the number of measurement repeats
+        :param wait: waiting time between individual repeats
+        :return: Current pressure in ???
         """
         raise NotImplementedError("The method not implemented")
