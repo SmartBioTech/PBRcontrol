@@ -15,19 +15,17 @@ cursor = mydb.cursor()
 
 cursor.execute('CREATE TABLE IF NOT EXISTS commands ('
                'id INT,'
-               't TIMESTAMP,'
+               't VARCHAR(255),'
                'args VARCHAR(255))')
 
 cursor.execute('CREATE TABLE IF NOT EXISTS log ('
-               't TIMESTAMP,'
+               't VARCHAR(255),'
                'event VARCHAR(255),'
                'status INT)')
 
 cursor.execute('CREATE TABLE IF NOT EXISTS measurement (' #TODO arguments
-               't time,'
+               't VARCHAR(255),'
                'log INT)')
-
-cursor.execute('INSERT INTO commands (id, t, args) VALUES (1, current_timestamp, "text")')
 
 mydb.commit()
 
