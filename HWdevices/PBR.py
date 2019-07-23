@@ -218,3 +218,36 @@ class PBR(AbstractPBR):
         """
         command = Command("measure-ft", [channel])
         return float(self.scheme_manager.execute([command])[0].rstrip())
+
+    def get_co2(self, raw: bool = True, repeats: int = 5) -> float:
+        """
+        TBA
+
+        :param raw: True for raw data, False for data ???
+        :param repeats: the number of measurement repeats
+        :return:
+        """
+        command = Command("get-co2", [repeats, self.scheme_manager.to_scheme_bool(raw)])
+        return float(self.scheme_manager.execute([command])[0].rstrip())
+
+    def measure_all(self):
+        """
+        Measures all basic measurable values.
+
+        channel for measure-ft ???
+        """
+        commands = [Command("get-pwm-settings"),
+                    Command("get-actinic-continual-settings", [0]),
+                    Command("get-actinic-continual-settings", [1]),
+                    Command("measure-od", [0, 30]),
+                    Command("measure-od", [0, 30]),
+                    Command("get-ph", [5, 0]),
+                    Command("get-current-temperature"),
+                    Command("get-pump-info", [5]),
+                    Command("get-o2/h2", [5, 0, self.scheme_manager.to_scheme_bool(True)]),
+                    Command("get-co2", [5, self.scheme_manager.to_scheme_bool(True)]),
+                    Command("measure-ft", [channel])]
+
+        results = self.scheme_manager.execute(commands)
+
+        # manage results

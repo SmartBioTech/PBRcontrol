@@ -100,3 +100,15 @@ class GAS(AbstractGAS):
         """
         command = Command("get-pressure", [repeats, wait])
         return float(self.scheme_manager.execute([command])[0].rstrip())
+
+    def measure_all(self):
+        """
+        Measures all basic measurable values.
+        """
+        commands = [Command("get-co2-air"),
+                    Command("get-flow", [5]),
+                    Command("get-pressure", [5, 0])]
+
+        results = self.scheme_manager.execute(commands)
+
+        # manage results
