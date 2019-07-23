@@ -14,8 +14,7 @@ class PBR(AbstractPBR):
         Get information about currently set temperature, maximal and
         minimal allowed temperature.
 
-        Returns:
-            dict: The current settings structured in a dictionary.
+        :return: The current settings structured in a dictionary.
         """
         results = ["set", "min", "max"]
         command = Command("get-thermoregulator-settings")
@@ -27,8 +26,7 @@ class PBR(AbstractPBR):
         """
         Get current temperature in Celsius degree.
 
-        Returns:
-            float: The current temperature.
+        :return: The current temperature.
         """
         command = Command("get-current-temperature")
         return float(self.scheme_manager.execute([command])[0])
@@ -37,10 +35,8 @@ class PBR(AbstractPBR):
         """
         Set desired temperature in Celsius degree.
 
-        Args:
-            temp (float): The temperature.
-        Returns:
-            bool: True if was succesful, False otherwise.
+        :param temp: The temperature.
+        :return: True if was successful, False otherwise.
         """
         command = Command("set-thermoregulator-temp", [temp])
         return self.scheme_manager.execute([command])[0].rstrip() == 'ok'
@@ -49,8 +45,9 @@ class PBR(AbstractPBR):
         """
         Get current pH (dimensionless.)
 
-        Returns:
-            float: The current pH.
+        :param repeats: the number of measurement repeats
+        :param wait: waiting time between individual repeats
+        :return: The current pH.
         """
         command = Command("get-ph", [repeats, wait])
         return float(self.scheme_manager.execute([command])[0])
@@ -59,8 +56,9 @@ class PBR(AbstractPBR):
         """
         Measure current Optical Density (OD, dimensionless).
 
-        Returns:
-            float: Measured OD
+        :param channel: which channel should be measured
+        :param repeats: the number of measurement repeats
+        :return: Measured OD
         """
         command = Command("measure-od", [channel, repeats])
         result = self.scheme_manager.execute([command])[0].rstrip().split()
@@ -70,10 +68,8 @@ class PBR(AbstractPBR):
         """
         Get parameters for given pump.
 
-        Args:
-            pump (int): Given pump
-        Returns:
-            dict: The current settings structured in a dictionary.
+        :param pump: Given pump
+        :return: The current settings structured in a dictionary.
         """
         command = Command("get-pump-info", [pump])
         result = self.scheme_manager.execute([command])[0].rstrip()[1:-1].split()
@@ -85,12 +81,10 @@ class PBR(AbstractPBR):
         """
         Set up the rotation direction and flow for given pump.
 
-        Args:
-            pump (int): Given pump
-            direction (int): Rotation direction (1 right, -1 left)
-            flow (float): Desired flow rate
-        Returns:
-            bool: True if was successful, False otherwise.
+        :param pump: Given pump
+        :param direction: Rotation direction (1 right, -1 left)
+        :param flow: Desired flow rate
+        :return:  True if was successful, False otherwise.
         """
         command = Command("set-pump-params", [pump, direction, flow])
         return self.scheme_manager.execute([command])[0].rstrip() == 'ok'
@@ -99,11 +93,9 @@ class PBR(AbstractPBR):
         """
         Turns on/off given pump.
 
-        Args:
-            pump (int): ID of a pump
-            on (bool): True to turn on, False to turn off
-        Returns:
-            bool: True if was successful, False otherwise.
+        :param pump: ID of a pump
+        :param on: True to turn on, False to turn off
+        :return: True if was successful, False otherwise.
         """
         command = Command("set-pump-state", [pump, self.scheme_manager.to_scheme_bool(on)])
         return self.scheme_manager.execute([command])[0].rstrip() == 'ok'
@@ -112,14 +104,12 @@ class PBR(AbstractPBR):
         """
         Checks for current (max?) light intensity.
 
-        Args:
-            channel (int): Given channel ID
-        Returns:
-            dict: The current settings structured in a dictionary.
-
         Items: "intensity": current light intensity (float) in μE,
-            "max": maximal intensity (float) in μE,
-            "on": True if light is turned on (bool)
+               "max": maximal intensity (float) in μE,
+               "on": True if light is turned on (bool)
+
+        :param channel: Given channel ID
+        :return: The current settings structured in a dictionary.
         """
         command = Command("get-actinic-continual-settings", [channel])
         result = self.scheme_manager.execute([command])[0].rstrip()[1:-1].split()
@@ -130,11 +120,9 @@ class PBR(AbstractPBR):
         """
         Control LED panel on photobioreactor.
 
-        Args:
-            channel (int): Given channel (0 for red light, 1 for blue light)
-            intensity (float): Desired intensity
-        Returns:
-            bool: True if was successful, False otherwise.
+        :param channel: Given channel (0 for red light, 1 for blue light)
+        :param intensity: Desired intensity
+        :return: True if was successful, False otherwise.
         """
         command = Command("set-actinic-continual-intensity", [channel, intensity])
         return self.scheme_manager.execute([command])[0].rstrip() == 'ok'
@@ -143,11 +131,9 @@ class PBR(AbstractPBR):
         """
         Turn on/off LED panel on photobioreactor.
 
-        Args:
-            channel (int): Given channel
-            on (bool): True turns on, False turns off
-        Returns:
-            bool: True if was successful, False otherwise.
+        :param channel: Given channel
+        :param on: True turns on, False turns off
+        :return: True if was successful, False otherwise.
         """
         command = Command("set-actinic-continual-mode", [channel, self.scheme_manager.to_scheme_bool(on)])
         return self.scheme_manager.execute([command])[0].rstrip() == 'ok'
@@ -156,13 +142,12 @@ class PBR(AbstractPBR):
         """
         Checks for current stirring settings.
 
-        Returns:
-            dict: The current settings structured in a dictionary.
-
         Items: "pulse": current stirring in %,
-            "min": minimal stirring in %,
-            "max": maximal stirring in %,
-            "on": True if stirring is turned on (bool)
+               "min": minimal stirring in %,
+               "max": maximal stirring in %,
+               "on": True if stirring is turned on (bool)
+
+        :return: The current settings structured in a dictionary.
         """
         command = Command("get-pwm-settings")
         result = self.scheme_manager.execute([command])[0].rstrip()[1:-1].split()
@@ -172,13 +157,11 @@ class PBR(AbstractPBR):
     def set_pwm(self, value: int, on: bool) -> bool:
         """
         Set stirring settings.
-        Channel: 0 je red and 1 blue according to PBR configuration.
+        Channel: 0 red and 1 blue according to PBR configuration.
 
-        Args:
-            value (int): desired stirring pulse
-            on (bool): True turns on, False turns off
-        Returns:
-            bool: True if was successful, False otherwise.
+        :param value: desired stirring pulse
+        :param on: True turns on, False turns off
+        :return: True if was successful, False otherwise.
         """
         command = Command("set-pwm", [value, self.scheme_manager.to_scheme_bool(on)])
         return self.scheme_manager.execute([command])[0].rstrip() == 'ok'
@@ -187,13 +170,15 @@ class PBR(AbstractPBR):
         """
         Checks for concentration of dissociated O2.
 
-        Returns:
-            dict: The current settings structured in a dictionary.
-
         Items: "pulse": current stirring in %,
-            "min": minimal stirring in %,
-            "max": maximal stirring in %,
-            "on": True if stirring is turned on (bool)
+               "min": minimal stirring in %,
+               "max": maximal stirring in %,
+               "on": True if stirring is turned on (bool)
+
+        :param raw: True for raw data, False for data calculated according to temperature calibration
+        :param repeats: the number of measurement repeats
+        :param wait: waiting time between individual repeats
+        :return: The current settings structured in a dictionary.
         """
         command = Command("get-o2/h2", [repeats, wait, self.scheme_manager.to_scheme_bool(raw)])
         return float(self.scheme_manager.execute([command])[0].rstrip())
@@ -202,13 +187,12 @@ class PBR(AbstractPBR):
         """
         Get current settings of thermoregulator.
 
-        Returns:
-            dict: The current settings structured in a dictionary.
-
         Items: "temp": current temperature in Celsius degrees,
-            "min": minimal allowed temperature,
-            "max": maximal allowed temperature,
-            "on": state of thermoregulator (1 -> on, 0 -> freeze, -1 -> off)
+               "min": minimal allowed temperature,
+               "max": maximal allowed temperature,
+               "on": state of thermoregulator (1 -> on, 0 -> freeze, -1 -> off)
+
+        :return: The current settings structured in a dictionary.
         """
         command = Command("get-thermoregulator-settings")
         result = self.scheme_manager.execute([command])[0].rstrip()[1:-1].split()
@@ -219,10 +203,8 @@ class PBR(AbstractPBR):
         """
         Set state of thermoregulator.
 
-        Args:
-            on (int): 1 -> on, 0 -> freeze, -1 -> off
-        Returns:
-            bool: True if was successful, False otherwise.
+        :param on: 1 -> on, 0 -> freeze, -1 -> off
+        :return: True if was successful, False otherwise.
         """
         command = Command("set-thermoregulator-state", [on])
         return self.scheme_manager.execute([command])[0].rstrip() == 'ok'
@@ -231,10 +213,8 @@ class PBR(AbstractPBR):
         """
         ???
 
-        Args:
-            channel (int): ???
-        Returns:
-            ???: ???
+        :param channel: ???
+        :return: ???
         """
         command = Command("measure-ft", [channel])
         return float(self.scheme_manager.execute([command])[0].rstrip())
