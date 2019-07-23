@@ -1,11 +1,11 @@
 from flask import request, Flask
 from flask_restful import Resource, Api
 import mysql.connector as cn
-import queue
+
 
 
 class Database:
-    def __init__(self):
+    def __init__(self,q):
         """Establish connection to local database, actions on the database are executed through the use of a cursor
         """
         host = "127.0.0.1"
@@ -14,7 +14,7 @@ class Database:
         db = "localdb"
         self.con = cn.connect(host=host, user=user, password=password, db=db, autocommit=True)
         self.cur = self.con.cursor()
-        self.queue = queue.Queue()
+        self.queue = q
 
     def post_command(self, id: int, t: str, args: str):
         """
@@ -98,11 +98,16 @@ class Measurement(GetData):
 
 
 class ApiInit:
-
+    '''
+    Initializes the API
+    '''
+    def __init__(self, q):
+        self.q = q
+        
     def run(self):
         app = Flask(__name__)
         api = Api(app)
-        db = Database()
+        db = Database(self.q)
 
         api.add_resource(Command, '/command', resource_class_kwargs={'db': db})
         api.add_resource(Log, '/log', resource_class_kwargs={'db': db, 'table': 'log'})

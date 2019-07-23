@@ -3,7 +3,9 @@
 import mysql.connector as cn
 
 class DatabaseInit:
-
+    '''
+    Initializes the database
+    '''
     def __init__(self, user, db):
         self.user = user
         self.db = db
