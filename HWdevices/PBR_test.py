@@ -1,9 +1,13 @@
+from random import random
+
 from HWdevices.abstract.device import Device
 
 
-class AbstractPBR(Device):
+class PBRtest(Device):
     def __init__(self, ID, address):
-        super(AbstractPBR, self).__init__(ID, address)
+        super(PBRtest, self).__init__(ID, address)
+        self.last_value = 0.45
+        self.increasing = False
 
     def get_temp_settings(self):
         """
@@ -12,7 +16,7 @@ class AbstractPBR(Device):
 
         :return: The current settings structured in a dictionary.
         """
-        raise NotImplementedError("The method not implemented")
+        return {"temp_set": 25, "temp_min": 10, "temp_max": 35}
 
     def get_temp(self):
         """
@@ -20,7 +24,7 @@ class AbstractPBR(Device):
 
         :return: The current temperature.
         """
-        raise NotImplementedError("The method not implemented")
+        return 25
 
     def set_temp(self, temp):
         """
@@ -29,7 +33,7 @@ class AbstractPBR(Device):
         :param temp: The temperature.
         :return: True if was successful, False otherwise.
         """
-        raise NotImplementedError("The method not implemented")
+        return True
 
     def get_ph(self):
         """
@@ -39,7 +43,7 @@ class AbstractPBR(Device):
         :param wait: waiting time between individual repeats
         :return: The current pH.
         """
-        raise NotImplementedError("The method not implemented")
+        return 7
 
     def measure_od(self, channel=0):
         """
@@ -49,7 +53,16 @@ class AbstractPBR(Device):
         :param repeats: the number of measurement repeats
         :return: Measured OD
         """
-        raise NotImplementedError("The method not implemented")
+        if random() < 0.01:
+            raise Exception("Cannot measure value - some random error.")
+        step = 0.002
+        sign = 1 if self.increasing else -1
+        if random() < 0.05:
+            step = random()
+            if random() > 0.01:
+                return self.last_value + sign * step
+        self.last_value += sign * step
+        return self.last_value
 
     def get_pump_params(self, pump):
         """
@@ -58,7 +71,8 @@ class AbstractPBR(Device):
         :param pump: Given pump
         :return: The current settings structured in a dictionary.
         """
-        raise NotImplementedError("The method not implemented")
+        return {"pump_direction": 1, "pump_on": True, "pump_valves": 10,
+                "pump_flow": 0.3, "pump_min": 0, "pump_max": 100}
 
     def set_pump_params(self, pump, direction, flow):
         """
@@ -69,7 +83,7 @@ class AbstractPBR(Device):
         :param flow: Desired flow rate
         :return:  True if was successful, False otherwise.
         """
-        raise NotImplementedError("The method not implemented")
+        return True
 
     def set_pump_state(self, pump, on):
         """
@@ -79,7 +93,8 @@ class AbstractPBR(Device):
         :param on: True to turn on, False to turn off
         :return: True if was successful, False otherwise.
         """
-        raise NotImplementedError("The method not implemented")
+        self.increasing = not bool(on)
+        return True
 
     def get_light_intensity(self, channel):
         """
@@ -92,7 +107,7 @@ class AbstractPBR(Device):
         :param channel: Given channel ID
         :return: The current settings structured in a dictionary.
         """
-        raise NotImplementedError("The method not implemented")
+        return {"light_intensity": 500, "light_max": 1000, "light_on": True}
 
     def set_light_intensity(self, channel, intensity):
         """
@@ -102,7 +117,7 @@ class AbstractPBR(Device):
         :param intensity: Desired intensity
         :return: True if was successful, False otherwise.
         """
-        raise NotImplementedError("The method not implemented")
+        return True
 
     def turn_on_light(self, channel, on):
         """
@@ -112,7 +127,7 @@ class AbstractPBR(Device):
         :param on: True turns on, False turns off
         :return: True if was successful, False otherwise.
         """
-        raise NotImplementedError("The method not implemented")
+        return True
 
     def get_pwm_settings(self):
         """
@@ -125,7 +140,7 @@ class AbstractPBR(Device):
 
         :return: The current settings structured in a dictionary.
         """
-        raise NotImplementedError("The method not implemented")
+        return {"pwm_pulse": 1, "pwm_min": 0, "pwm_max": 100, "pwm_on": True}
 
     def set_pwm(self, value, on):
         """
@@ -136,7 +151,7 @@ class AbstractPBR(Device):
         :param on: True turns on, False turns off
         :return: True if was successful, False otherwise.
         """
-        raise NotImplementedError("The method not implemented")
+        return True
 
     def get_o2(self, raw=True, repeats=5, wait=0):
         """
@@ -152,7 +167,7 @@ class AbstractPBR(Device):
         :param wait: waiting time between individual repeats
         :return: The current settings structured in a dictionary.
         """
-        raise NotImplementedError("The method not implemented")
+        return 10
 
     def get_thermoregulator_settings(self):
         """
@@ -165,7 +180,7 @@ class AbstractPBR(Device):
 
         :return: The current settings structured in a dictionary.
         """
-        raise NotImplementedError("The method not implemented")
+        return {"temp": 25, "temp_min": 0, "temp_max": 100, "temp_on": 1}
 
     def set_thermoregulator_state(self, on):
         """
@@ -174,7 +189,7 @@ class AbstractPBR(Device):
         :param on: 1 -> on, 0 -> freeze, -1 -> off
         :return: True if was successful, False otherwise.
         """
-        raise NotImplementedError("The method not implemented")
+        return True
 
     def measure_ft(self, channel):
         """
@@ -183,9 +198,9 @@ class AbstractPBR(Device):
         :param channel: ???
         :return: ???
         """
-        raise NotImplementedError("The method not implemented")
+        return 13.4
 
-    def get_co2(self, raw, repeats):
+    def get_co2(self, raw=True, repeats=5):
         """
         TBA
 
@@ -193,7 +208,7 @@ class AbstractPBR(Device):
         :param repeats: the number of measurement repeats
         :return:
         """
-        raise NotImplementedError("The method not implemented")
+        return 5
 
     def measure_all(self):
         """
@@ -201,4 +216,17 @@ class AbstractPBR(Device):
 
         :return: dictionary of all measured values
         """
-        raise NotImplementedError("The method not implemented")
+        result = dict()
+        result["pwm_setting"] = self.get_pwm_settings()
+        result["light_0"] = self.get_light_intensity(0)
+        result["light_1"] = self.get_light_intensity(1)
+        result["od_0"] = self.measure_od(0)
+        result["od_1"] = self.measure_od(1)
+        result["ph"] = self.get_ph()
+        result["temp"] = self.get_temp()
+        result["pump"] = self.get_pump_params(5)
+        result["o2"] = self.get_o2()
+        result["co2"] = self.get_co2()
+        result["ft"] = self.measure_ft(5)
+
+        return result
