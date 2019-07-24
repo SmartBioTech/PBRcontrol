@@ -5,7 +5,7 @@ import mysql.connector as cn
 
 
 class Database:
-    def __init__(self,q):
+    def __init__(self,q, flag):
         """Establish connection to local database, actions on the database are executed through the use of a cursor
         """
         host = "127.0.0.1"
@@ -15,6 +15,7 @@ class Database:
         self.con = cn.connect(host=host, user=user, password=password, db=db, autocommit=True)
         self.cur = self.con.cursor()
         self.queue = q
+        self.flag = flag
 
     def post_command(self, id: int, t: str, args: str):
         """
@@ -25,6 +26,7 @@ class Database:
         :args: str, arguments of the command
         """
         self.queue.put((id, t, args))
+        self.flag.set()
 
     def get(self, table):
         """
@@ -101,13 +103,14 @@ class ApiInit:
     '''
     Initializes the API
     '''
-    def __init__(self, q):
+    def __init__(self, q, flag):
         self.q = q
+        self.flag = flag
         
     def run(self):
         app = Flask(__name__)
         api = Api(app)
-        db = Database(self.q)
+        db = Database(self.q, self.flag)
 
         api.add_resource(Command, '/command', resource_class_kwargs={'db': db})
         api.add_resource(Log, '/log', resource_class_kwargs={'db': db, 'table': 'log'})
