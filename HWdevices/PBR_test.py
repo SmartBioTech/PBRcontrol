@@ -1,9 +1,8 @@
 from random import random
+from HWdevices.abstract.AbstractPBR import AbstractPBR
 
-from HWdevices.abstract.device import Device
 
-
-class PBRtest(Device):
+class PBRtest(AbstractPBR):
     def __init__(self, ID, address):
         super(PBRtest, self).__init__(ID, address)
         self.last_value = 0.45

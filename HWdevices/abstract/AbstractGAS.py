@@ -1,4 +1,4 @@
-from .device import Device
+from HWdevices.abstract.device import Device
 
 
 # Abstract Gas Analyser
