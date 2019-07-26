@@ -1,4 +1,5 @@
 from HWdevices.abstract.AbstractGAS import AbstractGAS
+from HWdevices.libs.parsing import Parser
 from HWdevices.scheme.command import Command
 from HWdevices.scheme.scheme_manager import SchemeManager
 
@@ -7,6 +8,7 @@ class GAS(AbstractGAS):
     def __init__(self, ID, address):
         super(GAS, self).__init__(ID, address)
         self.scheme_manager = SchemeManager(ID, address)
+        self.parser = Parser()
 
     def get_co2_air(self) -> float:
         """
@@ -15,7 +17,8 @@ class GAS(AbstractGAS):
         :return: measured CO2 in air
         """
         command = Command("get-co2-air")
-        return float(self.scheme_manager.execute([command])[0].rstrip())
+        value = self.scheme_manager.execute([command])
+        return self.parser.parse_co2_air(value)
 
     def get_small_valves(self) -> str:
         """
@@ -28,7 +31,8 @@ class GAS(AbstractGAS):
         :return: byte representation of vents settings.
         """
         command = Command("get-small-valves")
-        return bin(int(self.scheme_manager.execute([command])[0].rstrip()))[2:]
+        value = self.scheme_manager.execute([command])
+        return self.parser.parse_small_valves(value)
 
     def set_small_valves(self, mode: int) -> bool:
         """
@@ -59,7 +63,8 @@ class GAS(AbstractGAS):
         :return: The current flow in L/min.
         """
         command = Command("get-flow", [repeats])
-        return float(self.scheme_manager.execute([command])[0].rstrip())
+        value = self.scheme_manager.execute([command])
+        return self.parser.parse_flow(value)
 
     def get_flow_target(self) -> float:
         """
@@ -68,7 +73,8 @@ class GAS(AbstractGAS):
         :return: The desired flow in L/min.
         """
         command = Command("get-flow-target")
-        return float(self.scheme_manager.execute([command])[0].rstrip())
+        value = self.scheme_manager.execute([command])
+        return self.parser.parse_flow_target(value)
 
     def set_flow_target(self, flow: float) -> bool:
         """
@@ -88,7 +94,8 @@ class GAS(AbstractGAS):
         :return: The maximal flow in L/min
         """
         command = Command("get-flow-max")
-        return float(self.scheme_manager.execute([command])[0].rstrip())
+        value = self.scheme_manager.execute([command])
+        return self.parser.parse_flow_max(value)
 
     def get_pressure(self, repeats: int = 5, wait: int = 0) -> float:
         """
@@ -99,7 +106,8 @@ class GAS(AbstractGAS):
         :return: Current pressure in ???
         """
         command = Command("get-pressure", [repeats, wait])
-        return float(self.scheme_manager.execute([command])[0].rstrip())
+        value = self.scheme_manager.execute([command])
+        return self.parser.parse_pressure(value)
 
     def measure_all(self):
         """
@@ -109,6 +117,11 @@ class GAS(AbstractGAS):
                     Command("get-flow", [5]),
                     Command("get-pressure", [5, 0])]
 
-        results = self.scheme_manager.execute(commands)
+        values = self.scheme_manager.execute(commands)
 
-        # manage results
+        result = dict()
+        result["co2_air"] = self.parser.parse_co2_air(values[0])
+        result["flow"] = self.parser.parse_flow(values[1])
+        result["pressure"] = self.parser.parse_pressure(values[2])
+
+        return result

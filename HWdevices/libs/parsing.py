@@ -6,6 +6,10 @@ def from_scheme_bool(value):
 
 
 class Parser:
+    """
+    PBR
+    """
+
     @staticmethod
     def parse_temp_settings(results, value):
         values = value[0].rstrip()[1:-1].split()
@@ -59,4 +63,32 @@ class Parser:
 
     @staticmethod
     def parse_co2(value):
+        return float(value[0].rstrip())
+
+    """
+    GAS
+    """
+
+    @staticmethod
+    def parse_co2_air(value):
+        return float(value[0].rstrip())
+
+    @staticmethod
+    def parse_small_valves(value):
+        return bin(int(value[0].rstrip()))[2:]
+
+    @staticmethod
+    def parse_flow(value):
+        return float(value[0].rstrip())
+
+    @staticmethod
+    def parse_flow_target(value):
+        return float(value[0].rstrip())
+
+    @staticmethod
+    def parse_flow_max(value):
+        return float(value[0].rstrip())
+
+    @staticmethod
+    def parse_pressure(value):
         return float(value[0].rstrip())
