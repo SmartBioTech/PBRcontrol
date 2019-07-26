@@ -67,7 +67,3 @@ class SchemeManager:
     @staticmethod
     def to_scheme_bool(value):
         return "#t" if value else "#f"
-
-    @staticmethod
-    def from_scheme_bool(value):
-        return True if value == "#t" else False
