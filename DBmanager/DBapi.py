@@ -89,7 +89,6 @@ class Log(GetData):
         super(Log, self).__init__(db)
         self.table = table
 
-
 class Measurement(GetData):
     """
     :table: string, name of the table we want data from

@@ -8,8 +8,8 @@ if __name__ == '__main__':
     '''
     q = queue.Queue()
     api = DBmanager.API('PBRcontrol', 'localdb', q)
-    data_m = DataManager.Manager(q, api.flag)
     api.start()
+    data_m = DataManager.Manager(q, api.flag)
     data_m.start()
 
 
