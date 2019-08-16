@@ -1,11 +1,13 @@
 from flask import request, Flask
 from flask_restful import Resource, Api
 import mysql.connector as cn
-
+import requests
+import json
+from DataManager import datamanager
 
 
 class Database:
-    def __init__(self,q, flag):
+    def __init__(self):
         """Establish connection to local database, actions on the database are executed through the use of a cursor
         """
         host = "127.0.0.1"
@@ -14,19 +16,7 @@ class Database:
         db = "localdb"
         self.con = cn.connect(host=host, user=user, password=password, db=db, autocommit=True)
         self.cur = self.con.cursor()
-        self.queue = q
-        self.flag = flag
 
-    def post_command(self, id: int, t: str, args: str):
-        """
-        Insert a command into queue in the form of a tuple.
-
-        :id: int, id of the command later to be used by interpreter
-        :t: str, time the command was issued
-        :args: str, arguments of the command
-        """
-        self.queue.put((id, t, args))
-        self.flag.set()
 
     def get(self, table):
         """
@@ -51,12 +41,16 @@ class Command(Resource):
 
     Receives json data encoded into http protocol.
     """
-    def __init__(self, db):
-        self.db = db
+    def __init__(self, data_manager):
+        self.q = data_manager.q
+        self.q_new_item = data_manager.q_new_item
+
 
     def post(self):
         cmd = request.get_json()
-        self.db.post_command(cmd['id'], (cmd['time']), cmd['args'])
+        data = (cmd['time'], cmd['id'], cmd['args'])
+        self.q.put(data)
+        self.q_new_item.set()
 
 
 class GetData(Resource):
@@ -80,39 +74,67 @@ class GetData(Resource):
             row = self.db.get(self.table)
         return result
 
+class Nodes(Resource):
 
-class Log(GetData):
-    """
-    :table: string, name of the table we want data from
-    """
-    def __init__(self, db, table):
-        super(Log, self).__init__(db)
-        self.table = table
+    def __init__(self, endpoints, node_id):
+        self.node_id = node_id
+        self.endpoints = endpoints
 
-class Measurement(GetData):
-    """
-    :table: string, name of the table we want data from
-    """
-    def __init__(self, db, table):
-        super(Measurement, self).__init__(db)
-        self.table = table
+    def get(self):
+        return self.endpoints
+
+
+class CreateNewResource(Resource):
+
+    def __init__(self, api):
+        self.api = api
+
+    def post(self):
+        my_json = request.json
+        data=json.loads(my_json)
+
+
+        for node_id, devices in data.items():
+            endpoints = []
+            for device in devices:
+                device_id = devices[device].get('id')
+                device_details = devices[device]
+                my_data_manager = datamanager.Manager(device_details)
+                my_data_manager.start()
+                setup = devices[device].get('setup')
+                if setup != None:
+                    for setup_cmd in setup:
+                        print(setup_cmd)
+                        data = (setup_cmd['time'], setup_cmd['id'], setup_cmd['args'])
+                        my_data_manager.q.put(data)
+                        my_data_manager.q_new_item.set()
+
+                self.api.add_resource(Command, '/' + str(node_id) + '/' + str(device_id), endpoint = str(node_id) + '/' + str(device_id),
+                                      resource_class_kwargs={
+                                          'data_manager' : my_data_manager
+                                      })
+
+                endpoints.append(str(device_id))
+
+            self.api.add_resource(Nodes, '/' + str(node_id), endpoint = str(node_id),
+                              resource_class_kwargs={
+                                  'endpoints': endpoints,
+                                  'node_id' : str(node_id),
+                              })
 
 
 class ApiInit:
     '''
     Initializes the API
     '''
-    def __init__(self, q, flag):
-        self.q = q
-        self.flag = flag
         
     def run(self):
         app = Flask(__name__)
         api = Api(app)
-        db = Database(self.q, self.flag)
+        db = Database()
 
-        api.add_resource(Command, '/command', resource_class_kwargs={'db': db})
-        api.add_resource(Log, '/log', resource_class_kwargs={'db': db, 'table': 'log'})
-        api.add_resource(Measurement, '/measure', resource_class_kwargs={'db': db, 'table': 'measurement'})
+        api.add_resource(CreateNewResource, '/', resource_class_kwargs={'api': api})
+
+        api.add_resource(GetData, '/log', resource_class_kwargs={'db': db, 'table': 'log'})
 
         app.run(debug=False)

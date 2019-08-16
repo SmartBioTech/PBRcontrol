@@ -3,7 +3,7 @@ Initialize the Api, connect to database and add resources with corresponding end
 """
 
 from DBmanager import DBapi, localdb
-from threading import Thread, Event
+from threading import Thread
 
 class API(Thread):
     '''
@@ -14,15 +14,13 @@ class API(Thread):
     :q:     queue object
     :flag:  threading object, used to notify queue_checker that something was added to queue
     '''
-    def __init__(self, user, db, q):
+    def __init__(self, user, db):
         super(API, self).__init__()
         self.user = user
         self.db = db
-        self.q = q
-        self.flag = Event()
 
     def run(self):
         db = localdb.DatabaseInit(self.user, self.db)
-        api = DBapi.ApiInit(self.q, self.flag)
-        db.run()
+        api = DBapi.ApiInit()
+        db.initialize_database()
         api.run()
