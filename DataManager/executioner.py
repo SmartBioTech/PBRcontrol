@@ -1,4 +1,4 @@
-from threading import Thread, active_count
+from threading import Thread
 import datetime
 import mysql.connector as cn
 from DataManager import interpreter

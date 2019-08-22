@@ -16,16 +16,19 @@ def do():
 def post_json():
     my_dict = {
         2 : {
-            'device_1' : {
-                'type' : 'PBR',
-                'id' : 'PBR01',
-                'test' : True,
-                'address' : None,
-                'setup' : [{'time': (datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")),'id': 0, 'args': '5'}]
+            'experiment_details' : {'sleep_time' : 25},
+            'devices' : {
+                'device_1' : {
+                    'type' : 'PBR',
+                    'id' : 'PBR01',
+                    'test' : True,
+                    'address' : None,
+                    'setup' : [{'time': (datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")),'id': 0, 'args': '5'}]
+                }
             }
         }
-
     }
+
     my_json=json.dumps(my_dict)
     print(my_json)
     requests.post('http://localhost:5000/', json = my_json)

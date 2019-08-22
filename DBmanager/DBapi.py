@@ -4,6 +4,7 @@ import mysql.connector as cn
 import requests
 import json
 from DataManager import datamanager
+from DBmanager import measurement
 
 
 class Database:
@@ -76,12 +77,23 @@ class GetData(Resource):
 
 class Nodes(Resource):
 
-    def __init__(self, endpoints, node_id):
+    def __init__(self, endpoints, node_id, experiment_details):
         self.node_id = node_id
         self.endpoints = endpoints
+        self.experiment_details = experiment_details
+        self.measurement = measurement.PeriodicalMeasurement(self.endpoints, self.node_id, self.experiment_details)
+        self.measurement.start()
 
     def get(self):
         return self.endpoints
+
+    def post(self):
+        my_json = request.json
+        data = json.loads(my_json)
+        cmd_id = data.get('cmd', False)
+        args = data.get('args', [])
+        if cmd_id:
+            self.measurement.execute_cmd(cmd_id, args)
 
 
 class CreateNewResource(Resource):
@@ -94,8 +106,11 @@ class CreateNewResource(Resource):
         data=json.loads(my_json)
 
 
-        for node_id, devices in data.items():
+        for node_id in data:
             endpoints = []
+            node = data[node_id]
+            experiment_details = node['experiment_details']
+            devices = node['devices']
             for device in devices:
                 device_id = devices[device].get('id')
                 device_details = devices[device]
@@ -120,6 +135,7 @@ class CreateNewResource(Resource):
                               resource_class_kwargs={
                                   'endpoints': endpoints,
                                   'node_id' : str(node_id),
+                                  'experiment_details' : experiment_details,
                               })
 
 
