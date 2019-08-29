@@ -1,7 +1,7 @@
 from threading import Thread
 import datetime
 import mysql.connector as cn
-from DataManager import interpreter
+from time import sleep
 
 class Logger:
     def __init__(self):
@@ -17,16 +17,16 @@ class Logger:
                 print('db connected')
                 break
             except Exception:
-                time.sleep(2)
+                sleep(2)
 
         self.cur = self.con.cursor()
 
-    def update_log(self, time_issued, command_id, target, response):
+    def update_log(self, time_issued, target_address, command_id, target_arguments, response):
         time_executed = datetime.datetime.now()
         time_executed = time_executed.strftime("%m/%d/%Y, %H:%M:%S")
 
-        query = """INSERT INTO log (time_issued, command_id, target, response, time_executed) VALUES (%s, %s, %s, %s, %s)"""
-        query_args = (str(time_issued), int(command_id), str(target), str(response), str(time_executed))
+        query = """INSERT INTO log (time_issued, target_address, command_id, target, response, time_executed) VALUES (%s, %s, %s, %s, %s, %s)"""
+        query_args = (str(time_issued), str(target_address), int(command_id), str(target_arguments), str(response), str(time_executed))
 
 
         self.cur.execute(query, query_args)
@@ -50,7 +50,17 @@ class Checker(Thread):
 
     def run(self):
         log = Logger()
-        device = interpreter.Interpreter(self.device_details, self.q, self.q_new_item)
+
+        if self.device_details['type'] == 'PBR':
+            from DataManager import interpreterPBR as interpreter
+            arguments = [self.device_details, self.q, self.q_new_item, log]
+        else:
+            if self.device_details['type'] == 'GAS':
+                from DataManager import interpreterGAS as interpreter
+            elif self.device_details['type'] == 'GMS':
+                from DataManager import interpreterGMS as interpreter
+            arguments = [self.device_details, log]
+        device = interpreter.DeviceManager(*arguments)
 
 
         print('checker running')

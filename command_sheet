@@ -1,0 +1,92 @@
+ // EXPERIMENT INITIATION //
+
+ - endpoint: http//:[ip address]/
+
+ - structure:
+
+    {
+        [node number] : {
+            'experiment_details' : {'sleep_time' : int},
+            'devices' : {
+                'device_[node_number]' : {
+                    'node' : int
+                    'type' : str,
+                    'device_id' : str,
+                    'test' : bool,
+                    'address' : str,
+                    'setup' : {
+                        'initial_commands' : lst,
+                        'lower_outlier_tol' : float
+                        'upper_outlier_tol' : float
+                        'max_outliers' : float
+                        'min_OD' : float
+                        'max_OD' : float
+                        'pump_id' : int
+                        }
+
+
+                    }
+                }
+            }
+    }
+
+
+ // INDIVIDUAL COMMAND //
+ - endpoint: http//:[ip address]/[node number]/[device id]
+ - structure:
+
+    {'time': string,'cmd_id': int, 'args': lst}
+
+
+
+
+ // CHANGE NODE SETTINGS //
+
+ - endpoint: http//:[ip address]/[node number]
+
+ - structure is the same as in individual commands
+
+ - currently used to change time period between automatic measurements
+
+
+// COMMAND IDs //
+
+PBR         1: get_temp_settings,
+            2: get_temp,
+            3: set_temp,
+            4: get_ph,
+            5: measure_od,
+            6: get_pump_params,
+            7: set_pump_params,
+            8: set_pump_state,
+            9: get_light_intensity,
+            10: set_light_intensity,
+            11: turn_on_light,
+            12: get_pwm_settings,
+            13: set_pwm,
+            14: get_o2,
+            15: get_thermoregulator_settings,
+            16: set_thermoregulator_state,
+            17: measure_ft,
+            18: get_co2,
+            19: measure_all,
+            20: self.OD_checker.set_max_outliers,
+            21: self.OD_checker.set_od_bounds,
+            22: self.OD_checker.set_tolerance
+
+
+GAS         23: get_flow,
+            24: get_flow_target,
+            25: set_flow_target,
+            26: get_flow_max,
+            27: get_pressure
+            28: measure_all,
+            29: get_co2_air,
+            30: get_small_valves,
+
+
+GMS         31: get_valve_info,
+            22: get_valve_flow,
+            33: set_valve_flow,
+
+NODE        34: change_time_period

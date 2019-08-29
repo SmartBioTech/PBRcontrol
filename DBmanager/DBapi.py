@@ -1,7 +1,7 @@
 from flask import request, Flask
 from flask_restful import Resource, Api
 import mysql.connector as cn
-import requests
+import datetime
 import json
 from DataManager import datamanager
 from DBmanager import measurement
@@ -42,16 +42,19 @@ class Command(Resource):
 
     Receives json data encoded into http protocol.
     """
-    def __init__(self, data_manager):
+    def __init__(self, data_manager, address):
         self.q = data_manager.q
         self.q_new_item = data_manager.q_new_item
+        self.address = address
+
 
 
     def post(self):
         cmd = request.get_json()
-        data = (cmd['time'], cmd['id'], cmd['args'])
-        self.q.put(data)
-        self.q_new_item.set()
+        data = (cmd.get('time', (datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))), self.address, (cmd.get('id', False)), (cmd.get('args', '[]')))
+        if data[1]:
+            self.q.put(data)
+            self.q_new_item.set()
 
 
 class GetData(Resource):
@@ -77,23 +80,22 @@ class GetData(Resource):
 
 class Nodes(Resource):
 
-    def __init__(self, endpoints, node_id, experiment_details):
+    def __init__(self, endpoints, node_id, experiment_details, node_measurement):
         self.node_id = node_id
         self.endpoints = endpoints
         self.experiment_details = experiment_details
-        self.measurement = measurement.PeriodicalMeasurement(self.endpoints, self.node_id, self.experiment_details)
-        self.measurement.start()
+        self.my_measurement = node_measurement
 
     def get(self):
         return self.endpoints
 
     def post(self):
-        my_json = request.json
-        data = json.loads(my_json)
-        cmd_id = data.get('cmd', False)
-        args = data.get('args', [])
+        data = request.json
+        cmd_id = data.get('cmd_id', False)
+        args = data.get('args', '[]')
+        args = eval(args)
         if cmd_id:
-            self.measurement.execute_cmd(cmd_id, args)
+            self.my_measurement.execute_cmd(cmd_id, args)
 
 
 class CreateNewResource(Resource):
@@ -109,34 +111,39 @@ class CreateNewResource(Resource):
         for node_id in data:
             endpoints = []
             node = data[node_id]
-            experiment_details = node['experiment_details']
-            devices = node['devices']
+            experiment_details = node.get('experiment_details')
+            devices = node.get('devices')
             for device in devices:
-                device_id = devices[device].get('id')
+                device_id = devices[device].get('device_id')
                 device_details = devices[device]
                 my_data_manager = datamanager.Manager(device_details)
                 my_data_manager.start()
-                setup = devices[device].get('setup')
-                if setup != None:
-                    for setup_cmd in setup:
-                        print(setup_cmd)
-                        data = (setup_cmd['time'], setup_cmd['id'], setup_cmd['args'])
+                setup = device_details.get('setup')
+                initial_commands = setup.get('initial_commands', None)
+                if initial_commands != None:
+                    for setup_cmd in initial_commands:
+                        data = (setup_cmd['time'], '/' + str(node_id) + '/' + str(device_id), setup_cmd['id'], setup_cmd['args'])
                         my_data_manager.q.put(data)
                         my_data_manager.q_new_item.set()
 
                 self.api.add_resource(Command, '/' + str(node_id) + '/' + str(device_id), endpoint = str(node_id) + '/' + str(device_id),
                                       resource_class_kwargs={
-                                          'data_manager' : my_data_manager
+                                          'data_manager' : my_data_manager,
+                                          'address' : '/' + str(node_id) + '/' + str(device_id)
                                       })
 
-                endpoints.append(str(device_id))
+                endpoints.append(device_id)
+            node_measurement = measurement.PeriodicalMeasurement(endpoints, node_id, experiment_details)
 
             self.api.add_resource(Nodes, '/' + str(node_id), endpoint = str(node_id),
                               resource_class_kwargs={
                                   'endpoints': endpoints,
-                                  'node_id' : str(node_id),
+                                  'node_id' : node_id,
                                   'experiment_details' : experiment_details,
+                                  'node_measurement' : node_measurement
                               })
+
+            node_measurement.start()
 
 
 class ApiInit:

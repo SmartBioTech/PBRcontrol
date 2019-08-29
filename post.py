@@ -15,15 +15,24 @@ def do():
 
 def post_json():
     my_dict = {
-        2 : {
-            'experiment_details' : {'sleep_time' : 25},
+        1 : {
+            'experiment_details' : {'sleep_time' : 1},
             'devices' : {
                 'device_1' : {
+                    'node': 1,
                     'type' : 'PBR',
-                    'id' : 'PBR01',
+                    'device_id' : 'PBR01',
                     'test' : True,
                     'address' : None,
-                    'setup' : [{'time': (datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")),'id': 0, 'args': '5'}]
+                    'setup' : {
+                        'initial_commands' : [{'time': (datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")),'id': 8, 'args': '[1, True]'}],
+                        'lower_outlier_tol' : 2,
+                        'upper_outlier_tol' : 3,
+                        'max_outliers' : 6,
+                        'min_OD' : 0.1,
+                        'max_OD' : 0.9,
+                        'pump_id' : 1
+                    }
                 }
             }
         }
