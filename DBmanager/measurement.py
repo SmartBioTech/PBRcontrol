@@ -14,17 +14,17 @@ class PeriodicalMeasurement(Thread):
         self.experiment_details['sleep_time'] = t
         print('sleep time changed')
 
-    def __init__(self, endpoints, node_id, experiment_details):
-        super(PeriodicalMeasurement, self).__init__()
+    def __init__(self, endpoints, node_id, experiment_details, end_program):
+        super(PeriodicalMeasurement, self).__init__(daemon=True)
         self.experiment_details = experiment_details
         self.endpoints = endpoints
         self.node_id = node_id
+        self.end_program = end_program
 
         self.commands = {34 : self.change_time_period}
 
     def run(self):
-        while True:
-
+        while not self.end_program.is_set():
             for device in self.endpoints:
                 data = {'time': (datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))}
                 if 'GMS' in device:
@@ -39,6 +39,8 @@ class PeriodicalMeasurement(Thread):
                 post('http://localhost:5000/' + str(self.node_id) + '/' + str(device), data=data, headers=headers)
 
             sleep(int(self.experiment_details.get('sleep_time', 60)))
+
+
 
 
 

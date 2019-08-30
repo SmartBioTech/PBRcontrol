@@ -16,7 +16,7 @@ def do():
 def post_json():
     my_dict = {
         1 : {
-            'experiment_details' : {'sleep_time' : 1},
+            'experiment_details' : {'sleep_time' : 10},
             'devices' : {
                 'device_1' : {
                     'node': 1,
@@ -33,6 +33,18 @@ def post_json():
                         'max_OD' : 0.9,
                         'pump_id' : 1
                     }
+                },
+                'device_2' : {
+                    'node' : 1,
+                    'type' : 'GAS',
+                    'device_id' : 'GAS01',
+                    'test' : True,
+                    'address' : None,
+                    'setup' : {
+                        'initial_commands' : []
+
+                    }
+
                 }
             }
         }

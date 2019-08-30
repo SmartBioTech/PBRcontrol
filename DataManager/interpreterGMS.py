@@ -1,11 +1,8 @@
 from HWdevices import GMS_test
+from DataManager import base_interpreter
 
 
-class DeviceManager:
-
-    def execute(self, time_issued, id, args):
-        result = self.commands[id](*(eval(args)))
-        return (time_issued, id, args, result)
+class DeviceManager(base_interpreter.BaseInterpreter):
 
     def __init__(self, device_details, log):
         self.device_details = device_details
@@ -16,3 +13,4 @@ class DeviceManager:
                 22: self.device.get_valve_flow,
                 33: self.device.set_valve_flow,
             }
+        super(DeviceManager, self).__init__()

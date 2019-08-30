@@ -2,27 +2,10 @@ from HWdevices import PBR_test
 from DataManager import OD_Checker
 from time import sleep
 import datetime
+from DataManager import base_interpreter
 
-class DeviceManager:
+class DeviceManager(base_interpreter.BaseInterpreter):
 
-
-    def device_con(self, id, args):
-        args = eval(args)
-
-        count = 0
-        result = []
-        while count <= 5:
-            try:
-                result = self.commands[id](*args)
-                break
-            except Exception:
-                count += 1
-                sleep(2)
-
-        if not result:
-            raise Exception('Could not reach device')
-
-        return result
 
     def initial_OD(self):
         data = []
@@ -37,18 +20,6 @@ class DeviceManager:
                 sleep(2)
 
         return sum(data) / 5
-
-    def execute(self, time_issued, target_address, id, args):
-
-        try:
-            result = self.device_con(id, args)
-        except Exception:
-            result = 'Could not reach device'
-
-        if id == 19:
-            self.OD_checker.stabilize(result)
-
-        return (time_issued, target_address, id, args, result)
 
 
     def __init__(self, device_details, q, q_new_item, log):
@@ -88,6 +59,7 @@ class DeviceManager:
             21: self.OD_checker.set_od_bounds,
             22: self.OD_checker.set_tolerance
         })
+        super(DeviceManager, self).__init__()
 
 
 

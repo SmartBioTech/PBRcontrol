@@ -3,7 +3,7 @@ Initialize the Api, connect to database and add resources with corresponding end
 """
 
 from DBmanager import DBapi, localdb
-from threading import Thread
+from threading import Thread, Event
 
 class API(Thread):
     '''
@@ -18,9 +18,15 @@ class API(Thread):
         super(API, self).__init__()
         self.user = user
         self.db = db
+        self.end_program = Event()
+
 
     def run(self):
         db = localdb.DatabaseInit(self.user, self.db)
-        api = DBapi.ApiInit()
+        api = DBapi.ApiInit(self.end_program)
         db.initialize_database()
         api.run()
+
+
+
+

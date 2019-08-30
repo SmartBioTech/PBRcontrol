@@ -14,7 +14,6 @@ class Logger:
         while True:
             try:
                 self.con = cn.connect(host=host, user=user, password=password, db=db, autocommit=True)
-                print('db connected')
                 break
             except Exception:
                 sleep(2)
@@ -32,7 +31,6 @@ class Logger:
         self.cur.execute(query, query_args)
 
 
-        print('log updated')
 
 
 class Checker(Thread):
@@ -42,11 +40,12 @@ class Checker(Thread):
     :q: queue object
     :flag: threading.Event() object, is set to True when data is added to the queue; if not, the checker will wait
     '''
-    def __init__(self, q, q_new_item, device_details):
+    def __init__(self, q, q_new_item, device_details, end_program):
         super(Checker, self). __init__()
         self.q = q
         self.q_new_item = q_new_item
         self.device_details = device_details
+        self.end_program = end_program
 
     def run(self):
         log = Logger()
@@ -63,15 +62,12 @@ class Checker(Thread):
         device = interpreter.DeviceManager(*arguments)
 
 
-        print('checker running')
-        while True:
+        while not self.end_program.is_set():
+
             if self.q_new_item.is_set():
-                print('flag detected')
                 while self.q:
                     cmd = self.q.get()
-                    print('this is cmd: ', cmd)
                     response = device.execute(*cmd)
-                    print('response: ', response)
                     log.update_log(*response)
                 self.q_new_item.clear()
             else:

@@ -5,6 +5,8 @@ import datetime
 import json
 from DataManager import datamanager
 from DBmanager import measurement
+from multiprocessing import Process, Event
+
 
 
 class Database:
@@ -100,8 +102,9 @@ class Nodes(Resource):
 
 class CreateNewResource(Resource):
 
-    def __init__(self, api):
+    def __init__(self, api, end_program):
         self.api = api
+        self.end_program = end_program
 
     def post(self):
         my_json = request.json
@@ -116,7 +119,7 @@ class CreateNewResource(Resource):
             for device in devices:
                 device_id = devices[device].get('device_id')
                 device_details = devices[device]
-                my_data_manager = datamanager.Manager(device_details)
+                my_data_manager = datamanager.Manager(device_details, self.end_program)
                 my_data_manager.start()
                 setup = device_details.get('setup')
                 initial_commands = setup.get('initial_commands', None)
@@ -133,7 +136,7 @@ class CreateNewResource(Resource):
                                       })
 
                 endpoints.append(device_id)
-            node_measurement = measurement.PeriodicalMeasurement(endpoints, node_id, experiment_details)
+            node_measurement = measurement.PeriodicalMeasurement(endpoints, node_id, experiment_details, self.end_program)
 
             self.api.add_resource(Nodes, '/' + str(node_id), endpoint = str(node_id),
                               resource_class_kwargs={
@@ -146,18 +149,39 @@ class CreateNewResource(Resource):
             node_measurement.start()
 
 
-class ApiInit:
+class EndProgram(Resource):
+
+    def __init__(self, end_program, end_process):
+        self.end_program = end_program
+        self.end_process = end_process
+
+    def get(self):
+        self.end_program.set()
+        self.end_process.set()
+
+
+class ApiInit():
     '''
     Initializes the API
     '''
-        
+    def __init__(self, end_program):
+        self.app = Flask(__name__)
+        self.api = Api(self.app)
+        self.db = Database()
+        self.end_program = end_program
+        self.end_process = Event()
+
+
     def run(self):
-        app = Flask(__name__)
-        api = Api(app)
-        db = Database()
 
-        api.add_resource(CreateNewResource, '/', resource_class_kwargs={'api': api})
 
-        api.add_resource(GetData, '/log', resource_class_kwargs={'db': db, 'table': 'log'})
+        self.api.add_resource(CreateNewResource, '/', resource_class_kwargs={'api': self.api, 'end_program' : self.end_program})
 
-        app.run(debug=False)
+        self.api.add_resource(GetData, '/log', resource_class_kwargs={'db': self.db, 'table': 'log'})
+        self.api.add_resource(EndProgram, '/end', endpoint = '/end', resource_class_kwargs={'end_program' : self.end_program, 'end_process' : self.end_process})
+
+        server = Process(target=self.app.run)
+        server.start()
+        self.end_process.wait()
+        server.terminate()
+

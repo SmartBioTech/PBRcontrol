@@ -1,11 +1,9 @@
 from HWdevices import GAS_test
+from DataManager import base_interpreter
 
 
-class DeviceManager:
+class DeviceManager(base_interpreter.BaseInterpreter):
 
-    def execute(self, time_issued, id, args):
-        result = self.commands[id](*(eval(args)))
-        return (time_issued, id, args, result)
 
     def __init__(self, device_details, log):
         self.device_details = device_details
@@ -21,3 +19,5 @@ class DeviceManager:
                 29: self.device.get_co2_air,
                 30: self.device.get_small_valves,
             }
+
+        super(DeviceManager, self).__init__()
