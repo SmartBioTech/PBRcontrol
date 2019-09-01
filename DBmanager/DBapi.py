@@ -53,7 +53,12 @@ class Command(Resource):
 
     def post(self):
         cmd = request.get_json()
-        data = (cmd.get('time', (datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))), self.address, (cmd.get('id', False)), (cmd.get('args', '[]')))
+        data = (cmd.get('time', (datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))),
+                self.address,
+                (cmd.get('id', False)),
+                (cmd.get('args', '[]'))
+                )
+
         if data[1]:
             self.q.put(data)
             self.q_new_item.set()
@@ -153,31 +158,52 @@ class CreateNewResource(Resource):
                 if initial_commands != None:
 
                     for setup_cmd in initial_commands:
-                        cmd = (setup_cmd['time'], '/' + str(node_id) + '/' + str(device_id), setup_cmd['id'], setup_cmd['args'])
+
+                        cmd = (setup_cmd['time'],
+                               '/' + str(node_id) + '/' + str(device_id),
+                               setup_cmd['id'], setup_cmd['args']
+                               )
+
                         my_data_manager.q.put(cmd)
                         my_data_manager.q_new_item.set()
 
-                self.api.add_resource(Command, '/' + str(node_id) + '/' + str(device_id), endpoint = str(node_id) + '/' + str(device_id),
-                                      resource_class_kwargs={
-                                          'data_manager' : my_data_manager,
-                                          'address' : '/' + str(node_id) + '/' + str(device_id)
-                                      })
+                self.api.add_resource(Command, '/' + str(node_id) + '/' + str(device_id),
+                                      endpoint = str(node_id) + '/' + str(device_id),
+                                      resource_class_kwargs={'data_manager' : my_data_manager,
+                                                             'address' : '/' + str(node_id) + '/' + str(device_id)
+                                                             }
+                                      )
+
                 endpoints.append(device_id)
 
-                self.api.add_resource(EndDevice, '/' + str(node_id) + '/' + str(device_id) + 'end', endpoint = str(node_id) + '/' + str(device_id) + 'end', resource_class_kwargs={'end_device' : end_device, 'endpoints' : endpoints, 'device_id' : device_id})
+                self.api.add_resource(EndDevice, '/' + str(node_id) + '/' + str(device_id) + 'end',
+                                      endpoint = str(node_id) + '/' + str(device_id) + 'end',
+                                      resource_class_kwargs={'end_device' : end_device,
+                                                             'endpoints' : endpoints,
+                                                             'device_id' : device_id}
+                                      )
 
 
 
-            node_measurement = measurement.PeriodicalMeasurement(endpoints, node_id, experiment_details, self.end_program)
+            node_measurement = measurement.PeriodicalMeasurement(endpoints,
+                                                                 node_id,
+                                                                 experiment_details,
+                                                                 self.end_program,
+                                                                 )
 
-            self.api.add_resource(Nodes, '/' + str(node_id), endpoint = str(node_id),
-                              resource_class_kwargs={
-                                  'endpoints': endpoints,
-                                  'node_id' : node_id,
-                                  'experiment_details' : experiment_details,
-                                  'node_measurement' : node_measurement
-                              })
-            self.api.add_resource(EndNode, '/' + str(node_id) + '/end', endpoint = str(node_id) + '/end',  resource_class_kwargs={'node_events' : node_events, 'endpoints' : endpoints})
+            self.api.add_resource(Nodes, '/' + str(node_id),
+                                  endpoint = str(node_id),
+                                  resource_class_kwargs={
+                                      'endpoints': endpoints,
+                                      'node_id' : node_id,
+                                      'experiment_details' : experiment_details,
+                                      'node_measurement' : node_measurement}
+                                  )
+
+            self.api.add_resource(EndNode, '/' + str(node_id) + '/end', endpoint = str(node_id) + '/end',
+                                  resource_class_kwargs={'node_events' : node_events,
+                                                         'endpoints' : endpoints}
+                                  )
 
             node_measurement.start()
 
@@ -211,10 +237,21 @@ class ApiInit():
 
     def run(self):
 
-        self.api.add_resource(CreateNewResource, '/', resource_class_kwargs={'api': self.api, 'end_program' : self.end_program})
+        self.api.add_resource(CreateNewResource, '/',
+                              resource_class_kwargs={'api': self.api,
+                                                     'end_program' : self.end_program}
+                              )
 
-        self.api.add_resource(GetData, '/log', resource_class_kwargs={'db': self.db, 'table': 'log'})
-        self.api.add_resource(EndProgram, '/end', endpoint = '/end', resource_class_kwargs={'end_program' : self.end_program, 'end_process' : self.end_process})
+        self.api.add_resource(GetData, '/log',
+                              resource_class_kwargs={'db': self.db,
+                                                     'table': 'log'}
+                              )
+
+        self.api.add_resource(EndProgram, '/end',
+                              endpoint = '/end',
+                              resource_class_kwargs={'end_program' : self.end_program,
+                                                     'end_process' : self.end_process}
+                              )
 
         server = Process(target=self.run_app)
         server.start()

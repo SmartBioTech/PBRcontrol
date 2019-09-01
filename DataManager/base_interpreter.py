@@ -21,7 +21,8 @@ class BaseInterpreter:
         try:
             result = self.device_con(id, args)
         except Exception:
+            print('could not reach device')
             result = 'Could not reach device'
-        if id == 19:
+        if id == 19 and not isinstance(result, str):
             self.OD_checker.stabilize(result)
         return (time_issued, target_address, id, args, result)
