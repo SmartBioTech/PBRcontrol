@@ -23,8 +23,9 @@ class API(Thread):
 
     def run(self):
         db = localdb.DatabaseInit(self.user, self.db)
-        api = DBapi.ApiInit(self.end_program)
         db.initialize_database()
+        api = DBapi.ApiInit(self.end_program)
+
         api.run()
 
 

@@ -2,9 +2,9 @@ from flask import request, Flask
 from flask_restful import Resource, Api
 import mysql.connector as cn
 import datetime
-import json
 from DataManager import datamanager
 from DBmanager import measurement
+from threading import Event as ThreadEvent
 from multiprocessing import Process, Event
 
 
@@ -99,6 +99,28 @@ class Nodes(Resource):
         if cmd_id:
             self.my_measurement.execute_cmd(cmd_id, args)
 
+class EndDevice(Resource):
+
+    def __init__(self, end_device, endpoints, device_id):
+        self.device_id = device_id
+        self.end_device = end_device
+        self.endpoints= endpoints
+
+    def get(self):
+        self.end_device.set()
+        self.endpoints.remove(self.device_id)
+
+class EndNode(Resource):
+
+    def __init__(self, node_events, endpoints):
+        self.node_events = node_events
+        self.endpoints = endpoints
+
+    def get(self):
+        for event in self.node_events:
+            event.set()
+        while self.endpoints:
+            self.endpoints.pop()
 
 class CreateNewResource(Resource):
 
@@ -107,26 +129,32 @@ class CreateNewResource(Resource):
         self.end_program = end_program
 
     def post(self):
-        my_json = request.json
-        data=json.loads(my_json)
-
+        data = request.get_data()
+        data = eval(data)
 
         for node_id in data:
+            node_events = []
             endpoints = []
+
             node = data[node_id]
             experiment_details = node.get('experiment_details')
             devices = node.get('devices')
+
             for device in devices:
                 device_id = devices[device].get('device_id')
                 device_details = devices[device]
-                my_data_manager = datamanager.Manager(device_details, self.end_program)
+                end_device = ThreadEvent()
+                node_events.append(end_device)
+                my_data_manager = datamanager.Manager(device_details, self.end_program, end_device)
                 my_data_manager.start()
                 setup = device_details.get('setup')
                 initial_commands = setup.get('initial_commands', None)
+
                 if initial_commands != None:
+
                     for setup_cmd in initial_commands:
-                        data = (setup_cmd['time'], '/' + str(node_id) + '/' + str(device_id), setup_cmd['id'], setup_cmd['args'])
-                        my_data_manager.q.put(data)
+                        cmd = (setup_cmd['time'], '/' + str(node_id) + '/' + str(device_id), setup_cmd['id'], setup_cmd['args'])
+                        my_data_manager.q.put(cmd)
                         my_data_manager.q_new_item.set()
 
                 self.api.add_resource(Command, '/' + str(node_id) + '/' + str(device_id), endpoint = str(node_id) + '/' + str(device_id),
@@ -134,8 +162,12 @@ class CreateNewResource(Resource):
                                           'data_manager' : my_data_manager,
                                           'address' : '/' + str(node_id) + '/' + str(device_id)
                                       })
-
                 endpoints.append(device_id)
+
+                self.api.add_resource(EndDevice, '/' + str(node_id) + '/' + str(device_id) + 'end', endpoint = str(node_id) + '/' + str(device_id) + 'end', resource_class_kwargs={'end_device' : end_device, 'endpoints' : endpoints, 'device_id' : device_id})
+
+
+
             node_measurement = measurement.PeriodicalMeasurement(endpoints, node_id, experiment_details, self.end_program)
 
             self.api.add_resource(Nodes, '/' + str(node_id), endpoint = str(node_id),
@@ -145,6 +177,7 @@ class CreateNewResource(Resource):
                                   'experiment_details' : experiment_details,
                                   'node_measurement' : node_measurement
                               })
+            self.api.add_resource(EndNode, '/' + str(node_id) + '/end', endpoint = str(node_id) + '/end',  resource_class_kwargs={'node_events' : node_events, 'endpoints' : endpoints})
 
             node_measurement.start()
 
@@ -172,15 +205,18 @@ class ApiInit():
         self.end_process = Event()
 
 
-    def run(self):
+    def run_app(self):
+        self.app.run(host='0.0.0.0')
 
+
+    def run(self):
 
         self.api.add_resource(CreateNewResource, '/', resource_class_kwargs={'api': self.api, 'end_program' : self.end_program})
 
         self.api.add_resource(GetData, '/log', resource_class_kwargs={'db': self.db, 'table': 'log'})
         self.api.add_resource(EndProgram, '/end', endpoint = '/end', resource_class_kwargs={'end_program' : self.end_program, 'end_process' : self.end_process})
 
-        server = Process(target=self.app.run)
+        server = Process(target=self.run_app)
         server.start()
         self.end_process.wait()
         server.terminate()

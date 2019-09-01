@@ -32,8 +32,8 @@ def post_json():
                         'min_OD' : 0.1,
                         'max_OD' : 0.9,
                         'pump_id' : 1
-                    }
-                },
+                            }
+                            },
                 'device_2' : {
                     'node' : 1,
                     'type' : 'GAS',
@@ -42,20 +42,35 @@ def post_json():
                     'address' : None,
                     'setup' : {
                         'initial_commands' : []
-
+                            }
+                            }
+                        }
+            },
+    2 : {
+        'experiment_details' : {'sleep_time' : 5},
+        'devices' : {
+            'device_1' : {
+                'node' : 1,
+                'type' : 'PBR',
+                'device_id': 'PBR01',
+                'test' : True,
+                'address' : None,
+                'setup' : {
+                    'initial_commands' : [],
+                    'lower_outlier_tol' : 2,
+                    'upper_outlier_tol' : 3,
+                    'max_outliers' : 6,
+                    'min_OD' : 0.1,
+                    'max_OD' : 0.9,
+                    'pump_id' : 1,
+                            }
+                        }
                     }
-
-                }
-            }
         }
     }
 
-    my_json=json.dumps(my_dict)
-    print(my_json)
-    requests.post('http://localhost:5000/', json = my_json)
-
-def get():
-    resp = (requests.get('http://localhost:5000/1'))
+#    my_json=json.dumps(my_dict)
+    requests.post('http://localhost:5000/', str(my_dict))
 
 
 post_json()

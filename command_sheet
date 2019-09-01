@@ -49,6 +49,19 @@
  - currently used to change time period between automatic measurements
 
 
+// END DEVICE //
+
+ - endpoint: http//:[ip address]/[node number]/[device id]/end
+
+ - get
+
+// END NODE //
+ - endpoint: http//:[ip address]/[node number]/end
+
+ // END PROGRAM //
+
+ - endpoint: http//:[ip address]/end000
+
 // COMMAND IDs //
 
 PBR         1: get_temp_settings,

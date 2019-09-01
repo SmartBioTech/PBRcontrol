@@ -24,7 +24,7 @@ class PeriodicalMeasurement(Thread):
         self.commands = {34 : self.change_time_period}
 
     def run(self):
-        while not self.end_program.is_set():
+        while not self.end_program.is_set() and self.endpoints:
             for device in self.endpoints:
                 data = {'time': (datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))}
                 if 'GMS' in device:
