@@ -11,12 +11,23 @@ class OD_Check:
         self.average = average
 
 
-    def set_od_bounds(self, min=None, max=None):
+    def set_od_bounds(self, min, max):
 
-        if min != None:
-            self.device_setup['min_OD'] = min
-        if max != None:
-            self.device_setup['max_OD'] = max
+        if min and max:
+            if min <= max:
+                self.device_setup['min_OD'] = min
+                self.device_setup['max_OD'] = max
+            else:
+                return 'Invalid values'
+        elif min:
+            if min <= self.device_setup['max_OD']:
+                self.device_setup['min_OD'] = min
+        elif max:
+            if max >= self.device_setup['min_OD']:
+                self.device_setup['max_OD'] = max
+        else:
+            return 'Invalid values'
+        return (min, max)
 
     def set_tolerance(self, lower, upper):
 
@@ -24,20 +35,20 @@ class OD_Check:
             if lower <= upper:
                 self.device_setup['lower_outlier_tol'] = lower
                 self.device_setup['upper_outlier_tol'] = upper
-                return ('Tolerances set to ' + lower + ' and ' + upper)
+                return (lower, upper)
             else:
                 return ('Invalid values')
         if lower and lower <= self.device_setup['upper_outlier_tol']:
             self.device_setup['lower_outlier_tol'] = lower
-            return ('Tolerances set to ' + lower + ' and ' + self.device_setup['upper_outlier_tol'])
+            return (lower, self.device_setup['upper_outlier_tol'])
         if upper and upper >= self.device_setup['lower_outlier_tol']:
             self.device_setup['upper_outlier_tol'] = upper
-            return ('Tolerances set to ' + self.device_setup['lower_outlier_tol'] + ' and ' + upper)
-        return ('Ivalid input')
+            return (self.device_setup['lower_outlier_tol'], upper)
+        return ('Invalid input')
 
     def set_max_outliers(self, n):
         self.device_setup['max_outliers'] = n
-        return ('Maximum number of outliers is ' + n)
+        return n
 
     def stabilize(self, result):
 

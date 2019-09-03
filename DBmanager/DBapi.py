@@ -52,10 +52,11 @@ class Command(Resource):
 
 
     def post(self):
-        cmd = request.get_json()
+        cmd = (request.get_data())
+        cmd = eval(cmd)
         data = (cmd.get('time', (datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))),
                 self.address,
-                (cmd.get('id', False)),
+                (cmd.get('cmd_id', False)),
                 (cmd.get('args', '[]'))
                 )
 
@@ -97,7 +98,8 @@ class Nodes(Resource):
         return self.endpoints
 
     def post(self):
-        data = request.json
+        data = request.get_data()
+        data = eval(data)
         cmd_id = data.get('cmd_id', False)
         args = data.get('args', '[]')
         args = eval(args)
@@ -176,12 +178,13 @@ class CreateNewResource(Resource):
 
                 endpoints.append(device_id)
 
-                self.api.add_resource(EndDevice, '/' + str(node_id) + '/' + str(device_id) + 'end',
-                                      endpoint = str(node_id) + '/' + str(device_id) + 'end',
+                self.api.add_resource(EndDevice, '/' + str(node_id) + '/' + str(device_id) + '/end',
+                                      endpoint = str(node_id) + '/' + str(device_id) + '/end',
                                       resource_class_kwargs={'end_device' : end_device,
                                                              'endpoints' : endpoints,
                                                              'device_id' : device_id}
                                       )
+
 
 
 
