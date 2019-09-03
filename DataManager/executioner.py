@@ -12,6 +12,7 @@ class Logger:
         password = ""
         db = "localdb"
         while True:
+
             try:
                 self.con = cn.connect(host=host, user=user, password=password, db=db, autocommit=True)
                 break
@@ -26,7 +27,6 @@ class Logger:
 
         query = """INSERT INTO log (time_issued, target_address, command_id, target, response, time_executed) VALUES (%s, %s, %s, %s, %s, %s)"""
         query_args = (str(time_issued), str(target_address), int(command_id), str(target_arguments), str(response), str(time_executed))
-
 
         self.cur.execute(query, query_args)
 
@@ -67,7 +67,9 @@ class Checker(Thread):
 
             if self.q_new_item.is_set():
                 while self.q:
+
                     cmd = self.q.get()
+
                     response = device.execute(*cmd)
                     log.update_log(*response)
                 self.q_new_item.clear()

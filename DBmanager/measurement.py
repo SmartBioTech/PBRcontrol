@@ -30,9 +30,9 @@ class PeriodicalMeasurement(Thread):
                 if 'GMS' in device:
                     return
                 elif 'PBR' in device:
-                    data['id'] = 19
+                    data['cmd_id'] = 19
                 elif 'GAS' in device:
-                    data['id'] = 28
+                    data['cmd_id'] = 28
 
                 headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
                 data = json.dumps(data)

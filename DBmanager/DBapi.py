@@ -19,6 +19,7 @@ class Database:
         db = "localdb"
         self.con = cn.connect(host=host, user=user, password=password, db=db, autocommit=True)
         self.cur = self.con.cursor()
+        self.log_id = 0
 
 
     def get(self, table):
@@ -28,13 +29,13 @@ class Database:
         :param: table to read from (log/measurement)
         :return: the row that was read
         """
-        select = ('SELECT * FROM %s LIMIT 1' % table)
+        select = ('SELECT * FROM %s WHERE log_id > %s ORDER BY log_id DESC' %(table,self.log_id))
+
         self.cur.execute(select)
-        row = self.cur.fetchone()
-        if row != None:
-            query = ('DELETE FROM %s LIMIT 1' % table)
-            self.cur.execute(query)
-        return row
+        rows = self.cur.fetchall()
+        if rows:
+            self.log_id = rows[0][0]
+        return rows
 
 
 class Command(Resource):
@@ -44,10 +45,10 @@ class Command(Resource):
 
     Receives json data encoded into http protocol.
     """
-    def __init__(self, data_manager, address):
-        self.q = data_manager.q
-        self.q_new_item = data_manager.q_new_item
-        self.address = address
+    def __init__(self, resource_args, endpoint):
+        self.my_data_manager = resource_args[endpoint][0]
+        self.q = self.my_data_manager.q
+        self.q_new_item = self.my_data_manager.q_new_item
 
 
 
@@ -55,7 +56,7 @@ class Command(Resource):
         cmd = (request.get_data())
         cmd = eval(cmd)
         data = (cmd.get('time', (datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))),
-                self.address,
+                self.endpoint,
                 (cmd.get('cmd_id', False)),
                 (cmd.get('args', '[]'))
                 )
@@ -69,9 +70,9 @@ class GetData(Resource):
     """
     Parent class for Log and Measurement, its argument is the local database (object).
     """
-    def __init__(self, db):
+    def __init__(self, db, table):
         self.db = db
-        self.table = None
+        self.table = table
 
     def get(self):
         """
@@ -79,20 +80,19 @@ class GetData(Resource):
 
         :return: a list of all rows from the desired table
         """
-        row = self.db.get(self.table)
-        result = []
-        while row != None:
-            result.append(row)
-            row = self.db.get(self.table)
-        return result
+        rows = self.db.get(self.table)
+
+        return rows
 
 class Nodes(Resource):
 
-    def __init__(self, endpoints, node_id, experiment_details, node_measurement):
-        self.node_id = node_id
-        self.endpoints = endpoints
-        self.experiment_details = experiment_details
-        self.my_measurement = node_measurement
+    def __init__(self, resource_args, node_id):
+        self.node_args = resource_args[node_id]
+        self.endpoints = self.node_args[0]
+        self.node_id = self.node_args[1]
+
+        self.experiment_details = self.node_args[2]
+        self.my_measurement = self.node_args[3]
 
     def get(self):
         return self.endpoints
@@ -108,10 +108,10 @@ class Nodes(Resource):
 
 class EndDevice(Resource):
 
-    def __init__(self, end_device, endpoints, device_id):
-        self.device_id = device_id
-        self.end_device = end_device
-        self.endpoints= endpoints
+    def __init__(self, resource_args,endpoint):
+        self.device_id = resource_args[endpoint][3]
+        self.end_device = resource_args[endpoint][1]
+        self.endpoints= resource_args[endpoint][2]
 
     def get(self):
         self.end_device.set()
@@ -119,21 +119,21 @@ class EndDevice(Resource):
 
 class EndNode(Resource):
 
-    def __init__(self, node_events, endpoints):
-        self.node_events = node_events
-        self.endpoints = endpoints
+    def __init__(self, resource_args, node_id):
+        self.node_events = resource_args[node_id][4]
+        self.endpoints = resource_args[node_id][0]
 
     def get(self):
         for event in self.node_events:
             event.set()
-        while self.endpoints:
-            self.endpoints.pop()
+        self.endpoints.clear()
 
 class CreateNewResource(Resource):
 
-    def __init__(self, api, end_program):
+    def __init__(self, api, end_program, resource_args):
         self.api = api
         self.end_program = end_program
+        self.resource_args = resource_args
 
     def post(self):
         data = request.get_data()
@@ -157,36 +157,44 @@ class CreateNewResource(Resource):
                 setup = device_details.get('setup')
                 initial_commands = setup.get('initial_commands', None)
 
-                if initial_commands != None:
 
-                    for setup_cmd in initial_commands:
 
-                        cmd = (setup_cmd['time'],
-                               '/' + str(node_id) + '/' + str(device_id),
-                               setup_cmd['id'], setup_cmd['args']
-                               )
+                for setup_cmd in initial_commands:
 
-                        my_data_manager.q.put(cmd)
-                        my_data_manager.q_new_item.set()
+                    cmd = (
+                        setup_cmd['time'],
+                        '/' + str(node_id) + '/' + str(device_id),
+                       setup_cmd['id'],
+                       setup_cmd['args']
+                           )
 
-                self.api.add_resource(Command, '/' + str(node_id) + '/' + str(device_id),
-                                      endpoint = str(node_id) + '/' + str(device_id),
-                                      resource_class_kwargs={'data_manager' : my_data_manager,
-                                                             'address' : '/' + str(node_id) + '/' + str(device_id)
-                                                             }
-                                      )
+                    my_data_manager.q.put(cmd)
+                    my_data_manager.q_new_item.set()
+
+                endpoint = str(node_id) + '/' + str(device_id)
+
+
+                if endpoint not in self.resource_args.keys():
+
+                    self.resource_args[endpoint] = [my_data_manager, end_device, endpoints, device_id]
+
+                    self.api.add_resource(Command, '/' + str(node_id) + '/' + str(device_id),
+                                          endpoint = str(node_id) + '/' + str(device_id),
+                                          resource_class_kwargs={'resource_args' : self.resource_args,
+                                                                 'endpoint' : endpoint
+                                                                 }
+                                          )
+
+                    self.api.add_resource(EndDevice, '/' + endpoint + '/end',
+                                          endpoint=endpoint + '/end',
+                                          resource_class_kwargs={'resource_args': self.resource_args,
+                                                                 'endpoint' : endpoint
+                                                                 }
+                                          )
+                else:
+                    self.resource_args[endpoint] = [my_data_manager, end_device, endpoints, device_id]
 
                 endpoints.append(device_id)
-
-                self.api.add_resource(EndDevice, '/' + str(node_id) + '/' + str(device_id) + '/end',
-                                      endpoint = str(node_id) + '/' + str(device_id) + '/end',
-                                      resource_class_kwargs={'end_device' : end_device,
-                                                             'endpoints' : endpoints,
-                                                             'device_id' : device_id}
-                                      )
-
-
-
 
             node_measurement = measurement.PeriodicalMeasurement(endpoints,
                                                                  node_id,
@@ -194,19 +202,23 @@ class CreateNewResource(Resource):
                                                                  self.end_program,
                                                                  )
 
-            self.api.add_resource(Nodes, '/' + str(node_id),
-                                  endpoint = str(node_id),
-                                  resource_class_kwargs={
-                                      'endpoints': endpoints,
-                                      'node_id' : node_id,
-                                      'experiment_details' : experiment_details,
-                                      'node_measurement' : node_measurement}
-                                  )
+            if node_id not in self.resource_args.keys():
+                self.resource_args[node_id] = [endpoints, node_id, experiment_details, node_measurement, node_events]
 
-            self.api.add_resource(EndNode, '/' + str(node_id) + '/end', endpoint = str(node_id) + '/end',
-                                  resource_class_kwargs={'node_events' : node_events,
-                                                         'endpoints' : endpoints}
-                                  )
+                self.api.add_resource(Nodes, '/' + str(node_id),
+                                      endpoint = str(node_id),
+                                      resource_class_kwargs={
+                                          'resource_args': self.resource_args,
+                                          'node_id' : node_id}
+                                      )
+
+                self.api.add_resource(EndNode, '/' + str(node_id) + '/end', endpoint = str(node_id) + '/end',
+                                      resource_class_kwargs={
+                                          'resource_args': self.resource_args,
+                                          'node_id' : node_id}
+                                      )
+            else:
+                self.resource_args[node_id] = [endpoints, node_id, experiment_details, node_measurement, node_events]
 
             node_measurement.start()
 
@@ -239,10 +251,11 @@ class ApiInit():
 
 
     def run(self):
-
+        resource_args = {}
         self.api.add_resource(CreateNewResource, '/',
                               resource_class_kwargs={'api': self.api,
-                                                     'end_program' : self.end_program}
+                                                     'end_program' : self.end_program,
+                                                     'resource_args' : resource_args}
                               )
 
         self.api.add_resource(GetData, '/log',
