@@ -3,6 +3,7 @@ from DataManager import OD_Checker
 from time import sleep
 import datetime
 from DataManager import base_interpreter
+import numpy as np
 
 class DeviceManager(base_interpreter.BaseInterpreter):
 
@@ -19,7 +20,29 @@ class DeviceManager(base_interpreter.BaseInterpreter):
                 self.log.update_log(time_issued, address, 5, [], 'Waiting for connection...')
                 sleep(2)
 
-        return sum(data) / 5
+        data.sort()
+        computed = False
+
+        while not computed:
+
+            mean = np.mean(data)
+            median = np.median(data)
+
+            if len(data) < 2:
+                computed = True
+                average = data[0]
+
+            if mean / median <= 1:
+
+                if mean / median >= 0.9:
+                    computed = True
+                    average = mean
+                else:
+                    data = data[1:]
+            else:
+                data = data[:-1]
+        print('average: ', average)
+        return average
 
 
     def __init__(self, device_details, q, q_new_item, log):

@@ -129,7 +129,7 @@ def testPBR():
 def add_node():
     my_dict = {
         1 : {
-            'experiment_details' : {'sleep_time' : 0.1},
+            'experiment_details' : {'sleep_time' : 1},
             'devices' : {
                 'device_1' : {
                     'node': 1,
@@ -138,7 +138,7 @@ def add_node():
                     'test' : True,
                     'address' : None,
                     'setup' : {
-                        'initial_commands' : [{'time': (datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")),'id': 8, 'args': '[1, True]'}],
+                        'initial_commands' : [],
                         'lower_outlier_tol' : 2,
                         'upper_outlier_tol' : 3,
                         'max_outliers' : 6,

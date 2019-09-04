@@ -11,6 +11,10 @@ class OD_Check:
         self.outliers = 0
         self.average = average
         self.last_results = deque(maxlen=2)
+        self.pump_state = []
+
+    def change_pump_state(self, value):
+        self.pump_state = [value]
 
 
     def set_od_bounds(self, min, max):
@@ -63,9 +67,11 @@ class OD_Check:
                 switch = False
             else:
                 return
+            if self.pump_state and switch == self.pump_state[0]:
+                return
             time_initiated = datetime.datetime.now()
             time_initiated = time_initiated.strftime("%m/%d/%Y, %H:%M:%S")
-            self.q.put([time_initiated, '/'+str(self.device_details['node'])+'/'+self.device_details['device_id'], cmd_id, [pump_id, switch]])
+            self.q.put([time_initiated, '/'+str(self.device_details['node'])+'/'+self.device_details['device_id'], cmd_id, str([pump_id, switch])])
 
             self.q_new_item.set()
 
@@ -74,7 +80,6 @@ class OD_Check:
 
         my_list = []
         while self.last_results:
-
             my_list.append(self.last_results.pop())
 
         return sum(my_list)/len(my_list)
@@ -82,7 +87,7 @@ class OD_Check:
 
     def detect_outlier(self, result):
 
-        if self.tolerance(self.device_setup['lower_outlier_tol']) > result['od_1'] > self.tolerance(self.device_setup['upper_outlier_tol']):
+        if self.tolerance(-self.device_setup['lower_outlier_tol']) <= result['od_1'] <= self.tolerance(self.device_setup['upper_outlier_tol']):
             self.outliers = 0
             self.average = self.calculate_average()
             result['od_1'] = (result['od_1'], False)

@@ -30,7 +30,10 @@ class BaseInterpreter:
             print(exc)
             result = str(exc)
 
-        if id == 19 and not isinstance(result, str):
-            self.OD_checker.stabilize(result)
+        if not isinstance(result, str):
+            if id == 19:
+                self.OD_checker.stabilize(result)
+            elif id == 8:
+                self.OD_checker.change_pump_state(args[1])
 
         return (time_issued, target_address, id, args, result)

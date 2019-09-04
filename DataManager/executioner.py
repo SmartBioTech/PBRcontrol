@@ -60,6 +60,8 @@ class Checker(Thread):
             elif self.device_details['type'] == 'GMS':
                 from DataManager import interpreterGMS as interpreter
             arguments = [self.device_details, log]
+
+
         device = interpreter.DeviceManager(*arguments)
 
 
