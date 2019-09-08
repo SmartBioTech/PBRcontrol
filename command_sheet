@@ -1,6 +1,6 @@
  // EXPERIMENT INITIATION //
 
- - endpoint: http//:[ip address]/
+ - endpoint: https//:[ip address]/
 
  - structure:
 
@@ -32,35 +32,45 @@
 
 
  // INDIVIDUAL COMMAND //
- - endpoint: http//:[ip address]/[node number]/[device id]
+ - endpoint: https//:[ip address]/[node number]/[device id]
  - structure:
 
     {'time': string,'cmd_id': int, 'args': lst}
 
 
-
-
  // CHANGE NODE SETTINGS //
 
- - endpoint: http//:[ip address]/[node number]
+ - endpoint: https//:[ip address]/[node number]
 
  - structure is the same as in individual commands
 
  - currently used to change time period between automatic measurements
 
 
+// GET LOG //
+
+ - endpoint: https//:[ip address]/log
+ - returns all unseen log messages
+
+ // GET LOG - time specific //
+
+ - endpoint: https//:[ip address]/log?time=DDMMYYYYHHMMSS
+
+ - return all log data from specific time point (DD-MM-YYYY HH:MM:SS ---> DDMMYYYYHHMMSS)
+
+
 // END DEVICE //
 
- - endpoint: http//:[ip address]/[node number]/[device id]/end
+ - endpoint: https//:[ip address]/[node number]/[device id]/end
 
  - get
 
 // END NODE //
- - endpoint: http//:[ip address]/[node number]/end
+ - endpoint: https//:[ip address]/[node number]/end
 
  // END PROGRAM //
 
- - endpoint: http//:[ip address]/end
+ - endpoint: https//:[ip address]/end
 
 // COMMAND IDs //
 

@@ -15,7 +15,7 @@ class DeviceManager(base_interpreter.BaseInterpreter):
                 data.append(self.device_con(5, '[]'))
             except Exception:
                 time_issued = datetime.datetime.now()
-                time_issued = time_issued.strftime("%m/%d/%Y, %H:%M:%S")
+                time_issued = time_issued.strftime("%m-%d-%Y %H:%M:%S")
                 address = '/' + str(self.device_details['node']) + '/' + str(self.device_details['device_id'])
                 self.log.update_log(time_issued, address, 5, [], 'Waiting for connection...')
                 sleep(2)

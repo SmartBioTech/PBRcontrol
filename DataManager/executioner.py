@@ -23,7 +23,7 @@ class Logger:
 
     def update_log(self, time_issued, target_address, command_id, target_arguments, response):
         time_executed = datetime.datetime.now()
-        time_executed = time_executed.strftime("%m/%d/%Y, %H:%M:%S")
+        time_executed = time_executed.strftime("%m-%d-%Y %H:%M:%S")
 
         query = """INSERT INTO log (time_issued, target_address, command_id, target, response, time_executed) VALUES (%s, %s, %s, %s, %s, %s)"""
         query_args = (str(time_issued), str(target_address), int(command_id), str(target_arguments), str(response), str(time_executed))

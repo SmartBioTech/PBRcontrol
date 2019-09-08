@@ -117,8 +117,8 @@ def testPBR():
     cmds_dict = cmds_PBR()
     db = Connect()
     while id < 23:
-        t = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
-        requests.post('http://localhost:5000/1/PBR01', str({'time': t, 'cmd_id': id, 'args': str(cmds_dict[id])}))
+        t = datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S")
+        requests.post('https://localhost:5000/1/PBR01', str({'time': t, 'cmd_id': id, 'args': str(cmds_dict[id])}))
         x = []
         while not x:
             x = db.get_from_log(t, id)
@@ -147,13 +147,18 @@ def add_node():
                         'pump_id' : 1
                             }}}}}
 
-    requests.post('http://localhost:5000/', str(my_dict))
+    requests.post('https://localhost:5000/', str(my_dict), verify = 'cert.pem')
 
 
 def change_time():
     t = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
-    requests.post('http://localhost:5000/1', str({'time': t, 'cmd_id': 34, 'args': str([12])}))
+    requests.post('https://localhost:5000/1', str({'time': t, 'cmd_id': 34, 'args': str([12])}))
 
+def get_log():
+    e = requests.get('https://localhost:5000/log?time=080920192252', verify = 'cert.pem')
+    print(e.text)
+
+get_log()
 #testPBR()
-add_node()
+#add_node()
 #change_time()

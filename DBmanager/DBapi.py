@@ -22,7 +22,7 @@ class Database:
         self.log_id = 0
 
 
-    def get(self, table):
+    def get_unseen(self, table):
         """
         Read from a table, delete the line that was read
 
@@ -37,6 +37,11 @@ class Database:
             self.log_id = rows[0][0]
         return rows
 
+    def get_from_time(self, table, time):
+        select = ('SELECT * FROM %s WHERE time_issued > %s ORDER BY log_id DESC' %(table,time))
+        self.cur.execute(select)
+        rows = self.cur.fetchall()
+        return rows
 
 class Command(Resource):
     """
@@ -74,15 +79,32 @@ class GetData(Resource):
         self.db = db
         self.table = table
 
+    def process_time(self, time):
+        try:
+            processed = "'" + time[:2] + '-' + time[2:4] + '-' + time[4:8] + ' ' + time[8:10] + ':' + time[10:12] + ':' + time[12:14] + "'"
+            return processed
+        except Exception as e:
+            raise Exception(e)
+
     def get(self):
         """
          A method used for reading data from the Log table and Measurement table respectively.
 
         :return: a list of all rows from the desired table
         """
-        rows = self.db.get(self.table)
+        time = request.args.get('time')
+        if time == None:
+            rows = self.db.get_unseen(self.table)
 
-        return rows
+            return rows
+        else:
+            try:
+                time = self.process_time(time)
+                rows = self.db.get_from_time(self.table, time)
+                return rows
+            except Exception as e:
+                return e
+
 
 class Nodes(Resource):
 
@@ -247,7 +269,7 @@ class ApiInit():
 
 
     def run_app(self):
-        self.app.run(host='0.0.0.0')
+        self.app.run(host='0.0.0.0', ssl_context=('cert.pem', 'key.pem'))
 
 
     def run(self):

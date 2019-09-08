@@ -26,7 +26,7 @@ class PeriodicalMeasurement(Thread):
     def run(self):
         while not self.end_program.is_set() and self.endpoints:
             for device in self.endpoints:
-                data = {'time': (datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))}
+                data = {'time': (datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S"))}
                 if 'GMS' in device:
                     return
                 elif 'PBR' in device:
@@ -36,7 +36,7 @@ class PeriodicalMeasurement(Thread):
 
                 headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
                 data = json.dumps(data)
-                post('http://localhost:5000/' + str(self.node_id) + '/' + str(device), data=data, headers=headers)
+                post('https://localhost:5000/' + str(self.node_id) + '/' + str(device), data=data, headers=headers, verify = 'cert.pem')
 
             sleep(int(self.experiment_details.get('sleep_time', 60)))
 
