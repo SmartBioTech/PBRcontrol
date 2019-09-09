@@ -3,16 +3,18 @@ from time import sleep
 from requests import post
 import datetime
 import json
+from DataManager import executioner
 
 class PeriodicalMeasurement(Thread):
 
-    def execute_cmd(self, cmd_id, args):
-        self.commands[cmd_id](*args)
+    def execute_cmd(self, time_issued, cmd_id, args, source):
+        response = self.commands[cmd_id](*args)
+        self.logger.update_log(time_issued, '/'+str(self.node_id), cmd_id, args, response, source)
 
     def change_time_period(self, t):
 
         self.experiment_details['sleep_time'] = t
-        print('sleep time changed')
+        return True
 
     def __init__(self, endpoints, node_id, experiment_details, end_program):
         super(PeriodicalMeasurement, self).__init__(daemon=True)
@@ -20,13 +22,14 @@ class PeriodicalMeasurement(Thread):
         self.endpoints = endpoints
         self.node_id = node_id
         self.end_program = end_program
+        self.logger = executioner.Logger()
 
         self.commands = {34 : self.change_time_period}
 
     def run(self):
         while not self.end_program.is_set() and self.endpoints:
             for device in self.endpoints:
-                data = {'time': (datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S"))}
+                data = {'time': (datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S")), 'source' : 'internal'}
                 if 'GMS' in device:
                     return
                 elif 'PBR' in device:

@@ -71,7 +71,7 @@ class OD_Check:
                 return
             time_initiated = datetime.datetime.now()
             time_initiated = time_initiated.strftime("%m-%d-%Y %H:%M:%S")
-            self.q.put([time_initiated, '/'+str(self.device_details['node'])+'/'+self.device_details['device_id'], cmd_id, str([pump_id, switch])])
+            self.q.put([time_initiated, '/'+str(self.device_details['node'])+'/'+self.device_details['device_id'], cmd_id, str([pump_id, switch]), 'internal'])
 
             self.q_new_item.set()
 

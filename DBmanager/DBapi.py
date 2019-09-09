@@ -63,7 +63,8 @@ class Command(Resource):
         data = (cmd.get('time', (datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))),
                 self.endpoint,
                 (cmd.get('cmd_id', False)),
-                (cmd.get('args', '[]'))
+                (cmd.get('args', '[]')),
+                 cmd.get('source', '')
                 )
 
         if data[1]:
@@ -124,9 +125,11 @@ class Nodes(Resource):
         data = eval(data)
         cmd_id = data.get('cmd_id', False)
         args = data.get('args', '[]')
+        time_issued = data.get('time_issued')
+        source = data.get('source', 'external')
         args = eval(args)
         if cmd_id:
-            self.my_measurement.execute_cmd(cmd_id, args)
+            self.my_measurement.execute_cmd(time_issued, cmd_id, args, source)
 
 class EndDevice(Resource):
 
@@ -187,7 +190,8 @@ class CreateNewResource(Resource):
                         setup_cmd['time'],
                         '/' + str(node_id) + '/' + str(device_id),
                        setup_cmd['id'],
-                       setup_cmd['args']
+                       setup_cmd['args'],
+                        'experiment setup'
                            )
 
                     my_data_manager.q.put(cmd)

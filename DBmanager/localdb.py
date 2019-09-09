@@ -19,7 +19,7 @@ class DatabaseInit:
         mydb = cn.connect(user=self.user, db = self.db)
         cursor = mydb.cursor()
 
-        cursor.execute('CREATE TABLE IF NOT EXISTS log (log_id int NOT NULL auto_increment, time_issued VARCHAR(255),target_address VARCHAR(255),command_id INT,target VARCHAR(255),response VARCHAR(1000),time_executed VARCHAR(255), PRIMARY KEY (log_id))')
+        cursor.execute('CREATE TABLE IF NOT EXISTS log (log_id int NOT NULL auto_increment, time_issued VARCHAR(255),target_address VARCHAR(255),command_id INT,target VARCHAR(255),response VARCHAR(1000),time_executed VARCHAR(255), source VARCHAR(255), PRIMARY KEY (log_id))')
 
         cursor.execute('CREATE TABLE IF NOT EXISTS measurement (' #TODO arguments
                't VARCHAR(255),'

@@ -3,6 +3,7 @@ import datetime
 import mysql.connector as cn
 from time import sleep
 
+
 class Logger:
     def __init__(self):
         """Establish connection to local database, actions on the database are executed through the use of a cursor
@@ -21,12 +22,12 @@ class Logger:
 
         self.cur = self.con.cursor()
 
-    def update_log(self, time_issued, target_address, command_id, target_arguments, response):
+    def update_log(self, time_issued, target_address, command_id, target_arguments, response, source):
         time_executed = datetime.datetime.now()
         time_executed = time_executed.strftime("%m-%d-%Y %H:%M:%S")
 
-        query = """INSERT INTO log (time_issued, target_address, command_id, target, response, time_executed) VALUES (%s, %s, %s, %s, %s, %s)"""
-        query_args = (str(time_issued), str(target_address), int(command_id), str(target_arguments), str(response), str(time_executed))
+        query = """INSERT INTO log (time_issued, target_address, command_id, target, response, time_executed, source) VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+        query_args = (str(time_issued), str(target_address), int(command_id), str(target_arguments), str(response), str(time_executed), str(source))
 
         self.cur.execute(query, query_args)
 
@@ -71,8 +72,10 @@ class Checker(Thread):
                 while self.q:
 
                     cmd = self.q.get()
-
-                    response = device.execute(*cmd)
+                    try:
+                        response = device.execute(*cmd)
+                    except Exception as e:
+                        print(cmd)
                     log.update_log(*response)
                 self.q_new_item.clear()
             else:
