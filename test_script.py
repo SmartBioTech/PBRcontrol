@@ -122,7 +122,6 @@ def testPBR():
         x = []
         while not x:
             x = db.get_from_log(t, id)
-        print(x)
         id+=1
 
 
@@ -151,14 +150,14 @@ def add_node():
 
 
 def change_time():
-    t = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+    t = datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S")
     requests.post('https://localhost:5000/1', str({'time': t, 'cmd_id': 34, 'args': str([12]), 'source': 'external'}))
 
 def get_log():
     e = requests.get('https://localhost:5000/log?time=080920192252', verify = 'cert.pem')
     print(e.text)
 
-#get_log()
-testPBR()
+get_log()
+#testPBR()
 #add_node()
 #change_time()

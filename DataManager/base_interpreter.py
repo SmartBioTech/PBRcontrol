@@ -24,9 +24,11 @@ class BaseInterpreter:
         return result
 
     def execute(self, time_issued, target_address, id, args, source):
+        is_ok = True
         try:
             result = self.device_con(id, args)
         except Exception as exc:
+            is_ok = False
             print(exc)
             result = str(exc)
 
@@ -36,4 +38,4 @@ class BaseInterpreter:
             elif id == 8:
                 self.OD_checker.change_pump_state(args[1])
 
-        return (time_issued, target_address, id, args, result, source)
+        return (time_issued, target_address, id, args, (is_ok,result), source)
