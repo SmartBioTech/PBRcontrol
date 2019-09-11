@@ -1,47 +1,11 @@
 from flask import request, Flask
 from flask_restful import Resource, Api
-import mysql.connector as cn
 import datetime
 from DataManager import datamanager
-from DBmanager import measurement
+from DBmanager import measurement, localdb
 from threading import Event as ThreadEvent
 from multiprocessing import Process, Event
 
-
-
-class Database:
-    def __init__(self):
-        """Establish connection to local database, actions on the database are executed through the use of a cursor
-        """
-        host = "127.0.0.1"
-        user = "PBRcontrol"
-        password = ""
-        db = "localdb"
-        self.con = cn.connect(host=host, user=user, password=password, db=db, autocommit=True)
-        self.cur = self.con.cursor()
-        self.log_id = 0
-
-
-    def get_unseen(self, table):
-        """
-        Read from a table, delete the line that was read
-
-        :param: table to read from (log/measurement)
-        :return: the row that was read
-        """
-        select = ('SELECT * FROM %s WHERE log_id > %s ORDER BY log_id DESC' %(table,self.log_id))
-
-        self.cur.execute(select)
-        rows = self.cur.fetchall()
-        if rows:
-            self.log_id = rows[0][0]
-        return rows
-
-    def get_from_time(self, table, time):
-        select = ('SELECT * FROM %s WHERE time_issued > %s ORDER BY log_id DESC' %(table,time))
-        self.cur.execute(select)
-        rows = self.cur.fetchall()
-        return rows
 
 class Command(Resource):
     """
@@ -54,7 +18,6 @@ class Command(Resource):
         self.my_data_manager = resource_args[endpoint][0]
         self.q = self.my_data_manager.q
         self.q_new_item = self.my_data_manager.q_new_item
-
 
 
     def post(self):
@@ -95,16 +58,16 @@ class GetData(Resource):
         """
         time = request.args.get('time')
         if time == None:
-            rows = self.db.get_unseen(self.table)
+            rows = self.db.get_unseen()
 
             return rows
         else:
             try:
                 time = self.process_time(time)
-                rows = self.db.get_from_time(self.table, time)
+                rows = self.db.get_from_time(time)
                 return rows
             except Exception as e:
-                return e
+                return str(e)
 
 
 class Nodes(Resource):
@@ -267,7 +230,10 @@ class ApiInit():
     def __init__(self, end_program):
         self.app = Flask(__name__)
         self.api = Api(self.app)
-        self.db = Database()
+        self.db = localdb.Database()
+        self.db.create_database()
+        self.db.connect()
+        self.db.create_table()
         self.end_program = end_program
         self.end_process = Event()
 

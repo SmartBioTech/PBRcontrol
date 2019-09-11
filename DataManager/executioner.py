@@ -1,37 +1,5 @@
 from threading import Thread
-import datetime
-import mysql.connector as cn
-from time import sleep
-
-
-class Logger:
-    def __init__(self):
-        """Establish connection to local database, actions on the database are executed through the use of a cursor
-        """
-        host = "127.0.0.1"
-        user = "PBRcontrol"
-        password = ""
-        db = "localdb"
-        while True:
-
-            try:
-                self.con = cn.connect(host=host, user=user, password=password, db=db, autocommit=True)
-                break
-            except Exception:
-                sleep(2)
-
-        self.cur = self.con.cursor()
-
-    def update_log(self, time_issued, target_address, command_id, target_arguments, response, source):
-        time_executed = datetime.datetime.now()
-        time_executed = time_executed.strftime("%m-%d-%Y %H:%M:%S")
-
-        query = """INSERT INTO log (time_issued, target_address, command_id, target, response, time_executed, source) VALUES (%s, %s, %s, %s, %s, %s, %s)"""
-        query_args = (str(time_issued), str(target_address), int(command_id), str(target_arguments), str(response), str(time_executed), str(source))
-
-        self.cur.execute(query, query_args)
-
-
+from DBmanager import localdb
 
 
 class Checker(Thread):
@@ -50,7 +18,8 @@ class Checker(Thread):
         self.end_device = end_device
 
     def run(self):
-        log = Logger()
+        log = localdb.Database()
+        log.connect()
 
         if self.device_details['type'] == 'PBR':
             from DataManager import interpreterPBR as interpreter

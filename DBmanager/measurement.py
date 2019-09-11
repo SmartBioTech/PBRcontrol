@@ -3,7 +3,7 @@ from time import sleep
 from requests import post
 import datetime
 import json
-from DataManager import executioner
+from DBmanager import localdb
 
 class PeriodicalMeasurement(Thread):
 
@@ -22,7 +22,8 @@ class PeriodicalMeasurement(Thread):
         self.endpoints = endpoints
         self.node_id = node_id
         self.end_program = end_program
-        self.logger = executioner.Logger()
+        self.logger = localdb.Database()
+        self.logger.connect()
 
         self.commands = {34 : self.change_time_period}
 
