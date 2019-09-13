@@ -154,10 +154,14 @@ def change_time():
     requests.post('https://localhost:5000/1', str({'time': t, 'cmd_id': 34, 'args': str([12]), 'source': 'external'}), verify = 'cert.pem')
 
 def get_log():
-    e = requests.get('https://localhost:5000/log?time=080920192252', verify = 'cert.pem')
+    e = requests.get('https://localhost:5000/log', verify = 'cert.pem')
     print(e.text)
 
-#get_log()
-#testPBR()
-#add_node()
-change_time()
+def add_node_2():
+    str_dict = str({1: {'experiment_details': {'sleep_time': 10}, 'devices': [{'type': 'PBR', 'device_id': 'PBR01', 'test': True, 'address': None, 'setup': {'initial_commands': [{'id': 16, 'args': '[1]'}, {'id': 13, 'args': '[50, True]'}, {'id': 8, 'args': '[5, False]'}], 'lower_outlier_tol': 2, 'upper_outlier_tol': 3, 'max_outliers': 6, 'min_OD': 0.1, 'max_OD': 0.9, 'pump_id': 5}}, {'type': 'GAS', 'device_id': 'GAS01', 'test': True, 'address': None, 'setup': {'initial_commands': []}}]}})
+    requests.post("https://localhost:5000/", str_dict, verify = 'cert.pem')
+
+# get_log()
+# testPBR()
+add_node_2()
+# change_time()
