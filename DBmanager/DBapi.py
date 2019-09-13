@@ -23,7 +23,7 @@ class Command(Resource):
     def post(self):
         cmd = (request.get_data())
         cmd = eval(cmd)
-        data = (cmd.get('time', (datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))),
+        data = (cmd.get('time', (datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S"))),
                 self.endpoint,
                 (cmd.get('cmd_id', False)),
                 (cmd.get('args', '[]')),

@@ -8,8 +8,13 @@ from DBmanager import localdb
 class PeriodicalMeasurement(Thread):
 
     def execute_cmd(self, time_issued, cmd_id, args, source):
-        response = self.commands[cmd_id](*args)
-        self.logger.update_log(time_issued, '/'+str(self.node_id), cmd_id, args, response, source)
+        is_ok = True
+        try:
+            response = self.commands[cmd_id](*args)
+        except Exception as exc:
+            response = exc
+            is_ok = False
+        self.logger.update_log(time_issued, '/'+str(self.node_id), cmd_id, args, (is_ok,response), source)
 
     def change_time_period(self, t):
 

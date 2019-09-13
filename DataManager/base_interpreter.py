@@ -29,7 +29,6 @@ class BaseInterpreter:
             result = self.device_con(id, args)
         except Exception as exc:
             is_ok = False
-            print(exc)
             result = str(exc)
 
         if not isinstance(result, str):
