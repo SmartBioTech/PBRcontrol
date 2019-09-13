@@ -143,6 +143,7 @@ class CreateNewResource(Resource):
 
             for device in devices:
                 device_id = device.get('device_id')
+                device['node'] = node_id
                 end_device = ThreadEvent()
                 node_events.append(end_device)
                 my_data_manager = datamanager.Manager(device, self.end_program, end_device)

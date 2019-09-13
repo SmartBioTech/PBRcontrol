@@ -10,7 +10,6 @@ def initialize_experiment():
         1 : {
             'experiment_details' : {'sleep_time' : 10},
             'devices' : [{
-                    'node': 1,
                     'type' : 'PBR',
                     'device_id' : 'PBR01',
                     'test' : True,
@@ -26,7 +25,6 @@ def initialize_experiment():
                             }
                             },
                 {
-                    'node' : 1,
                     'type' : 'GAS',
                     'device_id' : 'GAS01',
                     'test' : True,
@@ -40,7 +38,6 @@ def initialize_experiment():
     2 : {
         'experiment_details' : {'sleep_time' : 5},
         'devices' : [{
-                'node' : 2,
                 'type' : 'PBR',
                 'device_id': 'PBR01',
                 'test' : True,
@@ -155,7 +152,7 @@ def get_log():
     e = requests.get('https://localhost:5000/log?node_id=2', verify = 'cert.pem')
     print(e.text)
 
-get_log()
-#testPBR()
+#get_log()
+testPBR()
 #add_node()
 #change_time()
