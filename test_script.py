@@ -9,15 +9,14 @@ def initialize_experiment():
     my_dict = {
         1 : {
             'experiment_details' : {'sleep_time' : 10},
-            'devices' : {
-                'device_1' : {
+            'devices' : [{
                     'node': 1,
                     'type' : 'PBR',
                     'device_id' : 'PBR01',
                     'test' : True,
                     'address' : None,
                     'setup' : {
-                        'initial_commands' : [{'time': (datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")),'id': 8, 'args': '[1, True]'}],
+                        'initial_commands' : [{'time': (datetime.datetime.now().strftime("%d-%m-%Y, %H:%M:%S")),'id': 8, 'args': '[1, True]'}],
                         'lower_outlier_tol' : 2,
                         'upper_outlier_tol' : 3,
                         'max_outliers' : 6,
@@ -26,7 +25,7 @@ def initialize_experiment():
                         'pump_id' : 1
                             }
                             },
-                'device_2' : {
+                {
                     'node' : 1,
                     'type' : 'GAS',
                     'device_id' : 'GAS01',
@@ -36,12 +35,11 @@ def initialize_experiment():
                         'initial_commands' : []
                             }
                             }
-                        }
+            ]
             },
     2 : {
         'experiment_details' : {'sleep_time' : 5},
-        'devices' : {
-            'device_1' : {
+        'devices' : [{
                 'node' : 2,
                 'type' : 'PBR',
                 'device_id': 'PBR01',
@@ -57,7 +55,7 @@ def initialize_experiment():
                     'pump_id' : 1,
                             }
                         }
-                    }
+                    ]
         }
     }
 
@@ -117,7 +115,7 @@ def testPBR():
     cmds_dict = cmds_PBR()
     db = Connect()
     while id < 23:
-        t = datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S")
+        t = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
         requests.post('https://localhost:5000/1/PBR01', str({'time': t, 'cmd_id': id, 'args': str(cmds_dict[id]), 'source' : 'external'}), verify = 'cert.pem')
         x = []
         while not x:
@@ -150,14 +148,14 @@ def add_node():
 
 
 def change_time():
-    t = datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S")
+    t = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
     requests.post('https://localhost:5000/1', str({'time': t, 'cmd_id': 34, 'args': str([12]), 'source': 'external'}), verify = 'cert.pem')
 
 def get_log():
-    e = requests.get('https://localhost:5000/log?time=080920192252', verify = 'cert.pem')
+    e = requests.get('https://localhost:5000/log?node_id=2', verify = 'cert.pem')
     print(e.text)
 
-#get_log()
+get_log()
 #testPBR()
 #add_node()
-change_time()
+#change_time()

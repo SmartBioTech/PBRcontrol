@@ -14,7 +14,7 @@ class PeriodicalMeasurement(Thread):
         except Exception as exc:
             response = exc
             is_ok = False
-        self.logger.update_log(time_issued, '/'+str(self.node_id), cmd_id, args, (is_ok,response), source)
+        self.logger.update_log(time_issued, self.node_id, 'None', cmd_id, args, (is_ok,response), source)
 
     def change_time_period(self, t):
 
@@ -35,7 +35,7 @@ class PeriodicalMeasurement(Thread):
     def run(self):
         while not self.end_program.is_set() and self.endpoints:
             for device in self.endpoints:
-                data = {'time': (datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S")), 'source' : 'internal'}
+                data = {'time': (datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")), 'source' : 'internal'}
                 if 'GMS' in device:
                     return
                 elif 'PBR' in device:

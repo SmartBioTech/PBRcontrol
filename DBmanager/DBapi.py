@@ -11,6 +11,7 @@ class Command(Resource):
     """
     Has a post method - when data are posted to its corresponding endpoint in HTTP (json format), it is read and
     forwarded to database
+        print(self.address)
 
     Receives json data encoded into http protocol.
     """
@@ -18,13 +19,15 @@ class Command(Resource):
         self.my_data_manager = resource_args[endpoint][0]
         self.q = self.my_data_manager.q
         self.q_new_item = self.my_data_manager.q_new_item
+        self.address = endpoint.split('/')
 
 
     def post(self):
         cmd = (request.get_data())
         cmd = eval(cmd)
-        data = (cmd.get('time', (datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S"))),
-                self.endpoint,
+        data = (cmd.get('time', (datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"))),
+                self.address[0],
+                self.address[1],
                 (cmd.get('cmd_id', False)),
                 (cmd.get('args', '[]')),
                  cmd.get('source', '')
@@ -56,18 +59,21 @@ class GetData(Resource):
 
         :return: a list of all rows from the desired table
         """
-        time = request.args.get('time')
-        if time == None:
-            rows = self.db.get_unseen()
-
-            return rows
-        else:
-            try:
+        try:
+            node_id = request.args.get('node_id')
+            time = request.args.get('time')
+            if time != None:
                 time = self.process_time(time)
-                rows = self.db.get_from_time(time)
+
+            if node_id != None:
+                rows = self.db.get_log(node_id, time)
                 return rows
-            except Exception as e:
-                return str(e)
+
+
+            rows = self.db.get_from_time(time)
+            return rows
+        except Exception as e:
+            return str(e)
 
 
 class Nodes(Resource):
@@ -132,33 +138,30 @@ class CreateNewResource(Resource):
             endpoints = []
 
             node = data[node_id]
-            experiment_details = node.get('experiment_details')
-            devices = node.get('devices')
+
+            devices = node['devices']
 
             for device in devices:
-                device_id = devices[device].get('device_id')
-                device_details = devices[device]
+                device_id = device.get('device_id')
                 end_device = ThreadEvent()
                 node_events.append(end_device)
-                my_data_manager = datamanager.Manager(device_details, self.end_program, end_device)
+                my_data_manager = datamanager.Manager(device, self.end_program, end_device)
                 my_data_manager.start()
-                setup = device_details.get('setup')
-                initial_commands = setup.get('initial_commands', None)
-
-
+                initial_commands = device.get('setup').get('initial_commands', [])
 
                 for setup_cmd in initial_commands:
 
                     cmd = (
                         setup_cmd['time'],
-                        '/' + str(node_id) + '/' + str(device_id),
+                        node_id,
+                        device_id,
                        setup_cmd['id'],
                        setup_cmd['args'],
                         'experiment setup'
                            )
-
                     my_data_manager.q.put(cmd)
                     my_data_manager.q_new_item.set()
+
 
                 endpoint = str(node_id) + '/' + str(device_id)
 
@@ -187,12 +190,12 @@ class CreateNewResource(Resource):
 
             node_measurement = measurement.PeriodicalMeasurement(endpoints,
                                                                  node_id,
-                                                                 experiment_details,
+                                                                 node['experiment_details'],
                                                                  self.end_program,
                                                                  )
 
             if node_id not in self.resource_args.keys():
-                self.resource_args[node_id] = [endpoints, node_id, experiment_details, node_measurement, node_events]
+                self.resource_args[node_id] = [endpoints, node_id, node['experiment_details'], node_measurement, node_events]
 
                 self.api.add_resource(Nodes, '/' + str(node_id),
                                       endpoint = str(node_id),
@@ -207,7 +210,7 @@ class CreateNewResource(Resource):
                                           'node_id' : node_id}
                                       )
             else:
-                self.resource_args[node_id] = [endpoints, node_id, experiment_details, node_measurement, node_events]
+                self.resource_args[node_id] = [endpoints, node_id, node['experiment_details'], node_measurement, node_events]
 
             node_measurement.start()
 

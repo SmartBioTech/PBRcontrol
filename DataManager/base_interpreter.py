@@ -23,7 +23,7 @@ class BaseInterpreter:
             raise Exception('Could not reach device')
         return result
 
-    def execute(self, time_issued, target_address, id, args, source):
+    def execute(self, time_issued, node_id, device_id, id, args, source):
         is_ok = True
         try:
             result = self.device_con(id, args)
@@ -37,4 +37,4 @@ class BaseInterpreter:
             elif id == 8:
                 self.OD_checker.change_pump_state(args[1])
 
-        return (time_issued, target_address, id, args, (is_ok,result), source)
+        return (time_issued, node_id, device_id, id, args, (is_ok,result), source)
