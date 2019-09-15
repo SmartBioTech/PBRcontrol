@@ -16,7 +16,7 @@ class Secured_Resource(Resource):
 
     def check_credentials(self, auth):
 
-        if auth = None or (auth['username'] == self.username and auth['password'] == self.password):
+        if auth == None or (auth['username'] == self.username and auth['password'] == self.password):
             return False
         return True
 

@@ -14,15 +14,13 @@ class API(Thread):
     :q:     queue object
     :flag:  threading object, used to notify queue_checker that something was added to queue
     '''
-    def __init__(self):
+    def __init__(self, app):
         super(API, self).__init__()
         self.end_program = Event()
-
+        self.app = app
 
     def run(self):
-        db = localdb.Database()
-
-        api = DBapi.ApiInit(self.end_program)
+        api = DBapi.ApiInit(self.app,self.end_program)
         api.run()
 
 
