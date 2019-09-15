@@ -1,9 +1,9 @@
 import requests
 import mysql.connector as cn
 import datetime
-from time import sleep
+from urllib3 import disable_warnings
 
-
+disable_warnings()
 
 def initialize_experiment():
     my_dict = {
@@ -56,7 +56,7 @@ def initialize_experiment():
         }
     }
 
-    requests.post('https://localhost:5000/', str(my_dict), verify = 'cert.pem')
+    requests.post('https://88.100.0.4:5000/', str(my_dict), verify=False, auth=('BioArInEO', 'sybila'))
 
 def cmds_PBR():
     cmds_dict = {
@@ -113,10 +113,8 @@ def testPBR():
     db = Connect()
     while id < 23:
         t = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-        requests.post('https://localhost:5000/1/PBR01', str({'time': t, 'cmd_id': id, 'args': str(cmds_dict[id]), 'source' : 'external'}), verify = 'cert.pem')
-        x = []
-        while not x:
-            x = db.get_from_log(t, id)
+        requests.post('https://88.100.0.4:5000/1/PBR01', str({'time': t, 'cmd_id': id, 'args': str(cmds_dict[id]), 'source' : 'external'}), verify=False, auth=('BioArInEO', 'sybila'))
+
         id+=1
 
 
@@ -141,18 +139,18 @@ def add_node():
                         'pump_id' : 1
                             }}}}}
 
-    requests.post('https://localhost:5000/', str(my_dict), verify = 'cert.pem')
+    requests.post('https://localhost:5000/', str(my_dict), verify=False, auth=('BioArInEO', 'sybila'))
 
 
 def change_time():
     t = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-    requests.post('https://localhost:5000/1', str({'time': t, 'cmd_id': 34, 'args': str([12]), 'source': 'external'}), verify = 'cert.pem')
+    requests.post('https://localhost:5000/1', str({'time': t, 'cmd_id': 34, 'args': str([12]), 'source': 'external'}), verify=False, auth=('BioArInEO', 'sybila'))
 
 def get_log():
-    e = requests.get('https://localhost:5000/log?node_id=2', verify = 'cert.pem')
+    e = requests.get('http://localhost:5000/log?node_id=2', verify=False, auth=('BioArInEO', 'sybila'))
     print(e.text)
 
-#get_log()
-testPBR()
+get_log()
+#testPBR()
 #add_node()
 #change_time()

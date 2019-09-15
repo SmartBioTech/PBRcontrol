@@ -45,7 +45,7 @@ class PeriodicalMeasurement(Thread):
 
                 headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
                 data = json.dumps(data)
-                post('https://localhost:5000/' + str(self.node_id) + '/' + str(device), data=data, headers=headers, verify = 'cert.pem')
+                post('https://localhost:5000/' + str(self.node_id) + '/' + str(device), data=data, headers=headers, verify=False, auth=('BioArInEO', 'sybila'))
 
             sleep(int(self.experiment_details.get('sleep_time', 60)))
 

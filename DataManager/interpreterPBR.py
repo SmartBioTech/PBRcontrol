@@ -41,7 +41,6 @@ class DeviceManager(base_interpreter.BaseInterpreter):
                     data = data[1:]
             else:
                 data = data[:-1]
-        print('average: ', average)
         return average
 
 
