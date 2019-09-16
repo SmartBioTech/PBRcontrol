@@ -117,4 +117,43 @@ class PBR(AbstractPBR):
 
         :return: dictionary of all measured values
         """
+        # do all measurements,for that communication has to generally take multiple commands
+        # (was originally done in example script)
+        raise NotImplementedError("The method not implemented")
+
+    def measure_AUX(self, channel):
+        """
+        Values of AUX auxiliary input voltage.
+
+        :param channel: ???
+        :return: ???
+        """
+        # measureAux1()/measureAux2()  # vrátí hodnotu napětí přídavného vstupu AUX1
+        raise NotImplementedError("The method not implemented")
+
+    def flash_LED(self):
+        """
+        Triggers a flashing sequence and is used to physically identify the PBR.
+
+        :return: True if was successful, False otherwise
+        """
+        # flashLED()  # provede záblesk a vrátí "flashLED" po dokončení příkazu
+        raise NotImplementedError("The method not implemented")
+
+    def get_hardware_address(self):
+        """
+        Get the MAC address of the PBR.
+
+        :return: the MAC address
+        """
+        # getHardwareAddress()  # vrátí MAC adresu PBR
+        raise NotImplementedError("The method not implemented")
+
+    def get_cluster_name(self):
+        """
+        The name of the bioreactor array / cluster.
+
+        :return: the cluster name
+        """
+        # getMatrixName()  # vrátí název PBR klastru
         raise NotImplementedError("The method not implemented")
