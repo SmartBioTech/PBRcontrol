@@ -1,7 +1,7 @@
 from HWdevices.abstract.AbstractPBR import AbstractPBR
-from HWdevices.libs.parsing import Parser
-from HWdevices.scheme.command import Command
-from HWdevices.scheme.scheme_manager import SchemeManager
+from HWdevices.PSI.libs.parsing import Parser
+from HWdevices.PSI.scheme.command import Command
+from HWdevices.PSI.scheme.scheme_manager import SchemeManager
 
 
 class PBR(AbstractPBR):
@@ -266,3 +266,36 @@ class PBR(AbstractPBR):
         result["ft"] = self.parser.parse_ft(values[10])
 
         return result
+
+    def measure_AUX(self, channel):
+        """
+        Values of AUX auxiliary input voltage.
+
+        :param channel: ???
+        :return: ???
+        """
+        raise NotImplementedError("The method not implemented")
+
+    def flash_LED(self):
+        """
+        Triggers a flashing sequence and is used to physically identify the PBR.
+
+        :return: True if was successful, False otherwise
+        """
+        raise NotImplementedError("The method not implemented")
+
+    def get_hardware_address(self):
+        """
+        Get the MAC address of the PBR.
+
+        :return: the MAC address
+        """
+        raise NotImplementedError("The method not implemented")
+
+    def get_cluster_name(self):
+        """
+        The name of the bioreactor array / cluster.
+
+        :return: the cluster name
+        """
+        raise NotImplementedError("The method not implemented")

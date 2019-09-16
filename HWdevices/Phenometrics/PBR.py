@@ -1,12 +1,11 @@
-from random import random
 from HWdevices.abstract.AbstractPBR import AbstractPBR
 
 
-class PBRtest(AbstractPBR):
+class PBR(AbstractPBR):
     def __init__(self, ID, address):
-        super(PBRtest, self).__init__(ID, address)
-        self.last_value = 0.45
-        self.increasing = False
+        super(PBR, self).__init__(ID, address)
+
+        # create an object with connection providing send/receive method
 
     def get_temp_settings(self):
         """
@@ -15,7 +14,7 @@ class PBRtest(AbstractPBR):
 
         :return: The current settings structured in a dictionary.
         """
-        return {"temp_set": 25, "temp_min": 10, "temp_max": 35}
+        raise NotImplementedError("The method not implemented")
 
     def get_temp(self):
         """
@@ -23,7 +22,8 @@ class PBRtest(AbstractPBR):
 
         :return: The current temperature.
         """
-        return 25
+        # measureTemperature()  # vrátí teplotu suspense ve °C
+        raise NotImplementedError("The method not implemented")
 
     def set_temp(self, temp):
         """
@@ -32,7 +32,8 @@ class PBRtest(AbstractPBR):
         :param temp: The temperature.
         :return: True if was successful, False otherwise.
         """
-        return True
+        # setTemperature(degrees C)  # nastaví teplotu termoregulátoru a vrátí tuto hodnotu
+        raise NotImplementedError("The method not implemented")
 
     def get_ph(self):
         """
@@ -42,7 +43,8 @@ class PBRtest(AbstractPBR):
         :param wait: waiting time between individual repeats
         :return: The current pH.
         """
-        return 7
+        # measurePH()  # vrátí měřenou hodnotu pH
+        raise NotImplementedError("The method not implemented")
 
     def measure_od(self, channel=0):
         """
@@ -52,16 +54,11 @@ class PBRtest(AbstractPBR):
         :param repeats: the number of measurement repeats
         :return: Measured OD
         """
-        if random() < 0.01:
-            raise Exception("Cannot measure value - some random error.")
-        step = 0.002
-        sign = 1 if self.increasing else -1
-        if random() < 0.05:
-            step = random()
-            if random() > 0.01:
-                return self.last_value + sign * step
-        self.last_value += sign * step
-        return self.last_value
+        # if channel == 0:
+        #     measureOD1()  # vrátí hodnotu optické hustoty pro řídkou suspenzi
+        # else:
+        #     measureOD2()  # vrátí hodnotu optické hustoty pro hustou suspenzi
+        raise NotImplementedError("The method not implemented")
 
     def get_pump_params(self, pump):
         """
@@ -70,8 +67,7 @@ class PBRtest(AbstractPBR):
         :param pump: Given pump
         :return: The current settings structured in a dictionary.
         """
-        return {"pump_direction": 1, "pump_on": True, "pump_valves": 10,
-                "pump_flow": 0.3, "pump_min": 0, "pump_max": 100}
+        raise NotImplementedError("The method not implemented")
 
     def set_pump_params(self, pump, direction, flow):
         """
@@ -82,7 +78,7 @@ class PBRtest(AbstractPBR):
         :param flow: Desired flow rate
         :return:  True if was successful, False otherwise.
         """
-        return True
+        raise NotImplementedError("The method not implemented")
 
     def set_pump_state(self, pump, on):
         """
@@ -92,8 +88,8 @@ class PBRtest(AbstractPBR):
         :param on: True to turn on, False to turn off
         :return: True if was successful, False otherwise.
         """
-        self.increasing = not bool(on)
-        return True
+        # setAux1()  # Typicky se používá na nastavení peristaltické pumpy
+        raise NotImplementedError("The method not implemented")
 
     def get_light_intensity(self, channel):
         """
@@ -106,7 +102,7 @@ class PBRtest(AbstractPBR):
         :param channel: Given channel ID
         :return: The current settings structured in a dictionary.
         """
-        return {"light_intensity": 500, "light_max": 1000, "light_on": True}
+        raise NotImplementedError("The method not implemented")
 
     def set_light_intensity(self, channel, intensity):
         """
@@ -116,7 +112,9 @@ class PBRtest(AbstractPBR):
         :param intensity: Desired intensity
         :return: True if was successful, False otherwise.
         """
-        return True
+        # setSolarLED(value)  # nastavuje intenzitu světelného panelu (jednotky uE PAR, rozsah od 0 do cca 2000 uE, v závislosti na kalibraci)
+        # nastavuje bílé (sluneční) světlo
+        raise NotImplementedError("The method not implemented")
 
     def turn_on_light(self, channel, on):
         """
@@ -126,7 +124,7 @@ class PBRtest(AbstractPBR):
         :param on: True turns on, False turns off
         :return: True if was successful, False otherwise.
         """
-        return True
+        raise NotImplementedError("The method not implemented")
 
     def get_pwm_settings(self):
         """
@@ -139,7 +137,7 @@ class PBRtest(AbstractPBR):
 
         :return: The current settings structured in a dictionary.
         """
-        return {"pwm_pulse": 1, "pwm_min": 0, "pwm_max": 100, "pwm_on": True}
+        raise NotImplementedError("The method not implemented")
 
     def set_pwm(self, value, on):
         """
@@ -150,7 +148,8 @@ class PBRtest(AbstractPBR):
         :param on: True turns on, False turns off
         :return: True if was successful, False otherwise.
         """
-        return True
+        # setStir(revolutions per minute)  # nastaví otáčky míchadla a vrátí hodnotu
+        raise NotImplementedError("The method not implemented")
 
     def get_o2(self, raw=True, repeats=5, wait=0):
         """
@@ -166,7 +165,7 @@ class PBRtest(AbstractPBR):
         :param wait: waiting time between individual repeats
         :return: The current settings structured in a dictionary.
         """
-        return 10
+        raise NotImplementedError("The method not implemented")
 
     def get_thermoregulator_settings(self):
         """
@@ -179,7 +178,7 @@ class PBRtest(AbstractPBR):
 
         :return: The current settings structured in a dictionary.
         """
-        return {"temp": 25, "temp_min": 0, "temp_max": 100, "temp_on": 1}
+        raise NotImplementedError("The method not implemented")
 
     def set_thermoregulator_state(self, on):
         """
@@ -188,7 +187,10 @@ class PBRtest(AbstractPBR):
         :param on: 1 -> on, 0 -> freeze, -1 -> off
         :return: True if was successful, False otherwise.
         """
-        return True
+        # stopTemperatureControl()  # zásadě set_thermoregulator_state na 0
+        # Jejich setTemperature(n) nastaví teplotu na požadovanou hodnotu a
+        # zapne termoregulaci, takže vypínání řeší speciálním příkazem
+        raise NotImplementedError("The method not implemented")
 
     def measure_ft(self, channel):
         """
@@ -197,9 +199,9 @@ class PBRtest(AbstractPBR):
         :param channel: ???
         :return: ???
         """
-        return 13.4
+        raise NotImplementedError("The method not implemented")
 
-    def get_co2(self, raw=True, repeats=5):
+    def get_co2(self, raw, repeats):
         """
         TBA
 
@@ -207,7 +209,7 @@ class PBRtest(AbstractPBR):
         :param repeats: the number of measurement repeats
         :return:
         """
-        return 5
+        raise NotImplementedError("The method not implemented")
 
     def measure_all(self):
         """
@@ -215,17 +217,43 @@ class PBRtest(AbstractPBR):
 
         :return: dictionary of all measured values
         """
-        result = dict()
-        result["pwm_setting"] = self.get_pwm_settings()
-        result["light_0"] = self.get_light_intensity(0)
-        result["light_1"] = self.get_light_intensity(1)
-        result["od_0"] = self.measure_od(0)
-        result["od_1"] = self.measure_od(1)
-        result["ph"] = self.get_ph()
-        result["temp"] = self.get_temp()
-        result["pump"] = self.get_pump_params(5)
-        result["o2"] = self.get_o2()
-        result["co2"] = self.get_co2()
-        result["ft"] = self.measure_ft(5)
+        # do all measurements,for that communication has to generally take multiple commands
+        # (was originally done in example script)
+        raise NotImplementedError("The method not implemented")
 
-        return result
+    def measure_AUX(self, channel):
+        """
+        Values of AUX auxiliary input voltage.
+
+        :param channel: ???
+        :return: ???
+        """
+        # measureAux1()/measureAux2()  # vrátí hodnotu napětí přídavného vstupu AUX1
+        raise NotImplementedError("The method not implemented")
+
+    def flash_LED(self):
+        """
+        Triggers a flashing sequence and is used to physically identify the PBR.
+
+        :return: True if was successful, False otherwise
+        """
+        # flashLED()  # provede záblesk a vrátí "flashLED" po dokončení příkazu
+        raise NotImplementedError("The method not implemented")
+
+    def get_hardware_address(self):
+        """
+        Get the MAC address of the PBR.
+
+        :return: the MAC address
+        """
+        # getHardwareAddress()  # vrátí MAC adresu PBR
+        raise NotImplementedError("The method not implemented")
+
+    def get_cluster_name(self):
+        """
+        The name of the bioreactor array / cluster.
+
+        :return: the cluster name
+        """
+        # getMatrixName()  # vrátí název PBR klastru
+        raise NotImplementedError("The method not implemented")
