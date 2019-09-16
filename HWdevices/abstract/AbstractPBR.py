@@ -202,3 +202,36 @@ class AbstractPBR(Device):
         :return: dictionary of all measured values
         """
         raise NotImplementedError("The method not implemented")
+
+    def measure_AUX(self, channel):
+        """
+        Values of AUX auxiliary input voltage.
+
+        :param channel: ???
+        :return: ???
+        """
+        raise NotImplementedError("The method not implemented")
+
+    def flash_LED(self):
+        """
+        Triggers a flashing sequence and is used to physically identify the PBR.
+
+        :return: True if was successful, False otherwise
+        """
+        raise NotImplementedError("The method not implemented")
+
+    def get_hardware_address(self):
+        """
+        Get the MAC address of the PBR.
+
+        :return: the MAC address
+        """
+        raise NotImplementedError("The method not implemented")
+
+    def get_cluster_name(self):
+        """
+        The name of the bioreactor array / cluster.
+
+        :return: the cluster name
+        """
+        raise NotImplementedError("The method not implemented")
