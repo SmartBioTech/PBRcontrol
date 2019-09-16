@@ -229,3 +229,36 @@ class PBRtest(AbstractPBR):
         result["ft"] = self.measure_ft(5)
 
         return result
+
+    def measure_AUX(self, channel):
+        """
+        Values of AUX auxiliary input voltage.
+
+        :param channel: ???
+        :return: ???
+        """
+        return 10
+
+    def flash_LED(self):
+        """
+        Triggers a flashing sequence and is used to physically identify the PBR.
+
+        :return: True if was successful, False otherwise
+        """
+        return "flashLED"
+
+    def get_hardware_address(self):
+        """
+        Get the MAC address of the PBR.
+
+        :return: the MAC address
+        """
+        return 21345
+
+    def get_cluster_name(self):
+        """
+        The name of the bioreactor array / cluster.
+
+        :return: the cluster name
+        """
+        return "claster 1"

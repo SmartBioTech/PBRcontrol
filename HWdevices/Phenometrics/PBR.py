@@ -7,6 +7,15 @@ class PBR(AbstractPBR):
 
         # create an object with connection providing send/receive method
 
+    def get_temp_settings(self):
+        """
+        Get information about currently set temperature, maximal and
+        minimal allowed temperature.
+
+        :return: The current settings structured in a dictionary.
+        """
+        raise NotImplementedError("The method not implemented")
+
     def get_temp(self):
         """
         Get current temperature in Celsius degree.
@@ -51,6 +60,26 @@ class PBR(AbstractPBR):
         #     measureOD2()  # vrátí hodnotu optické hustoty pro hustou suspenzi
         raise NotImplementedError("The method not implemented")
 
+    def get_pump_params(self, pump):
+        """
+        Get parameters for given pump.
+
+        :param pump: Given pump
+        :return: The current settings structured in a dictionary.
+        """
+        raise NotImplementedError("The method not implemented")
+
+    def set_pump_params(self, pump, direction, flow):
+        """
+        Set up the rotation direction and flow for given pump.
+
+        :param pump: Given pump
+        :param direction: Rotation direction (1 right, -1 left)
+        :param flow: Desired flow rate
+        :return:  True if was successful, False otherwise.
+        """
+        raise NotImplementedError("The method not implemented")
+
     def set_pump_state(self, pump, on):
         """
         Turns on/off given pump.
@@ -87,6 +116,29 @@ class PBR(AbstractPBR):
         # nastavuje bílé (sluneční) světlo
         raise NotImplementedError("The method not implemented")
 
+    def turn_on_light(self, channel, on):
+        """
+        Turn on/off LED panel on photobioreactor.
+
+        :param channel: Given channel
+        :param on: True turns on, False turns off
+        :return: True if was successful, False otherwise.
+        """
+        raise NotImplementedError("The method not implemented")
+
+    def get_pwm_settings(self):
+        """
+        Checks for current stirring settings.
+
+        Items: "pulse": current stirring in %,
+               "min": minimal stirring in %,
+               "max": maximal stirring in %,
+               "on": True if stirring is turned on (bool)
+
+        :return: The current settings structured in a dictionary.
+        """
+        raise NotImplementedError("The method not implemented")
+
     def set_pwm(self, value, on):
         """
         Set stirring settings.
@@ -99,6 +151,35 @@ class PBR(AbstractPBR):
         # setStir(revolutions per minute)  # nastaví otáčky míchadla a vrátí hodnotu
         raise NotImplementedError("The method not implemented")
 
+    def get_o2(self, raw=True, repeats=5, wait=0):
+        """
+        Checks for concentration of dissociated O2.
+
+        Items: "pulse": current stirring in %,
+               "min": minimal stirring in %,
+               "max": maximal stirring in %,
+               "on": True if stirring is turned on (bool)
+
+        :param raw: True for raw data, False for data calculated according to temperature calibration
+        :param repeats: the number of measurement repeats
+        :param wait: waiting time between individual repeats
+        :return: The current settings structured in a dictionary.
+        """
+        raise NotImplementedError("The method not implemented")
+
+    def get_thermoregulator_settings(self):
+        """
+        Get current settings of thermoregulator.
+
+        Items: "temp": current temperature in Celsius degrees,
+               "min": minimal allowed temperature,
+               "max": maximal allowed temperature,
+               "on": state of thermoregulator (1 -> on, 0 -> freeze, -1 -> off)
+
+        :return: The current settings structured in a dictionary.
+        """
+        raise NotImplementedError("The method not implemented")
+
     def set_thermoregulator_state(self, on):
         """
         Set state of thermoregulator.
@@ -109,6 +190,25 @@ class PBR(AbstractPBR):
         # stopTemperatureControl()  # zásadě set_thermoregulator_state na 0
         # Jejich setTemperature(n) nastaví teplotu na požadovanou hodnotu a
         # zapne termoregulaci, takže vypínání řeší speciálním příkazem
+        raise NotImplementedError("The method not implemented")
+
+    def measure_ft(self, channel):
+        """
+        ???
+
+        :param channel: ???
+        :return: ???
+        """
+        raise NotImplementedError("The method not implemented")
+
+    def get_co2(self, raw, repeats):
+        """
+        TBA
+
+        :param raw: True for raw data, False for data ???
+        :param repeats: the number of measurement repeats
+        :return:
+        """
         raise NotImplementedError("The method not implemented")
 
     def measure_all(self):
