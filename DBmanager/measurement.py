@@ -30,7 +30,7 @@ class PeriodicalMeasurement(Thread):
         self.logger = localdb.Database()
         self.logger.connect()
 
-        self.commands = {34 : self.change_time_period}
+        self.commands = {35 : self.change_time_period}
 
     def run(self):
         while not self.end_program.is_set() and self.endpoints:

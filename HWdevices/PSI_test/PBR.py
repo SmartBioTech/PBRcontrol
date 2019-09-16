@@ -2,9 +2,9 @@ from random import random
 from HWdevices.abstract.AbstractPBR import AbstractPBR
 
 
-class PBRtest(AbstractPBR):
+class PBR(AbstractPBR):
     def __init__(self, ID, address):
-        super(PBRtest, self).__init__(ID, address)
+        super(PBR, self).__init__(ID, address)
         self.last_value = 0.45
         self.increasing = False
 

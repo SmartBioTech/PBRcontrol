@@ -24,7 +24,7 @@ class OD_Check:
                 self.device_setup['min_OD'] = min
                 self.device_setup['max_OD'] = max
             else:
-                return 'Invalid values'
+                raise TypeError
         elif min:
             if min <= self.device_setup['max_OD']:
                 self.device_setup['min_OD'] = min
@@ -32,8 +32,8 @@ class OD_Check:
             if max >= self.device_setup['min_OD']:
                 self.device_setup['max_OD'] = max
         else:
-            return 'Invalid values'
-        return (min, max)
+            raise TypeError
+        return (self.device_setup['min_OD'],self.device_setup['max_OD'])
 
     def set_tolerance(self, lower, upper):
 
@@ -43,14 +43,14 @@ class OD_Check:
                 self.device_setup['upper_outlier_tol'] = upper
                 return (lower, upper)
             else:
-                return ('Invalid values')
+                raise TypeError
         if lower and lower <= self.device_setup['upper_outlier_tol']:
             self.device_setup['lower_outlier_tol'] = lower
             return (lower, self.device_setup['upper_outlier_tol'])
         if upper and upper >= self.device_setup['lower_outlier_tol']:
             self.device_setup['upper_outlier_tol'] = upper
             return (self.device_setup['lower_outlier_tol'], upper)
-        return ('Invalid input')
+        raise TypeError
 
     def set_max_outliers(self, n):
         self.device_setup['max_outliers'] = n

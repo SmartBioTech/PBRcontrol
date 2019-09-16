@@ -1,4 +1,3 @@
-from HWdevices import PBR_test
 from DataManager import OD_Checker
 from time import sleep
 import datetime
@@ -44,13 +43,11 @@ class DeviceManager(base_interpreter.BaseInterpreter):
         return average
 
 
-    def __init__(self, device_details, q, q_new_item, log):
+    def __init__(self, device_details, q, q_new_item, log, device_class):
         self.q = q
         self.q_new_item = q_new_item
-        self.device_details = device_details
-        self.log = log
+        super(DeviceManager, self).__init__(device_details, device_class, log)
 
-        self.device = PBR_test.PBRtest(self.device_details['device_id'], self.device_details['address'])
 
         self.commands = {
             1: self.device.get_temp_settings,
@@ -81,7 +78,6 @@ class DeviceManager(base_interpreter.BaseInterpreter):
             21: self.OD_checker.set_od_bounds,
             22: self.OD_checker.set_tolerance
         })
-        super(DeviceManager, self).__init__()
 
 
 

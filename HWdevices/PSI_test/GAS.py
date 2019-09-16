@@ -2,9 +2,9 @@ from HWdevices.abstract.AbstractGAS import AbstractGAS
 
 
 # Abstract Gas Analyser
-class GAStest(AbstractGAS):
+class GAS(AbstractGAS):
     def __init__(self, ID, address):
-        super(GAStest, self).__init__(ID, address)
+        super(GAS, self).__init__(ID, address)
 
     def get_co2_air(self):
         """

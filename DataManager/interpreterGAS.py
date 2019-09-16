@@ -1,14 +1,12 @@
-from HWdevices import GAS_test
 from DataManager import base_interpreter
 
 
 class DeviceManager(base_interpreter.BaseInterpreter):
 
 
-    def __init__(self, device_details, log):
-        self.device_details = device_details
-        self.device = GAS_test.GAStest(self.device_details['device_id'], self.device_details['address'])
-        self.log = log
+    def __init__(self, device_details, log, device_class):
+        super(DeviceManager, self).__init__(device_details, device_class, log)
+
         self.commands = {
                 23: self.device.get_flow,
                 24: self.device.get_flow_target,
@@ -18,6 +16,6 @@ class DeviceManager(base_interpreter.BaseInterpreter):
                 28: self.device.measure_all,
                 29: self.device.get_co2_air,
                 30: self.device.get_small_valves,
+                31: self.device.set_small_valves,
             }
 
-        super(DeviceManager, self).__init__()

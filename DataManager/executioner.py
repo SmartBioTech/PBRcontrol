@@ -1,5 +1,6 @@
 from threading import Thread
 from DBmanager import localdb
+from importlib import import_module
 
 
 class Checker(Thread):
@@ -20,17 +21,16 @@ class Checker(Thread):
     def run(self):
         log = localdb.Database()
         log.connect()
+        device_type = self.device_details['device_type']
 
-        if self.device_details['type'] == 'PBR':
-            from DataManager import interpreterPBR as interpreter
-            arguments = [self.device_details, self.q, self.q_new_item, log]
+        hw_class = getattr(import_module('HWdevices.'+self.device_details['device_class']+'.'+device_type), device_type)
+
+        interpreter = import_module('DataManager.interpreter' + device_type)
+
+        if device_type == 'PBR':
+            arguments = [self.device_details, self.q, self.q_new_item, log, hw_class]
         else:
-            if self.device_details['type'] == 'GAS':
-                from DataManager import interpreterGAS as interpreter
-            elif self.device_details['type'] == 'GMS':
-                from DataManager import interpreterGMS as interpreter
-            arguments = [self.device_details, log]
-
+            arguments = [self.device_details, log, hw_class]
 
         device = interpreter.DeviceManager(*arguments)
 
@@ -41,10 +41,7 @@ class Checker(Thread):
                 while self.q:
 
                     cmd = self.q.get()
-                    try:
-                        response = device.execute(*cmd)
-                    except Exception as e:
-                        print(cmd)
+                    response = device.execute(*cmd)
                     log.update_log(*response)
                 self.q_new_item.clear()
             else:

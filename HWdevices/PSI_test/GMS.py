@@ -2,9 +2,9 @@ from HWdevices.abstract.AbstractGMS import AbstractGMS
 
 
 # Abstract Gas Mixer
-class GMStest(AbstractGMS):
+class GMS(AbstractGMS):
     def __init__(self, ID, address):
-        super(GMStest, self).__init__(ID, address)
+        super(GMS, self).__init__(ID, address)
         self.GAS_TYPES = ["CO2", "Air", "N2"]
 
     def get_valve_flow(self, valve):

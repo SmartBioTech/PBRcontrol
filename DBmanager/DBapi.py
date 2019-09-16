@@ -6,6 +6,7 @@ from DBmanager import measurement, localdb
 from threading import Event as ThreadEvent
 from multiprocessing import Process, Event
 import ssl
+from time import sleep
 
 class Secured_Resource(Resource):
 
@@ -198,7 +199,7 @@ class CreateNewResource(Secured_Resource):
                 for setup_cmd in initial_commands:
 
                     cmd = (
-                        setup_cmd['time'],
+                        setup_cmd.get('time', (datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"))),
                         node_id,
                         device_id,
                        setup_cmd['id'],
@@ -278,6 +279,7 @@ class EndProgram(Secured_Resource):
             return 'Invalid Credentials'
         self.end_program.set()
         self.end_process.set()
+        return
 
 
 class ApiInit():
@@ -301,7 +303,7 @@ class ApiInit():
     def run_app(self):
         context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
         context.load_cert_chain('MyCertificate.crt', 'MyKey.key')
-        self.app.run(host='0.0.0.0')
+        self.app.run(host='0.0.0.0', ssl_context = context)
 
 
     def run(self):
@@ -328,5 +330,6 @@ class ApiInit():
         server = Process(target=self.run_app)
         server.start()
         self.end_process.wait()
+        sleep(1)
         server.terminate()
 

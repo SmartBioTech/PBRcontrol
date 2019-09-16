@@ -7,12 +7,10 @@
     {
         [node number] : {
             'experiment_details' : {'sleep_time' : int},
-            'devices' : {
-                'device_[node_number]' : {
-                    'node' : int
-                    'type' : str,
+            'devices' : [{
+                    'device_type' : str,
                     'device_id' : str,
-                    'test' : bool,
+                    'device_class' : str,    ----------> is the name of package, e.g. PSI, PSI_test, Phenometrics...
                     'address' : str,
                     'setup' : {
                         'initial_commands' : lst,
@@ -26,7 +24,7 @@
 
 
                     }
-                }
+                ]
             }
     }
 
@@ -35,7 +33,7 @@
  - endpoint: https//:[ip address]/[node number]/[device id]
  - structure:
 
-    {'time': string,'cmd_id': int, 'args': lst}
+    {'time': string,'cmd_id': int, 'args': lst, 'source': ('internal' OR 'external')}
 
 
  // CHANGE NODE SETTINGS //
@@ -106,10 +104,11 @@ GAS         23: get_flow,
             28: measure_all,
             29: get_co2_air,
             30: get_small_valves,
+            31: set_small_valves,
 
 
-GMS         31: get_valve_info,
-            22: get_valve_flow,
-            33: set_valve_flow,
+GMS         32: get_valve_info,
+            33: get_valve_flow,
+            34: set_valve_flow,
 
-NODE        34: change_time_period
+NODE        35: change_time_period

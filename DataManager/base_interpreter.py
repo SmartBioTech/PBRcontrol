@@ -2,11 +2,15 @@ from time import sleep
 
 class BaseInterpreter:
 
+    def __init__(self, device_details, device_class, log):
+        self.device_details = device_details
+        self.log = log
+        self.device = device_class(self.device_details['device_id'], self.device_details['address'])
+
     def device_con(self, id, args):
         args = eval(args)
-
+        result=[]
         count = 0
-        result = []
         if not isinstance(id, int):
             raise Exception('Invalid Input')
         while count <= 5:
@@ -15,7 +19,8 @@ class BaseInterpreter:
                 return result
             except TypeError:
                 raise Exception('Invalid input')
-            except Exception:
+            except Exception as e:
+                print(e)
                 count += 1
                 sleep(0.1)
 
