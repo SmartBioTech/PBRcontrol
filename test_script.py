@@ -1,23 +1,21 @@
 import requests
 import mysql.connector as cn
 import datetime
-from time import sleep
+from urllib3 import disable_warnings
 
-
+disable_warnings()
 
 def initialize_experiment():
     my_dict = {
         1 : {
             'experiment_details' : {'sleep_time' : 10},
-            'devices' : {
-                'device_1' : {
-                    'node': 1,
+            'devices' : [{
                     'type' : 'PBR',
                     'device_id' : 'PBR01',
                     'test' : True,
                     'address' : None,
                     'setup' : {
-                        'initial_commands' : [{'time': (datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")),'id': 8, 'args': '[1, True]'}],
+                        'initial_commands' : [{'time': (datetime.datetime.now().strftime("%d-%m-%Y, %H:%M:%S")),'id': 8, 'args': '[1, True]'}],
                         'lower_outlier_tol' : 2,
                         'upper_outlier_tol' : 3,
                         'max_outliers' : 6,
@@ -26,8 +24,7 @@ def initialize_experiment():
                         'pump_id' : 1
                             }
                             },
-                'device_2' : {
-                    'node' : 1,
+                {
                     'type' : 'GAS',
                     'device_id' : 'GAS01',
                     'test' : True,
@@ -36,13 +33,11 @@ def initialize_experiment():
                         'initial_commands' : []
                             }
                             }
-                        }
+            ]
             },
     2 : {
         'experiment_details' : {'sleep_time' : 5},
-        'devices' : {
-            'device_1' : {
-                'node' : 2,
+        'devices' : [{
                 'type' : 'PBR',
                 'device_id': 'PBR01',
                 'test' : True,
@@ -57,11 +52,11 @@ def initialize_experiment():
                     'pump_id' : 1,
                             }
                         }
-                    }
+                    ]
         }
     }
 
-    requests.post('https://localhost:5000/', str(my_dict), verify = 'cert.pem')
+    requests.post('https://88.100.0.4:5000/', str(my_dict), verify=False, auth=('BioArInEO', 'sybila'))
 
 def cmds_PBR():
     cmds_dict = {
@@ -117,11 +112,9 @@ def testPBR():
     cmds_dict = cmds_PBR()
     db = Connect()
     while id < 23:
-        t = datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S")
-        requests.post('https://localhost:5000/1/PBR01', str({'time': t, 'cmd_id': id, 'args': str(cmds_dict[id]), 'source' : 'external'}), verify = 'cert.pem')
-        x = []
-        while not x:
-            x = db.get_from_log(t, id)
+        t = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+        requests.post('https://88.100.0.4:5000/1/PBR01', str({'time': t, 'cmd_id': id, 'args': str(cmds_dict[id]), 'source' : 'external'}), verify=False, auth=('BioArInEO', 'sybila'))
+
         id+=1
 
 
@@ -146,22 +139,23 @@ def add_node():
                         'pump_id' : 1
                             }}}}}
 
-    requests.post('https://localhost:5000/', str(my_dict), verify = 'cert.pem')
+    requests.post('https://localhost:5000/', str(my_dict), verify=False, auth=('BioArInEO', 'sybila'))
 
 
 def change_time():
-    t = datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S")
-    requests.post('https://localhost:5000/1', str({'time': t, 'cmd_id': 34, 'args': str([12]), 'source': 'external'}), verify = 'cert.pem')
+    t = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+    requests.post('https://localhost:5000/1', str({'time': t, 'cmd_id': 34, 'args': str([12]), 'source': 'external'}), verify=False, auth=('BioArInEO', 'sybila'))
 
 def get_log():
-    e = requests.get('https://localhost:5000/log', verify = 'cert.pem')
+    e = requests.get('http://localhost:5000/log?node_id=2', verify=False, auth=('BioArInEO', 'sybila'))
     print(e.text)
 
 def add_node_2():
     str_dict = str({1: {'experiment_details': {'sleep_time': 10}, 'devices': [{'type': 'PBR', 'device_id': 'PBR01', 'test': True, 'address': None, 'setup': {'initial_commands': [{'id': 16, 'args': '[1]'}, {'id': 13, 'args': '[50, True]'}, {'id': 8, 'args': '[5, False]'}], 'lower_outlier_tol': 2, 'upper_outlier_tol': 3, 'max_outliers': 6, 'min_OD': 0.1, 'max_OD': 0.9, 'pump_id': 5}}, {'type': 'GAS', 'device_id': 'GAS01', 'test': True, 'address': None, 'setup': {'initial_commands': []}}]}})
     requests.post("https://localhost:5000/", str_dict, verify = 'cert.pem')
 
-# get_log()
-# testPBR()
-add_node_2()
-# change_time()
+get_log()
+#testPBR()
+#add_node()
+#add_node_2()
+#change_time()

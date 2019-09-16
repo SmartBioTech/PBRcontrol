@@ -14,7 +14,7 @@ class Database:
         self.db = "localdb"
         self.host = "127.0.0.1"
         self.password = ""
-        self.log_id = 0
+        self.node_unseen = {}
 
     def create_database(self):
         mydb = cn.connect(user=self.user)
@@ -27,8 +27,9 @@ class Database:
 
         self.cursor.execute(
             'CREATE TABLE IF NOT EXISTS log (log_id int NOT NULL auto_increment,'
-            ' time_issued VARCHAR(255),'
-            'target_address VARCHAR(255),'
+            'time_issued VARCHAR(255),'
+            'node_id INT,'
+            'device_id VARCHAR(255),'
             'command_id INT,'
             'target VARCHAR(255),'
             'response VARCHAR(1000),'
@@ -49,33 +50,44 @@ class Database:
 
         self.cursor = self.con.cursor()
 
-    def get_unseen(self):
+    def get_log(self, node_id, time):
         """
         Read from a table, delete the line that was read
 
         :param: table to read from (log/measurement)
         :return: the row that was read
         """
-        select = ('SELECT * FROM log WHERE log_id > %s ORDER BY log_id DESC' %(self.log_id))
+
+        if node_id not in self.node_unseen:
+            self.node_unseen[node_id] = 0
+        if time == None:
+            select = ('SELECT * FROM log WHERE log_id > %s AND node_id = %s ORDER BY log_id DESC' %(self.node_unseen[node_id], node_id))
+        else:
+            select = ('SELECT * FROM log WHERE node_id = %s AND time_issued > %s ORDER BY log_id DESC' %(node_id, time))
 
         self.cursor.execute(select)
         rows = self.cursor.fetchall()
         if rows:
-            self.log_id = rows[0][0]
+            self.node_unseen[node_id] = rows[0][0]
         return rows
 
     def get_from_time(self, time):
-        select = ('SELECT * FROM log WHERE time_issued > %s ORDER BY log_id DESC' %(time))
+        if time == None:
+
+            select = ('SELECT * FROM log ORDER BY log_id DESC')
+        else:
+            print(time)
+            select = ('SELECT * FROM log WHERE time_issued > %s ORDER BY log_id DESC' %(time))
         self.cursor.execute(select)
         rows = self.cursor.fetchall()
         return rows
 
-    def update_log(self, time_issued, target_address, command_id, target_arguments, response, source):
+    def update_log(self, time_issued, node_id, device_id, command_id, target_arguments, response, source):
         time_executed = datetime.datetime.now()
-        time_executed = time_executed.strftime("%m-%d-%Y %H:%M:%S")
+        time_executed = time_executed.strftime("%d-%m-%Y %H:%M:%S")
 
-        query = """INSERT INTO log (time_issued, target_address, command_id, target, response, time_executed, source) VALUES (%s, %s, %s, %s, %s, %s, %s)"""
-        query_args = (str(time_issued), str(target_address), int(command_id), str(target_arguments), str(response),
+        query = """INSERT INTO log (time_issued, node_id, device_id, command_id, target, response, time_executed, source) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
+        query_args = (str(time_issued), int(node_id), str(device_id), int(command_id), str(target_arguments), str(response),
                       str(time_executed), str(source))
 
         self.cursor.execute(query, query_args)
