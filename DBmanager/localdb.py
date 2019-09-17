@@ -24,8 +24,8 @@ class Database:
         mydb.commit()
 
     def create_table(self):
-
-        self.cursor.execute(
+        cursor = self.con.cursor()
+        cursor.execute(
             'CREATE TABLE IF NOT EXISTS log (log_id int NOT NULL auto_increment,'
             'time_issued VARCHAR(255),'
             'node_id INT,'
@@ -38,6 +38,7 @@ class Database:
             'PRIMARY KEY (log_id))')
 
         self.con.commit()
+        cursor.close()
 
     def connect(self):
         while True:
@@ -48,7 +49,6 @@ class Database:
                 print(e)
                 sleep(2)
 
-        self.cursor = self.con.cursor()
 
     def get_log(self, node_id, time):
         """
@@ -57,7 +57,7 @@ class Database:
         :param: table to read from (log/measurement)
         :return: the row that was read
         """
-
+        cursor = self.con.cursor()
         if node_id not in self.node_unseen:
             self.node_unseen[node_id] = 0
         if time == None:
@@ -66,23 +66,27 @@ class Database:
             print(time)
             select = ('SELECT * FROM log WHERE (node_id = %s AND TIMESTAMP(time_issued) >= TIMESTAMP(%s)) ORDER BY log_id DESC' %(node_id, time))
 
-        self.cursor.execute(select)
-        rows = self.cursor.fetchall()
+        cursor.execute(select)
+        rows = cursor.fetchall()
         if rows:
             self.node_unseen[node_id] = rows[0][0]
+        cursor.close()
         return rows
 
     def get_from_time(self, time):
+        cursor = self.con.cursor()
         if time == None:
 
             select = ('SELECT * FROM log ORDER BY log_id DESC')
         else:
             select = ('SELECT * FROM log WHERE TIMESTAMP(time_issued) > TIMESTAMP(%s) ORDER BY log_id DESC' %(time))
-        self.cursor.execute(select)
-        rows = self.cursor.fetchall()
+        cursor.execute(select)
+        rows = cursor.fetchall()
+        cursor.close()
         return rows
 
     def update_log(self, time_issued, node_id, device_type, command_id, target_arguments, response, source):
+        cursor = self.con.cursor()
         time_executed = datetime.datetime.now()
         time_executed = time_executed.strftime("%d-%m-%Y %H:%M:%S")
 
@@ -90,7 +94,9 @@ class Database:
         query_args = (str(time_issued), int(node_id), str(device_type), int(command_id), str(target_arguments), str(response),
                       str(time_executed), str(source))
 
-        self.cursor.execute(query, query_args)
+        cursor.execute(query, query_args)
+        cursor.close()
+
 
 class DatabaseCon:
 

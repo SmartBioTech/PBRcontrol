@@ -49,7 +49,7 @@ class Command(Secured_Resource):
                 self.address[1],
                 (cmd.get('cmd_id', False)),
                 (cmd.get('args', '[]')),
-                 cmd.get('source', '')
+                 cmd.get('source', 'external')
                 )
 
         if data[1]:
@@ -205,7 +205,7 @@ class CreateNewResource(Secured_Resource):
                         device_type,
                        setup_cmd['id'],
                        setup_cmd['args'],
-                        'experiment setup'
+                        'external'
                            )
                     my_data_manager.q.put(cmd)
                     my_data_manager.q_new_item.set()

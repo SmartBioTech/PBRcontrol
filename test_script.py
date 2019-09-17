@@ -210,6 +210,7 @@ def post_cmd(node, device_type, cmd_id, args):
     requests.post('https://localhost:5000/' + str(node) +'/'+ str(device_type),
                   str({'time': t, 'cmd_id': cmd_id, 'args': str(args), 'source': 'external'}), verify=False,
                   auth=('BioArInEO', 'sybila'))
+
 def end_node(node):
     requests.get('https://localhost:5000/' + str(node) + '/end', verify=False, auth=('BioArInEO', 'sybila'))
 
@@ -229,41 +230,13 @@ def get_node_endpoints(node):
     r = requests.get('https://localhost:5000/' + str(node), verify=False, auth=('BioArInEO', 'sybila'))
     return r.text
 
-def add_device(node, device_type):
-    t = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    my_dict = {
-        node: {
-            'experiment_details': {'sleep_time': 5},
-            'devices': [
-                {
-                    'device_type': device_type,
-                    'device_class': 'PSI_test',
-                    'address': None,
-                    'setup' : {
-                        'initial_commands' : [{'time': (datetime.datetime.now().strftime("%Y-%m-%d, %H:%M:%S")),'id': 8, 'args': '[1, True]'}],
-                        'lower_outlier_tol' : 2,
-                        'upper_outlier_tol' : 3,
-                        'max_outliers' : 6,
-                        'min_OD' : 0.1,
-                        'max_OD' : 0.9,
-                        'pump_id' : 1
-                            }
-                    }
-                ]
-        }
-        }
 
-    requests.post('https://localhost:5000/',
-                  str(my_dict), verify=False,
-                  auth=('BioArInEO', 'sybila'))
-
-get_log()
+#get_log()
 #test_all()
-#add_node(1)
-#change_time()
+#add_node(2)
+#change_time(2, 1)
 #post_cmd(1, 'GAS01', 31, [2])
 #end_device(1, 'PBR')
 #end_node(1)
 #end_program()
 #print(get_node_endpoints(2))
-#add_device(1, 'PBR')
