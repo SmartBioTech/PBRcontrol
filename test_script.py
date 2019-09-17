@@ -31,7 +31,7 @@ def initialize_experiment():
                     'device_class' : 'PSI_test',
                     'address' : None,
                     'setup' : {
-                        'initial_commands' : [{'time': (datetime.datetime.now().strftime("%d-%m-%Y, %H:%M:%S")),'id': 8, 'args': '[1, True]'}],
+                        'initial_commands' : [{'time': (datetime.datetime.now().strftime("%Y-%m-%d, %H:%M:%S")),'id': 8, 'args': '[1, True]'}],
                         'lower_outlier_tol' : 2,
                         'upper_outlier_tol' : 3,
                         'max_outliers' : 6,
@@ -153,19 +153,19 @@ def test_all():
     gas = cmds_GAS()
     gms = cmds_GMS()
     while id < 23:
-        t = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+        t = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         requests.post('https://localhost:5000/1/PBR', str({'time': t, 'cmd_id': id, 'args': str(pbr[id]), 'source' : 'external'}), verify=False, auth=('BioArInEO', 'sybila'))
         id+=1
         sleep(1)
 
     while id < 32:
-        t = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+        t = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         requests.post('https://localhost:5000/1/GAS', str({'time': t, 'cmd_id': id, 'args': str(gas[id]), 'source' : 'external'}), verify=False, auth=('BioArInEO', 'sybila'))
         sleep(1)
         id+=1
 
     while id < 35:
-        t = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+        t = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         requests.post('https://localhost:5000/2/GMS', str({'time': t, 'cmd_id': id, 'args': str(gms[id]), 'source' : 'external'}), verify=False, auth=('BioArInEO', 'sybila'))
         sleep(1)
         id+=1
@@ -179,11 +179,11 @@ def change_time(node, time_period):
     change time period of periodical measurement on node to a specific time_period
     :return: None
     '''
-    t = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+    t = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     requests.post('https://localhost:5000/'+str(node), str({'time': t, 'cmd_id': 35, 'args': str([time_period]), 'source': 'external'}), verify=False, auth=('BioArInEO', 'sybila'))
 
 def get_log():
-    e = requests.get('https://localhost:5000/log?node_id=1', verify=False, auth=('BioArInEO', 'sybila'))
+    e = requests.get('https://localhost:5000/log?node_id=1&time=20190917115910', verify=False, auth=('BioArInEO', 'sybila'))
     print(e.text)
 
 def add_node(node_number):
@@ -206,7 +206,7 @@ def post_cmd(node, device_type, cmd_id, args):
     :param args: list
 
     '''
-    t = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+    t = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     requests.post('https://localhost:5000/' + str(node) +'/'+ str(device_type),
                   str({'time': t, 'cmd_id': cmd_id, 'args': str(args), 'source': 'external'}), verify=False,
                   auth=('BioArInEO', 'sybila'))
@@ -229,12 +229,41 @@ def get_node_endpoints(node):
     r = requests.get('https://localhost:5000/' + str(node), verify=False, auth=('BioArInEO', 'sybila'))
     return r.text
 
-#get_log()
-test_all()
+def add_device(node, device_type):
+    t = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    my_dict = {
+        node: {
+            'experiment_details': {'sleep_time': 5},
+            'devices': [
+                {
+                    'device_type': device_type,
+                    'device_class': 'PSI_test',
+                    'address': None,
+                    'setup' : {
+                        'initial_commands' : [{'time': (datetime.datetime.now().strftime("%Y-%m-%d, %H:%M:%S")),'id': 8, 'args': '[1, True]'}],
+                        'lower_outlier_tol' : 2,
+                        'upper_outlier_tol' : 3,
+                        'max_outliers' : 6,
+                        'min_OD' : 0.1,
+                        'max_OD' : 0.9,
+                        'pump_id' : 1
+                            }
+                    }
+                ]
+        }
+        }
+
+    requests.post('https://localhost:5000/',
+                  str(my_dict), verify=False,
+                  auth=('BioArInEO', 'sybila'))
+
+get_log()
+#test_all()
 #add_node(1)
 #change_time()
 #post_cmd(1, 'GAS01', 31, [2])
-#end_device(2, 'PBR02')
+#end_device(1, 'PBR')
 #end_node(1)
 #end_program()
 #print(get_node_endpoints(2))
+#add_device(1, 'PBR')

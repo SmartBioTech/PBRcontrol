@@ -35,7 +35,7 @@ class PeriodicalMeasurement(Thread):
     def run(self):
         while not self.end_program.is_set() and self.endpoints:
             for device in self.endpoints:
-                data = {'time': (datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")), 'source' : 'internal'}
+                data = {'time': (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")), 'source' : 'internal'}
                 if 'GMS' in device:
                     return
                 elif 'PBR' in device:

@@ -44,7 +44,7 @@ class Command(Secured_Resource):
 
         cmd = (request.get_data())
         cmd = eval(cmd)
-        data = (cmd.get('time', (datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"))),
+        data = (cmd.get('time', (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))),
                 self.address[0],
                 self.address[1],
                 (cmd.get('cmd_id', False)),
@@ -68,7 +68,7 @@ class GetData(Secured_Resource):
 
     def process_time(self, time):
         try:
-            processed = "'" + time[:2] + '-' + time[2:4] + '-' + time[4:8] + ' ' + time[8:10] + ':' + time[10:12] + ':' + time[12:14] + "'"
+            processed = "'" + time[:4] + '-' + time[4:6] + '-' + time[6:8] + ' ' + time[8:10] + ':' + time[10:12] + ':' + time[12:14] + "'"
             return processed
         except Exception as e:
             raise Exception(e)
@@ -86,6 +86,7 @@ class GetData(Secured_Resource):
             node_id = request.args.get('node_id')
             time = request.args.get('time')
             if time != None:
+
                 time = self.process_time(time)
 
             if node_id != None:
@@ -199,7 +200,7 @@ class CreateNewResource(Secured_Resource):
                 for setup_cmd in initial_commands:
 
                     cmd = (
-                        setup_cmd.get('time', (datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"))),
+                        setup_cmd.get('time', (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))),
                         node_id,
                         device_type,
                        setup_cmd['id'],

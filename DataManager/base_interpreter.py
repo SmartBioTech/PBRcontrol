@@ -19,7 +19,7 @@ class BaseInterpreter:
                 return result
             except TypeError:
                 raise Exception('Invalid input')
-            except Exception as e:
+            except Exception:
                 count += 1
                 sleep(0.1)
 

@@ -52,9 +52,9 @@
 
  // GET LOG - time specific //
 
- - endpoint: https//:[ip address]/log?time=DDMMYYYYHHMMSS
+ - endpoint: https//:[ip address]/log?time=YYYYMMDDHHMMSS
 
- - return all log data from specific time point (DD-MM-YYYY HH:MM:SS ---> DDMMYYYYHHMMSS)
+ - return all log data from specific time point (YYYY-MM-DD HH:MM:SS ---> YYYYMMDDHHMMSS)
 
 
 // END DEVICE //
