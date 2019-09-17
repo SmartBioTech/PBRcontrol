@@ -77,7 +77,6 @@ class Database:
 
             select = ('SELECT * FROM log ORDER BY log_id DESC')
         else:
-            print(time)
             select = ('SELECT * FROM log WHERE TIMESTAMP(time_issued) > TIMESTAMP(%s) ORDER BY log_id DESC' %(time))
         self.cursor.execute(select)
         rows = self.cursor.fetchall()
