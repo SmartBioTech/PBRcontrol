@@ -188,7 +188,7 @@ class CreateNewResource(Secured_Resource):
             devices = node['devices']
 
             for device in devices:
-                device_id = device.get('device_id')
+                device_type = device.get('device_type')
                 device['node'] = node_id
                 end_device = ThreadEvent()
                 node_events.append(end_device)
@@ -201,7 +201,7 @@ class CreateNewResource(Secured_Resource):
                     cmd = (
                         setup_cmd.get('time', (datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"))),
                         node_id,
-                        device_id,
+                        device_type,
                        setup_cmd['id'],
                        setup_cmd['args'],
                         'experiment setup'
@@ -210,15 +210,15 @@ class CreateNewResource(Secured_Resource):
                     my_data_manager.q_new_item.set()
 
 
-                endpoint = str(node_id) + '/' + str(device_id)
+                endpoint = str(node_id) + '/' + str(device_type)
 
 
                 if endpoint not in self.resource_args.keys():
 
-                    self.resource_args[endpoint] = [my_data_manager, end_device, endpoints, device_id]
+                    self.resource_args[endpoint] = [my_data_manager, end_device, endpoints, device_type]
 
-                    self.api.add_resource(Command, '/' + str(node_id) + '/' + str(device_id),
-                                          endpoint = str(node_id) + '/' + str(device_id),
+                    self.api.add_resource(Command, '/' + str(node_id) + '/' + str(device_type),
+                                          endpoint = str(node_id) + '/' + str(device_type),
                                           resource_class_kwargs={'api': self.api,
                                                                  'resource_args' : self.resource_args,
                                                                  'endpoint' : endpoint
@@ -233,9 +233,9 @@ class CreateNewResource(Secured_Resource):
                                                                  }
                                           )
                 else:
-                    self.resource_args[endpoint] = [my_data_manager, end_device, endpoints, device_id]
+                    self.resource_args[endpoint] = [my_data_manager, end_device, endpoints, device_type]
 
-                endpoints.append(device_id)
+                endpoints.append(device_type)
 
             node_measurement = measurement.PeriodicalMeasurement(endpoints,
                                                                  node_id,
@@ -244,7 +244,8 @@ class CreateNewResource(Secured_Resource):
                                                                  )
 
             if node_id not in self.resource_args.keys():
-                self.resource_args[node_id] = [endpoints, node_id, node['experiment_details'], node_measurement, node_events]
+                self.resource_args[node_id] = [endpoints, node_id, node['experiment_details'],
+                                               node_measurement, node_events]
 
                 self.api.add_resource(Nodes, '/' + str(node_id),
                                       endpoint = str(node_id),
@@ -261,7 +262,8 @@ class CreateNewResource(Secured_Resource):
                                           'node_id' : node_id}
                                       )
             else:
-                self.resource_args[node_id] = [endpoints, node_id, node['experiment_details'], node_measurement, node_events]
+                self.resource_args[node_id] = [endpoints, node_id, node['experiment_details'],
+                                               node_measurement, node_events]
 
             node_measurement.start()
 

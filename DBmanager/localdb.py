@@ -29,7 +29,7 @@ class Database:
             'CREATE TABLE IF NOT EXISTS log (log_id int NOT NULL auto_increment,'
             'time_issued VARCHAR(255),'
             'node_id INT,'
-            'device_id VARCHAR(255),'
+            'device_type VARCHAR(255),'
             'command_id INT,'
             'target VARCHAR(255),'
             'response VARCHAR(1000),'
@@ -82,12 +82,12 @@ class Database:
         rows = self.cursor.fetchall()
         return rows
 
-    def update_log(self, time_issued, node_id, device_id, command_id, target_arguments, response, source):
+    def update_log(self, time_issued, node_id, device_type, command_id, target_arguments, response, source):
         time_executed = datetime.datetime.now()
         time_executed = time_executed.strftime("%d-%m-%Y %H:%M:%S")
 
-        query = """INSERT INTO log (time_issued, node_id, device_id, command_id, target, response, time_executed, source) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
-        query_args = (str(time_issued), int(node_id), str(device_id), int(command_id), str(target_arguments), str(response),
+        query = """INSERT INTO log (time_issued, node_id, device_type, command_id, target, response, time_executed, source) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
+        query_args = (str(time_issued), int(node_id), str(device_type), int(command_id), str(target_arguments), str(response),
                       str(time_executed), str(source))
 
         self.cursor.execute(query, query_args)

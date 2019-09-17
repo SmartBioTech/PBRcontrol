@@ -5,7 +5,7 @@ class BaseInterpreter:
     def __init__(self, device_details, device_class, log):
         self.device_details = device_details
         self.log = log
-        self.device = device_class(self.device_details['device_id'], self.device_details['address'])
+        self.device = device_class(self.device_details['device_type'], self.device_details['address'])
 
     def device_con(self, id, args):
         args = eval(args)
@@ -20,7 +20,6 @@ class BaseInterpreter:
             except TypeError:
                 raise Exception('Invalid input')
             except Exception as e:
-                print(e)
                 count += 1
                 sleep(0.1)
 
@@ -28,7 +27,7 @@ class BaseInterpreter:
             raise Exception('Could not reach device')
         return result
 
-    def execute(self, time_issued, node_id, device_id, id, args, source):
+    def execute(self, time_issued, node_id, device_type, id, args, source):
         is_ok = True
         try:
             result = self.device_con(id, args)
@@ -42,4 +41,4 @@ class BaseInterpreter:
             elif id == 8:
                 self.OD_checker.change_pump_state(args[1])
 
-        return (time_issued, node_id, device_id, id, args, (is_ok,result), source)
+        return (time_issued, node_id, device_type, id, args, (is_ok,result), source)
