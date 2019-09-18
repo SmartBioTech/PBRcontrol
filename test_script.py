@@ -183,7 +183,8 @@ def change_time(node, time_period):
     requests.post('https://localhost:5000/'+str(node), str({'time': t, 'cmd_id': 35, 'args': str([time_period]), 'source': 'external'}), verify=False, auth=('BioArInEO', 'sybila'))
 
 def get_log():
-    e = requests.get('https://localhost:5000/log?node_id=1&time=20190917115910', verify=False, auth=('BioArInEO', 'sybila'))
+    e = requests.get('https://localhost:5000/log?node_id=2&time=20190917162810', verify=False, auth=('BioArInEO', 'sybila'))
+    print(e.status_code)
     print(e.text)
 
 def add_node(node_number):
@@ -193,7 +194,7 @@ def add_node(node_number):
     adds node with node_number with a PBR and a GAS device
     :return:
     '''
-    str_dict = str({node_number: {'experiment_details': {'sleep_time': 10}, 'devices': [{'device_type': 'PBR', 'device_class': 'PSI_test', 'address': None, 'setup': {'initial_commands': [{'id': 16, 'args': '[1]'}, {'id': 13, 'args': '[50, True]'}, {'id': 8, 'args': '[5, False]'}], 'lower_outlier_tol': 2, 'upper_outlier_tol': 3, 'max_outliers': 6, 'min_OD': 0.1, 'max_OD': 0.9, 'pump_id': 5}}, {'device_type': 'GAS', 'device_class': 'PSI_test', 'address': None, 'setup': {'initial_commands': []}}]}})
+    str_dict = str({node_number: {'experiment_details': {'sleep_time': 0.1}, 'devices': [{'device_type': 'PBR', 'device_class': 'PSI_test', 'address': None, 'setup': {'initial_commands': [{'id': 16, 'args': '[1]'}, {'id': 13, 'args': '[50, True]'}, {'id': 8, 'args': '[5, False]'}], 'lower_outlier_tol': 2, 'upper_outlier_tol': 3, 'max_outliers': 6, 'min_OD': 0.1, 'max_OD': 0.9, 'pump_id': 5}}, {'device_type': 'GAS', 'device_class': 'PSI_test', 'address': None, 'setup': {'initial_commands': []}}]}})
     requests.post("https://localhost:5000/", str_dict, verify=False, auth=('BioArInEO', 'sybila'))
 
 def post_cmd(node, device_type, cmd_id, args):
@@ -231,7 +232,7 @@ def get_node_endpoints(node):
     return r.text
 
 
-#get_log()
+get_log()
 #test_all()
 #add_node(2)
 #change_time(2, 1)

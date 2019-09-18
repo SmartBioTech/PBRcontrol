@@ -61,10 +61,9 @@ class Database:
         if node_id not in self.node_unseen:
             self.node_unseen[node_id] = 0
         if time == None:
-            select = ('SELECT * FROM log WHERE log_id > %s AND node_id = %s ORDER BY log_id DESC' %(self.node_unseen[node_id], node_id))
+            select = ('SELECT * FROM log WHERE log_id > %s AND node_id = %s ORDER BY log_id' %(self.node_unseen[node_id], node_id))
         else:
-            print(time)
-            select = ('SELECT * FROM log WHERE (node_id = %s AND TIMESTAMP(time_issued) >= TIMESTAMP(%s)) ORDER BY log_id DESC' %(node_id, time))
+            select = ('SELECT * FROM log WHERE (node_id = %s AND TIMESTAMP(time_issued) >= TIMESTAMP(%s)) ORDER BY log_id' %(node_id, time))
 
         cursor.execute(select)
         rows = cursor.fetchall()
@@ -77,9 +76,9 @@ class Database:
         cursor = self.con.cursor()
         if time == None:
 
-            select = ('SELECT * FROM log ORDER BY log_id DESC')
+            select = ('SELECT * FROM log ORDER BY log_id')
         else:
-            select = ('SELECT * FROM log WHERE TIMESTAMP(time_issued) > TIMESTAMP(%s) ORDER BY log_id DESC' %(time))
+            select = ('SELECT * FROM log WHERE TIMESTAMP(time_issued) > TIMESTAMP(%s) ORDER BY log_id' %(time))
         cursor.execute(select)
         rows = cursor.fetchall()
         cursor.close()

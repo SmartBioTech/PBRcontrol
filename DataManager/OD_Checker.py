@@ -69,9 +69,17 @@ class OD_Check:
                 return
             if self.pump_state and switch == self.pump_state[0]:
                 return
+            else:
+                self.pump_state[0] = bool(switch)
             time_initiated = datetime.datetime.now()
             time_initiated = time_initiated.strftime("%Y-%m-%d %H:%M:%S")
-            self.q.put([time_initiated, str(self.device_details['node']), self.device_details['device_type'], cmd_id, str([pump_id, switch]), 'internal'])
+            self.q.put((0,(time_initiated,
+                        str(self.device_details['node']),
+                        self.device_details['device_type'],
+                        cmd_id,
+                        str([pump_id, switch]),
+                        'internal')))
+
 
             self.q_new_item.set()
 

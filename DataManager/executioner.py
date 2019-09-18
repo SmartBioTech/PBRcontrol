@@ -41,7 +41,7 @@ class Checker(Thread):
                 while self.q:
 
                     cmd = self.q.get()
-                    response = device.execute(*cmd)
+                    response = device.execute(*cmd[1])
                     log.update_log(*response)
                 self.q_new_item.clear()
             else:

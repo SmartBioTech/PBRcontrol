@@ -40,21 +40,25 @@ class Command(Secured_Resource):
     def post(self):
 
         if self.check_credentials(request.authorization):
-            return 'Invalid Credentials'
+            return 'Invalid Credentials', 401
+        try:
+            cmd = (request.get_data())
+            cmd = eval(cmd)
+            data = (1,(cmd.get('time', (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))),
+                    self.address[0],
+                    self.address[1],
+                    cmd['cmd_id'],
+                    (cmd.get('args', '[]')),
+                    cmd.get('source', 'external')
+                    ))
 
-        cmd = (request.get_data())
-        cmd = eval(cmd)
-        data = (cmd.get('time', (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))),
-                self.address[0],
-                self.address[1],
-                (cmd.get('cmd_id', False)),
-                (cmd.get('args', '[]')),
-                 cmd.get('source', 'external')
-                )
 
-        if data[1]:
             self.q.put(data)
             self.q_new_item.set()
+        except Exception as e:
+            return e, 400
+
+        return 'Success', 200
 
 
 class GetData(Secured_Resource):
@@ -80,7 +84,7 @@ class GetData(Secured_Resource):
         :return: a list of all rows from the desired table
         """
         if self.check_credentials(request.authorization):
-            return 'Invalid Credentials'
+            return 'Invalid Credentials', 401
 
         try:
             node_id = request.args.get('node_id')
@@ -91,13 +95,16 @@ class GetData(Secured_Resource):
 
             if node_id != None:
                 rows = self.db.get_log(node_id, time)
-                return rows
 
+            else:
 
-            rows = self.db.get_from_time(time)
-            return rows
+                rows = self.db.get_from_time(time)
+            if rows == []:
+                return rows, 204
+            else:
+                return rows, 200
         except Exception as e:
-            return str(e)
+            return str(e), 400
 
 
 class Nodes(Secured_Resource):
@@ -113,23 +120,30 @@ class Nodes(Secured_Resource):
 
     def get(self):
         if self.check_credentials(request.authorization):
-            return 'Invalid Credentials'
+            return 'Invalid Credentials', 401
+        if self.endpoints:
+            return self.endpoints, 200
+        else:
+            return self.endpoints, 204
 
-        return self.endpoints
 
     def post(self):
         if self.check_credentials(request.authorization):
-            return 'Invalid Credentials'
-
-        data = request.get_data()
-        data = eval(data)
-        cmd_id = data.get('cmd_id', False)
-        args = data.get('args', '[]')
-        time_issued = data.get('time_issued')
-        source = data.get('source', 'external')
-        args = eval(args)
-        if cmd_id:
-            self.my_measurement.execute_cmd(time_issued, cmd_id, args, source)
+            return 'Invalid Credentials', 401
+        try:
+            data = request.get_data()
+            data = eval(data)
+            cmd_id = data.get('cmd_id', False)
+            args = data.get('args', '[]')
+            time_issued = data.get('time_issued')
+            source = data.get('source', 'external')
+            args = eval(args)
+            if cmd_id:
+                self.my_measurement.execute_cmd(time_issued, cmd_id, args, source)
+            return 'success', 200
+        
+        except Exception as e:
+            return e, 400
 
 class EndDevice(Secured_Resource):
 
@@ -142,7 +156,7 @@ class EndDevice(Secured_Resource):
 
     def get(self):
         if self.check_credentials(request.authorization):
-            return 'Invalid Credentials'
+            return 'Invalid Credentials', 401
 
         self.end_device.set()
         self.endpoints.remove(self.device_id)
@@ -157,7 +171,7 @@ class EndNode(Secured_Resource):
 
     def get(self):
         if self.check_credentials(request.authorization):
-            return 'Invalid Credentials'
+            return 'Invalid Credentials', 401
 
         for event in self.node_events:
             event.set()
@@ -175,7 +189,7 @@ class CreateNewResource(Secured_Resource):
 
     def post(self):
         if self.check_credentials(request.authorization):
-            return 'Invalid Credentials'
+            return 'Invalid Credentials', 401
 
         data = request.get_data()
         data = eval(data)
@@ -199,14 +213,14 @@ class CreateNewResource(Secured_Resource):
 
                 for setup_cmd in initial_commands:
 
-                    cmd = (
+                    cmd = (0, (
                         setup_cmd.get('time', (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))),
                         node_id,
                         device_type,
                        setup_cmd['id'],
                        setup_cmd['args'],
                         'external'
-                           )
+                           ))
                     my_data_manager.q.put(cmd)
                     my_data_manager.q_new_item.set()
 
@@ -279,7 +293,7 @@ class EndProgram(Secured_Resource):
 
     def get(self):
         if self.check_credentials(request.authorization):
-            return 'Invalid Credentials'
+            return 'Invalid Credentials', 401
         self.end_program.set()
         self.end_process.set()
         return
