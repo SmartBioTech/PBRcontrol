@@ -68,7 +68,7 @@ class Database:
         cursor.execute(select)
         rows = cursor.fetchall()
         if rows:
-            self.node_unseen[node_id] = rows[0][0]
+            self.node_unseen[node_id] = rows[-1][0]
         cursor.close()
         return rows
 
