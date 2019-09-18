@@ -150,7 +150,7 @@ class EndDevice(Secured_Resource):
     def __init__(self, api, resource_args, endpoint):
         super(EndDevice, self).__init__(api)
 
-        self.device_id = resource_args[endpoint][3]
+        self.device_type = resource_args[endpoint][3]
         self.end_device = resource_args[endpoint][1]
         self.endpoints = resource_args[endpoint][2]
 
@@ -159,13 +159,14 @@ class EndDevice(Secured_Resource):
             return 'Invalid Credentials', 401
 
         self.end_device.set()
-        self.endpoints.remove(self.device_id)
+        self.endpoints.remove(self.device_type)
+        return 'device ' + self.device_type +' ended', 200
 
 class EndNode(Secured_Resource):
 
     def __init__(self, api, resource_args, node_id):
         super(EndNode, self).__init__(api)
-
+        self.node_id = node_id
         self.node_events = resource_args[node_id][4]
         self.endpoints = resource_args[node_id][0]
 
@@ -176,6 +177,7 @@ class EndNode(Secured_Resource):
         for event in self.node_events:
             event.set()
         self.endpoints.clear()
+        return 'node ' + self.node_id + ' ended', 200
 
 class CreateNewResource(Secured_Resource):
 
@@ -281,7 +283,7 @@ class CreateNewResource(Secured_Resource):
                                                node_measurement, node_events]
 
             node_measurement.start()
-
+            return 'success', 200
 
 class EndProgram(Secured_Resource):
 
@@ -296,7 +298,7 @@ class EndProgram(Secured_Resource):
             return 'Invalid Credentials', 401
         self.end_program.set()
         self.end_process.set()
-        return
+        return 'ending PBRcontrol...', 200
 
 
 class ApiInit():
