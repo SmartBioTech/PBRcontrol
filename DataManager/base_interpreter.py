@@ -38,7 +38,6 @@ class BaseInterpreter:
         if not isinstance(result, str):
             if id == 19:
                 self.OD_checker.stabilize(result)
-            elif id == 8:
-                self.OD_checker.change_pump_state(args[1])
+
 
         return (time_issued, node_id, device_type, id, args, (is_ok,result), source)

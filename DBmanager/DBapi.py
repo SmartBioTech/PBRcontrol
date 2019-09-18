@@ -44,13 +44,13 @@ class Command(Secured_Resource):
         try:
             cmd = (request.get_data())
             cmd = eval(cmd)
-            data = (1,(cmd.get('time', (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))),
+            data = (cmd.get('time', (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))),
                     self.address[0],
                     self.address[1],
                     cmd['cmd_id'],
                     (cmd.get('args', '[]')),
                     cmd.get('source', 'external')
-                    ))
+                    )
 
 
             self.q.put(data)
@@ -215,14 +215,14 @@ class CreateNewResource(Secured_Resource):
 
                 for setup_cmd in initial_commands:
 
-                    cmd = (0, (
+                    cmd = (
                         setup_cmd.get('time', (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))),
                         node_id,
                         device_type,
-                       setup_cmd['id'],
-                       setup_cmd['args'],
-                        'external'
-                           ))
+                        setup_cmd['id'],
+                        setup_cmd['args'],
+                        setup_cmd.get('source','internal')
+                           )
                     my_data_manager.q.put(cmd)
                     my_data_manager.q_new_item.set()
 

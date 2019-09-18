@@ -11,11 +11,11 @@ class OD_Check:
         self.outliers = 0
         self.average = average
         self.last_results = deque(maxlen=2)
-        self.pump_state = []
+        self.pump_state = False
 
     def change_pump_state(self, value):
-        self.pump_state = [value]
 
+        self.pump_state = value
 
     def set_od_bounds(self, min, max):
 
@@ -67,19 +67,19 @@ class OD_Check:
                 switch = False
             else:
                 return
-            if self.pump_state and switch == self.pump_state[0]:
+            if switch == self.pump_state:
                 return
-            else:
-                self.pump_state[0] = bool(switch)
+
+            self.change_pump_state(switch)
+
             time_initiated = datetime.datetime.now()
             time_initiated = time_initiated.strftime("%Y-%m-%d %H:%M:%S")
-            self.q.put((0,(time_initiated,
+            self.q.put((time_initiated,
                         str(self.device_details['node']),
                         self.device_details['device_type'],
                         cmd_id,
                         str([pump_id, switch]),
-                        'internal')))
-
+                        'internal'))
 
             self.q_new_item.set()
 
