@@ -1,15 +1,15 @@
-from threading import Thread
-from time import sleep
-from requests import post
-import datetime
-import json
+from threading import Thread, Event
+import time
 from DBmanager import localdb
+import datetime
+
 
 class PeriodicalMeasurement(Thread):
 
     def execute_cmd(self, time_issued, cmd_id, args, source):
         is_ok = True
         try:
+            args = eval(args)
             response = self.commands[cmd_id](*args)
         except Exception as exc:
             response = exc
@@ -21,33 +21,44 @@ class PeriodicalMeasurement(Thread):
         self.experiment_details['sleep_time'] = t
         return True
 
-    def __init__(self, endpoints, node_id, experiment_details, end_program):
-        super(PeriodicalMeasurement, self).__init__(daemon=True)
+    def __init__(self, node_id, devices, experiment_details):
+        super(PeriodicalMeasurement, self).__init__(name=(str(node_id)+'-measurement'))
         self.experiment_details = experiment_details
-        self.endpoints = endpoints
+        self.end_measurement = Event()
+        self.devices = devices
         self.node_id = node_id
-        self.end_program = end_program
         self.logger = localdb.Database()
         self.logger.connect()
+
+        self.codes = {'PBR': 19,
+                      'GAS': 28}
 
         self.commands = {35 : self.change_time_period}
 
     def run(self):
-        while not self.end_program.is_set() and self.endpoints:
-            for device in self.endpoints:
-                data = {'time': (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")), 'source' : 'internal'}
-                if 'GMS' in device:
-                    return
-                elif 'PBR' in device:
-                    data['cmd_id'] = 19
-                elif 'GAS' in device:
-                    data['cmd_id'] = 28
 
-                headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-                data = json.dumps(data)
-                post('https://localhost:5000/' + str(self.node_id) + '/' + str(device), data=data, headers=headers, verify=False, auth=('BioArInEO', 'sybila'))
+        next_time = time.time() + self.experiment_details['sleep_time']
+        while not self.end_measurement.is_set():
+            time.sleep(max(0, next_time - time.time()))
+            delay = self.experiment_details['sleep_time']
+            self.measure()
+            next_time += (time.time() - next_time) // delay * delay + delay
 
-            sleep(float(self.experiment_details.get('sleep_time', 60)))
+    def measure(self):
+        for device_key in self.devices:
+            device = self.devices[device_key]
+            if device == 'GMS':
+                continue
+            cmd = {'time': (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
+                   'source' : 'internal',
+                   'args' : '[]',
+                   'cmd_id': self.codes[device.device_type]}
+
+            device.accept_command(cmd)
+
+
+    def end(self):
+        self.end_measurement.set()
 
 
 

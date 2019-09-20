@@ -69,6 +69,7 @@ class Database:
         rows = cursor.fetchall()
         if rows:
             self.node_unseen[node_id] = rows[-1][0]
+
         cursor.close()
         return rows
 
@@ -82,6 +83,7 @@ class Database:
         cursor.execute(select)
         rows = cursor.fetchall()
         cursor.close()
+
         return rows
 
     def update_log(self, time_issued, node_id, device_type, command_id, target_arguments, response, source):
@@ -92,7 +94,7 @@ class Database:
         query = """INSERT INTO log (time_issued, node_id, device_type, command_id, target, response, time_executed, source) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
         query_args = (str(time_issued), int(node_id), str(device_type), int(command_id), str(target_arguments), str(response),
                       str(time_executed), str(source))
-
+        print(query_args)
         cursor.execute(query, query_args)
         cursor.close()
 

@@ -1,0 +1,165 @@
+***************************************************************
+*******************NODE INITIATION*****************************
+***************************************************************
+
+FUNCTIONALITY: Creates nodes and assigns corresponding devices to it. Devices must be in a list.
+
+ENDPOINT: /initiate
+
+TYPE: POST
+
+URL ARGUMENTS: -
+
+POSSIBLE RESPONSES:
+    401, 'Invalid Credentials' -> invalid credentials in the auth argument in post request
+    500, 'Internal server error' -> error occured on PBRcontrol, report immediately
+    404, 'Server not found' -> PBRcontrol is not running
+    200, {node_id: {device_type: True/False}} -> returns dictionary of requested node_ids, each has a dict of requested
+                                                 devices. If the device was initiated, its value in the dict is True,
+                                                 otherwise False (e.g. if the device already exists on node. This can
+                                                 happen by user trying to initiate multiple devices of the same type on
+                                                 one node)
+                                              -> if the node already exists, initiation will fail and the value of node_id
+                                                 in dict will be False
+
+DATA: Dictionary of nodes. All parameters are required in the expected format.
+    {
+        1 : {
+            'experiment_details' : {'sleep_time' : 120},
+            'devices' : [{
+                    'device_type' : 'PBR',
+                    'device_class' : 'PSI_test',
+                    'address' : None,
+                    'setup' : {
+                        'initial_commands' : [{'time': (datetime.datetime.now().strftime("%Y-%m-%d, %H:%M:%S")),'cmd_id': 8, 'args': '[1, True]'}],
+                        'lower_outlier_tol' : 2,
+                        'upper_outlier_tol' : 3,
+                        'max_outliers' : 6,
+                        'min_OD' : 0.1,
+                        'max_OD' : 0.9,
+                        'pump_id' : 1
+                            }
+                            },
+                {
+                    'device_type' : 'GAS',
+                    'device_class' : 'PSI_test',
+                    'address' : None,
+                    'setup' : {
+                        'initial_commands' : []
+                            }
+                            }
+            ]
+            },
+    2 : {
+        'experiment_details' : {'sleep_time' : 180},
+        'devices' : [{
+                'device_type' : 'PBR',
+                'device_class' : 'PSI_test',
+                'address' : None,
+                'setup' : {
+                    'initial_commands' : [],
+                    'lower_outlier_tol' : 2,
+                    'upper_outlier_tol' : 3,
+                    'max_outliers' : 6,
+                    'min_OD' : 0.1,
+                    'max_OD' : 0.9,
+                    'pump_id' : 1,
+                            }
+                        },
+            {
+                'device_type': 'GMS',
+                'device_class': 'PSI_test',
+                'address': None,
+                'setup': {
+                    'initial_commands': []
+                }
+            }
+                    ]
+        }
+    }
+
+***************************************************************
+**************************ADD DEVICE***************************
+***************************************************************
+
+FUNCTIONALITY: Add device to an existing node
+
+ENDPOINT: /add_device
+
+TYPE: POST
+
+URL ARGUMENTS: ?node_id=x
+
+POSSIBLE RESPONSES:
+    401, 'Invalid Credentials' -> invalid credentials in the auth argument in post request
+    500, 'Internal server error' -> error occured on PBRcontrol, report immediately
+    404, 'Server not found' -> PBRcontrol is not running
+    200, True -> device was added to requested node
+    400, False -> device already exists on requested node
+    400, 'Node number unspecified' -> node wasn't specified in URL args
+    400, 'Requested node is not initialized'
+
+
+
+DATA: dictionary
+
+                {
+                    'device_type' : device,
+                    'device_class' : 'PSI_test',
+                    'address' : None,
+                    'setup' : {
+                        'initial_commands' : [{'time': (datetime.datetime.now().strftime("%Y-%m-%d, %H:%M:%S")),'cmd_id': 8, 'args': '[1, True]'}],
+                        'lower_outlier_tol' : 2,
+                        'upper_outlier_tol' : 3,
+                        'max_outliers' : 6,
+                        'min_OD' : 0.1,
+                        'max_OD' : 0.9,
+                        'pump_id' : 1
+                            }
+                            }
+
+
+***************************************************************
+**************************END**********************************
+***************************************************************
+
+FUNCTIONALITY: end device, node or whole program
+
+ENDPOINT: /end
+
+TYPE: GET
+
+URL ARGUMENTS: 1) -                                        -> ends the program
+               2) ?node_id=x                                -> ends node and its devices
+               3) ?node_id=x&device_type=xyz                -> ends device on specified node
+
+POSSIBLE RESPONSES:
+    401, 'Invalid Credentials' -> invalid credentials in the auth argument in post request
+    500, 'Internal server error' -> error occured on PBRcontrol, report immediately
+    404, 'Server not found' -> PBRcontrol is not running
+    400, 'Requested node is not initialized'
+    400, 'Device doesnt exist on node x'
+    200, '' -> success
+
+
+***************************************************************
+**************************LOG**********************************
+***************************************************************
+
+FUNCTIONALITY: retireve data from log
+
+ENDPOINT: /log
+
+TYPE: GET
+
+URL ARGUMENTS: 1) ?time=YYMMDDHHMMSS   -> return all data from given time
+               2) ?node=x              -> return all unseen data from node.
+               3) ?node=x&time=YYMMDDHHMMSS  -> return all data from given time for given node
+
+
+POSSIBLE RESPONSES:
+    401, 'Invalid Credentials' -> invalid credentials in the auth argument in post request
+    500, 'Internal server error' -> error occured on PBRcontrol, report immediately
+    404, 'Server not found' -> PBRcontrol is not running
+    200, [data] -> success, return log data in a list ordered from oldest to most recent
+    204, '[]' -> no data to show for given parameters
