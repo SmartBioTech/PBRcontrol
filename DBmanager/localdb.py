@@ -22,13 +22,13 @@ class Database:
         return cn.connect(host=self.host, user=self.user, password=self.password, db=self.db)
 
     def create_database(self):
-        mydb = cn.connect(user=self.user)
+        con = cn.connect(user=self.user)
         cursor = mydb.cursor()
         query = ('CREATE DATABASE IF NOT EXISTS %s' % self.db)
         cursor.execute(query)
-        mydb.commit()
+        con.commit()
         cursor.close()
-        mydb.close()
+        con.close()
 
     def create_table(self):
         con = self.connect()
@@ -45,6 +45,7 @@ class Database:
             ' source VARCHAR(255), '
             'PRIMARY KEY (log_id))')
 
+        con.commit()
         cursor.close()
         con.close()
 
@@ -101,5 +102,6 @@ class Database:
                       int(command_id), str(target_arguments), str(response),
                       str(time_executed), str(source))
         cursor.execute(query, query_args)
+        con.commit()
         cursor.close()
         con.close()
