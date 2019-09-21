@@ -23,7 +23,7 @@ class Database:
 
     def create_database(self):
         con = cn.connect(user=self.user)
-        cursor = mydb.cursor()
+        cursor = con.cursor()
         query = ('CREATE DATABASE IF NOT EXISTS %s' % self.db)
         cursor.execute(query)
         con.commit()

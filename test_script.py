@@ -154,19 +154,23 @@ def test_all():
     gms = cmds_GMS()
     while id < 23:
         t = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        requests.post('https://localhost:5000/command?node_id=1&device_type=PBR', str({'time': t, 'cmd_id': id, 'args': str(pbr[id]), 'source' : 'external'}), verify=False, auth=('BioArInEO', 'sybila'))
+        r = requests.post('https://localhost:5000/command?node_id=1&device_type=PBR', str([{'time': t, 'cmd_id': id, 'args': str(pbr[id]), 'source' : 'external'}]), verify=False, auth=('BioArInEO', 'sybila'))
+        print(r.status_code, r.text)
         id+=1
         sleep(1)
 
     while id < 32:
         t = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        requests.post('https://localhost:5000/command?node_id=1&device_type=GAS', str({'time': t, 'cmd_id': id, 'args': str(gas[id]), 'source' : 'external'}), verify=False, auth=('BioArInEO', 'sybila'))
+        r=requests.post('https://localhost:5000/command?node_id=1&device_type=GAS', str([{'time': t, 'cmd_id': id, 'args': str(gas[id]), 'source' : 'external'}]), verify=False, auth=('BioArInEO', 'sybila'))
+        print(r.status_code, r.text)
         sleep(1)
         id+=1
 
     while id < 35:
         t = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        requests.post('https://localhost:5000/command?node_id=2&device_type=GMS', str({'time': t, 'cmd_id': id, 'args': str(gms[id]), 'source' : 'external'}), verify=False, auth=('BioArInEO', 'sybila'))
+        r = requests.post('https://localhost:5000/command?node_id=2&device_type=GMS', str([{'time': t, 'cmd_id': id, 'args': str(gms[id]), 'source' : 'external'}]), verify=False, auth=('BioArInEO', 'sybila'))
+        print(r.status_code, r.text)
+
         sleep(1)
         id+=1
 
@@ -251,8 +255,8 @@ def add_device(node, device):
     requests.post('https://localhost:5000/add_device?node_id='+str(node),
                   str(data), verify=False,
                   auth=('BioArInEO', 'sybila'))
-get_log()
-#test_all()
+#get_log()
+test_all()
 #add_node(2)
 #change_time(2, 30)
 #post_cmd(1, 'GAS01', 31, [2])
