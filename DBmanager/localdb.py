@@ -89,7 +89,7 @@ class Database:
     def update_log(self, time_issued, node_id, device_type, command_id, target_arguments, response, source):
         cursor = self.con.cursor()
         time_executed = datetime.datetime.now()
-        time_executed = time_executed.strftime("%d-%m-%Y %H:%M:%S")
+        time_executed = time_executed.strftime("%Y-%m-%d %H:%M:%S")
 
         query = """INSERT INTO log (time_issued, node_id, device_type, command_id, target, response, time_executed, source) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
         query_args = (str(time_issued), int(node_id), str(device_type), int(command_id), str(target_arguments), str(response),

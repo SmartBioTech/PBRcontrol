@@ -1,6 +1,7 @@
 import datetime
 from collections import deque
 
+
 class OD_Check:
 
     def __init__(self, device_details, q, q_new_item, average):
@@ -33,7 +34,7 @@ class OD_Check:
                 self.device_setup['max_OD'] = max
         else:
             raise TypeError
-        return (self.device_setup['min_OD'],self.device_setup['max_OD'])
+        return self.device_setup['min_OD'], self.device_setup['max_OD']
 
     def set_tolerance(self, lower, upper):
 

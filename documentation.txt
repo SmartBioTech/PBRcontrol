@@ -116,7 +116,30 @@ DATA: dictionary
                         'max_OD' : 0.9,
                         'pump_id' : 1
                             }
-                            }
+                 }
+
+***************************************************************
+**************************COMMAND******************************
+***************************************************************
+
+FUNCTIONALITY: Forward commands to device/node. It is possible to send multiple commands, but only to one device/one node.
+               Commands are to be sent as dictionaries in a list.
+
+ENDPOINT: /command
+
+TYPE: POST
+
+URL ARGUMENTS: 1) ?node_id=x    -> send command which affects whole node, currently used only to change time period of measurements
+               2) ?node_id=x&device_type=xyz    -> send command to specific device on specific node
+
+DATA:
+    [{'time': (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")),'cmd_id': 8, 'args': '[1, True]'}]
+
+POSSIBLE RESPONSES:
+        401, 'Invalid Credentials' -> invalid credentials in the auth argument in post request
+        500, 'Internal server error' -> error occured on PBRcontrol, report immediately
+        400, False  -> invalid node_id or device_type requested
+        200, True   -> success, the command has been added to corresponding queue and is waiting to be executed
 
 
 ***************************************************************
@@ -146,7 +169,7 @@ POSSIBLE RESPONSES:
 **************************LOG**********************************
 ***************************************************************
 
-FUNCTIONALITY: retireve data from log
+FUNCTIONALITY: retrieve data from log
 
 ENDPOINT: /log
 
