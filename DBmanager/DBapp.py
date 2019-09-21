@@ -153,6 +153,8 @@ class Command(SecuredResource):
 
             data = request.get_data()
             data = eval(data)
+            if not isinstance(data, list):
+                raise Exception('Commmands must be ordered in a list')
 
             if node_id:     
                 node_id = int(node_id)
