@@ -8,27 +8,40 @@ from DBmanager import measurement
 class Node:
 
     def __init__(self, data):
+        """
+        :param data: check documentation.txt for syntax
+        """
         self.devices = {}   # keep a dict of all devices on node
         self.node_id = data['node_id']
         self.experiment_details = data['experiment_details']
         self.measurement = measurement.PeriodicalMeasurement(self.node_id, self.devices, self.experiment_details)
-        self.measurement.start()
 
     def initiate_device(self, device_data):
+        """
+        :param device_data: check documentation.txt for syntax
+        :return: True if successfully initialized, False otherwise
+        """
+
         device_type = device_data.get('device_type')
         if device_type in self.devices or device_type == None:  # raise exception if device already exists on node
             return False
         device_data['node_id'] = self.node_id
         device = Device(device_data)
         self.devices[device_type] = device
-        device.checker.start()
+        device.checker.start()  # start the queue checker
 
         for cmd in device_data['setup']['initial_commands']: # execute the initial commands
             device.accept_command(cmd)
         return True
 
     def accept_command(self, cmd):
+        """
+        Processes the commands that affect all the devices on a certain node (currently used only to change the interval
+        of periodical measurements.
 
+        :param cmd: dictionary, check documentation.txt
+        :return: None
+        """
         processed = (
             cmd.get('time', (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))),
             cmd['cmd_id'],
@@ -36,14 +49,23 @@ class Node:
             cmd.get('source', 'internal')
         )
 
-        self.measurement.execute_cmd(*processed)
+        self.measurement.execute_cmd(*processed)    # pass the command
 
     def end_node(self):
+        """
+        Ends all devices on the node. End the periodical measurement on the node.
+        :return: None
+        """
         for device in self.devices:
             self.devices[device].end()
         self.measurement.end()
 
     def end_device(self, device):
+        """
+        End a certain device on the node
+        :param device: str device_type
+        :return: None
+        """
         self.devices[device].end()
         self.devices.pop(device)
 
@@ -74,23 +96,3 @@ class Device:
         self.q.put(False)
         self.q_new_item.set()
 
-
-class Manager(Thread):
-    '''
-    starts the DataManager
-
-    :q: queue object
-    :flag: threading.Event() object
-
-    '''
-    def __init__(self, device_details, end_device, q, q_new_item):
-        self.thread_name = device_details['node_id'] + '-' + str(device_details['device_type'])
-        super(Manager, self).__init__(name=self.thread_name)
-        self.device_details = device_details
-        self.end_device = end_device
-        self.q = q
-        self.q_new_item = q_new_item
-
-    def run(self):
-        checker = executioner.Checker(self.q, self.q_new_item, self.device_details, self.end_device, self.thread_name)
-        checker.start()
