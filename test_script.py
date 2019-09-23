@@ -31,7 +31,7 @@ def initialize_experiment():
                     'device_class' : 'PSI_test',
                     'address' : None,
                     'setup' : {
-                        'initial_commands' : [{'time': (datetime.datetime.now().strftime("%Y-%m-%d, %H:%M:%S")),'cmd_id': 8, 'args': '[1, True]'}],
+                        'initial_commands' : [{'time': (datetime.datetime.utcnow().strftime("%Y-%m-%d, %H:%M:%S")),'cmd_id': 8, 'args': '[1, True]'}],
                         'lower_outlier_tol' : 2,
                         'upper_outlier_tol' : 3,
                         'max_outliers' : 6,
@@ -153,21 +153,21 @@ def test_all():
     gas = cmds_GAS()
     gms = cmds_GMS()
     while id < 23:
-        t = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        t = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         r = requests.post('https://localhost:5000/command?node_id=1&device_type=PBR', str([{'time': t, 'cmd_id': id, 'args': str(pbr[id]), 'source' : 'external'}]), verify=False, auth=('BioArInEO', 'sybila'))
         print(r.status_code, r.text)
         id+=1
         sleep(1)
 
     while id < 32:
-        t = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        t = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         r=requests.post('https://localhost:5000/command?node_id=1&device_type=GAS', str([{'time': t, 'cmd_id': id, 'args': str(gas[id]), 'source' : 'external'}]), verify=False, auth=('BioArInEO', 'sybila'))
         print(r.status_code, r.text)
         sleep(1)
         id+=1
 
     while id < 35:
-        t = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        t = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         r = requests.post('https://localhost:5000/command?node_id=2&device_type=GMS', str([{'time': t, 'cmd_id': id, 'args': str(gms[id]), 'source' : 'external'}]), verify=False, auth=('BioArInEO', 'sybila'))
         print(r.status_code, r.text)
 
@@ -183,7 +183,7 @@ def change_time(node, time_period):
     change time period of periodical measurement on node to a specific time_period
     :return: None
     '''
-    t = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    t = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
     requests.post('https://localhost:5000/command?node_id='+str(node), str({'time': t, 'cmd_id': 35, 'args': str([time_period]), 'source': 'external'}), verify=False, auth=('BioArInEO', 'sybila'))
 
 def get_log():
@@ -198,7 +198,7 @@ def add_node(node_number):
     adds node with node_number with a PBR and a GAS device
     :return:
     '''
-    str_dict = str({node_number: {'experiment_details': {'sleep_time': 0.5}, 'devices': [{'device_type': 'PBR', 'device_class': 'PSI_test', 'address': None, 'setup': {'initial_commands': [{'cmd_id': 16, 'args': '[1]'}, {'cmd_id': 13, 'args': '[50, True]'}, {'cmd_id': 8, 'args': '[5, False]'}], 'lower_outlier_tol': 2, 'upper_outlier_tol': 3, 'max_outliers': 6, 'min_OD': 0.45, 'max_OD': 0.5, 'pump_id': 5}}, {'device_type': 'GAS', 'device_class': 'PSI_test', 'address': None, 'setup': {'initial_commands': []}}]}})
+    str_dict = str({node_number: {'experiment_details': {'sleep_time': 5}, 'devices': [{'device_type': 'PBR', 'device_class': 'PSI_test', 'address': None, 'setup': {'initial_commands': [{'cmd_id': 16, 'args': '[1]'}, {'cmd_id': 13, 'args': '[50, True]'}, {'cmd_id': 8, 'args': '[5, False]'}], 'lower_outlier_tol': 2, 'upper_outlier_tol': 3, 'max_outliers': 6, 'min_OD': 0.45, 'max_OD': 0.5, 'pump_id': 5}}, {'device_type': 'GAS', 'device_class': 'PSI_test', 'address': None, 'setup': {'initial_commands': []}}]}})
     x = requests.post("https://localhost:5000/initiate", str_dict, verify=False, auth=('BioArInEO', 'sybila'))
     print(x.text)
 
@@ -212,7 +212,7 @@ def post_cmd(node, device_type, cmd_id, args):
     :param args: list
 
     '''
-    t = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    t = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
     requests.post('https://localhost:5000/' + str(node) +'/'+ str(device_type),
                   str({'time': t, 'cmd_id': cmd_id, 'args': str(args), 'source': 'external'}), verify=False,
                   auth=('BioArInEO', 'sybila'))
@@ -242,7 +242,7 @@ def add_device(node, device):
                     'device_class' : 'PSI_test',
                     'address' : None,
                     'setup' : {
-                        'initial_commands' : [{'time': (datetime.datetime.now().strftime("%Y-%m-%d, %H:%M:%S")),'cmd_id': 8, 'args': '[1, True]'}],
+                        'initial_commands' : [{'time': (datetime.datetime.utcnow().strftime("%Y-%m-%d, %H:%M:%S")),'cmd_id': 8, 'args': '[1, True]'}],
                         'lower_outlier_tol' : 2,
                         'upper_outlier_tol' : 3,
                         'max_outliers' : 6,
@@ -251,13 +251,13 @@ def add_device(node, device):
                         'pump_id' : 1
                             }
                             }
-    t = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    t = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
     requests.post('https://localhost:5000/add_device?node_id='+str(node),
                   str(data), verify=False,
                   auth=('BioArInEO', 'sybila'))
 #get_log()
-test_all()
-#add_node(2)
+#test_all()
+add_node(2)
 #change_time(2, 30)
 #post_cmd(1, 'GAS01', 31, [2])
 #end_device(2, 'PBR')

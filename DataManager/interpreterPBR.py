@@ -4,8 +4,8 @@ import datetime
 from DataManager import base_interpreter
 import numpy as np
 
-class DeviceManager(base_interpreter.BaseInterpreter):
 
+class DeviceManager(base_interpreter.BaseInterpreter):
 
     def initial_OD(self):
         data = []
@@ -13,7 +13,7 @@ class DeviceManager(base_interpreter.BaseInterpreter):
             try:
                 data.append(self.device_con(5, '[]'))
             except Exception:
-                time_issued = datetime.datetime.now()
+                time_issued = datetime.datetime.utcnow()
                 time_issued = time_issued.strftime("%m-%d-%Y %H:%M:%S")
                 address = '/' + str(self.device_details['node']) + '/' + str(self.device_details['device_id'])
                 self.log.update_log(time_issued, address, 5, [], 'Waiting for connection...')
@@ -47,7 +47,6 @@ class DeviceManager(base_interpreter.BaseInterpreter):
         self.q = q
         self.q_new_item = q_new_item
         super(DeviceManager, self).__init__(device_details, device_class, log)
-
 
         self.commands = {
             1: self.device.get_temp_settings,

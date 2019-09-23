@@ -43,7 +43,7 @@ class Node:
         :return: None
         """
         processed = (
-            cmd.get('time', (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))),
+            cmd.get('time', (datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"))),
             cmd['cmd_id'],
             cmd['args'],
             cmd.get('source', 'internal')
@@ -93,7 +93,7 @@ class Device:
         :return: None
         """
         processed = (
-            cmd.get('time', (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))),
+            cmd.get('time', (datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"))),
             self.data['node_id'],
             self.device_type,
             cmd['cmd_id'],

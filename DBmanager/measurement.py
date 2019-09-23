@@ -33,7 +33,7 @@ class PeriodicalMeasurement(Thread):
         self.codes = {'PBR': 19,
                       'GAS': 28}
 
-        self.commands = {35 : self.change_time_period}
+        self.commands = {35: self.change_time_period}
 
     def run(self):
 
@@ -49,7 +49,7 @@ class PeriodicalMeasurement(Thread):
             device = self.devices[device_key]
             if device == 'GMS':
                 continue
-            cmd = {'time': (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
+            cmd = {'time': (datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")),
                    'source' : 'internal',
                    'args' : '[]',
                    'cmd_id': self.codes[device.device_type]}

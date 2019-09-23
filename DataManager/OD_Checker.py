@@ -73,7 +73,7 @@ class ODcheck:
 
             self.change_pump_state(switch)
 
-            time_initiated = datetime.datetime.now()
+            time_initiated = datetime.datetime.utcnow()
             time_initiated = time_initiated.strftime("%Y-%m-%d %H:%M:%S")
             self.q.put((time_initiated,
                         str(self.device_details['node_id']),
