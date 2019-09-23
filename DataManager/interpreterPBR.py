@@ -71,7 +71,7 @@ class DeviceManager(base_interpreter.BaseInterpreter):
             19: self.device.measure_all,
         }
 
-        self.OD_checker = OD_Checker.OD_Check(self.device_details, self.q, self.q_new_item, self.initial_OD())
+        self.OD_checker = OD_Checker.ODcheck(self.device_details, self.q, self.q_new_item, self.initial_OD())
 
         self.commands.update({
             20: self.OD_checker.set_max_outliers,

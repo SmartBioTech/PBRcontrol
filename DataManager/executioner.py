@@ -4,13 +4,17 @@ from importlib import import_module
 
 
 class Checker(Thread):
-    '''
-    checks the shared queue for commands
+    """
+    Checks the shared queue for commands and forwards them to its actual device.
+    """
 
-    :q: queue object
-    :flag: threading.Event() object, is set to True when data is added to the queue; if not, the checker will wait
-    '''
     def __init__(self, q, q_new_item, device_details, thread_name):
+        """
+        :param q: queue.Queue() object, commands are put in it
+        :param q_new_item: queue.Event() object, is set when new commands are added to it, which triggers the checker
+        :param device_details:  dict, check documentation.txt
+        :param thread_name: name of the thread, used to identify and keep in tact active threads
+        """
         thread_name = thread_name+'-checker'
         super(Checker, self). __init__(name=thread_name)
         self.q = q
@@ -18,6 +22,11 @@ class Checker(Thread):
         self.device_details = device_details
 
     def run(self):
+        """
+        Connect to localdb, import the right module according to device_details, execute commands and log the responses.
+
+        :return: None
+        """
         log = localdb.Database()
         log.connect()
         device_type = self.device_details['device_type']

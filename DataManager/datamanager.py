@@ -1,4 +1,4 @@
-from threading import Thread, Event
+from threading import Event
 from DataManager import executioner
 import queue
 import datetime
@@ -73,14 +73,25 @@ class Node:
 class Device:
 
     def __init__(self, data):
+        """
+        :param data: dictionary, check documentation.txt
+        """
         self.thread_name = str(data['node_id']) + data['device_type']
         self.data = data
         self.device_type = data['device_type']
-        self.q = queue.Queue()
-        self.q_new_item = Event()
+        self.q = queue.Queue()      # Queue object - all commands will be stacking here and waiting for execution
+        self.q_new_item = Event()   # Event object - notifies that a new command has been added to queue
+
+        # start the checker of the queue
         self.checker = executioner.Checker(self.q, self.q_new_item, self.data, self.thread_name)
 
     def accept_command(self, cmd):
+        """
+        Process the command and add id to the queue of the device.
+
+        :param cmd: dict, check documentation.txt
+        :return: None
+        """
         processed = (
             cmd.get('time', (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))),
             self.data['node_id'],
@@ -89,10 +100,15 @@ class Device:
             cmd['args'],
             cmd.get('source', 'internal')
         )
-        self.q.put(processed)
-        self.q_new_item.set()
+        self.q.put(processed)   # put it to queue
+        self.q_new_item.set()   # notify checker that a new object has been added to queue
 
     def end(self):
+        """
+        Puts False into the queue, which triggers the checker to exit.
+
+        :return: None
+        """
         self.q.put(False)
         self.q_new_item.set()
 

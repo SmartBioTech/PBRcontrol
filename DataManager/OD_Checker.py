@@ -2,7 +2,7 @@ import datetime
 from collections import deque
 
 
-class OD_Check:
+class ODcheck:
 
     def __init__(self, device_details, q, q_new_item, average):
         self.device_details = device_details
