@@ -29,32 +29,35 @@ class Checker(Thread):
         :return: None
         """
         log = localdb.Database()
-        log.connect()
         device_type = self.device_details['device_type']
 
+        # import the right class for the specific device
         hw_class = getattr(import_module('HWdevices.'+self.device_details['device_class']+'.'+device_type), device_type)
 
+        # import interpreter for the specific device type
         interpreter = import_module('DataManager.interpreter' + device_type)
+
+        # PBRs need to work with the queue directly (to control the device's pumps)
+        # The queue of commands must be passed on the PBRs
 
         if device_type == 'PBR':
             arguments = [self.device_details, self.q, self.q_new_item, log, hw_class]
         else:
             arguments = [self.device_details, log, hw_class]
 
-        device = interpreter.DeviceManager(*arguments)
+        device = interpreter.DeviceManager(*arguments)  # initiate the physical device and its interpreter
 
-        while True:
+        while True:     # for as long as the program runs
+            if self.q_new_item.is_set():    # if sth was added to queue
+                while self.q:   # while there still is something in queue
 
-            if self.q_new_item.is_set():
-                while self.q:
-
-                    cmd = self.q.get()
-                    if not cmd:
-                        return
-                    response = device.execute(*cmd)
-                    log.update_log(*response)
-                self.q_new_item.clear()
+                    cmd = self.q.get()  # get 1st command in queue
+                    if not cmd:     # if the command is False
+                        return      # end the loop and exit
+                    response = device.execute(*cmd)     # execute the command on the device and save the response
+                    log.update_log(*response)   # upload the response to log
+                self.q_new_item.clear()     # when the queue is finally empty again, clear the flag
             else:
-                self.q_new_item.wait()
+                self.q_new_item.wait()  # if flag isn't set (nothing was added to queue), wait for it to be set
 
 

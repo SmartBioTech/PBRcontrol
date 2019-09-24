@@ -3,10 +3,8 @@
 import mysql.connector as cn
 import datetime
 
+
 class Database:
-    '''
-    Initializes the database
-    '''
 
     def __init__(self):
         self.user = "PBRcontrol"
@@ -14,14 +12,23 @@ class Database:
         self.host = "127.0.0.1"
         self.password = ""
         self.node_unseen = {}
-        self.create_database()
-        self.create_table()
-
+        self.create_database()  # initialize the database
+        self.create_table()     # initialize the table
 
     def connect(self):
+        """
+        Establish connection to the database.
+
+        :return: mysql.connector.connect object
+        """
         return cn.connect(host=self.host, user=self.user, password=self.password, db=self.db)
 
     def create_database(self):
+        """
+        create the database
+
+        :return: None
+        """
         con = cn.connect(user=self.user)
         cursor = con.cursor()
         query = ('CREATE DATABASE IF NOT EXISTS %s' % self.db)
@@ -31,6 +38,11 @@ class Database:
         con.close()
 
     def create_table(self):
+        """
+        Create the log table
+
+        :return: None
+        """
         con = self.connect()
         cursor = con.cursor()
         cursor.execute(
@@ -52,10 +64,12 @@ class Database:
 
     def get_for_system(self, node_id, time):
         """
-        Read from a table, delete the line that was read
+        Getter - retrieves data from log and remembers which data have been shown in the current session. Already seen
+        data will not be loaded in the next get.
 
-        :param: table to read from (log/measurement)
-        :return: the row that was read
+        :param node_id: node_id to search for
+        :param time: time from which to begin the search
+        :return: list of the table's rows
         """
         con = self.connect()
         cursor = con.cursor()
@@ -70,12 +84,12 @@ class Database:
         rows = cursor.fetchall()
         cursor.close()
         con.close()
+
         if rows:
             self.node_unseen[node_id] = rows[-1][0]
 
-
         return rows
-
+    '''
     def get_for_user(self, time):
         con = self.connect()
         cursor = con.cursor()
@@ -89,8 +103,22 @@ class Database:
         con.close()
 
         return rows
+    '''
 
     def update_log(self, time_issued, node_id, device_type, command_id, target_arguments, response, source):
+        """
+        Is called by executioner - saves data(responses) to the log table.
+
+        :param time_issued: str
+        :param node_id: int
+        :param device_type: str
+        :param command_id: int
+        :param target_arguments: lst
+        :param response: tuple
+        :param source: str
+
+        :return: None
+        """
         con = self.connect()
         cursor = con.cursor()
         time_executed = datetime.datetime.utcnow()
