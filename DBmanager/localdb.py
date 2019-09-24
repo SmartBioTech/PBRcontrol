@@ -50,7 +50,7 @@ class Database:
         con.close()
 
 
-    def get_log(self, node_id, time):
+    def get_for_system(self, node_id, time):
         """
         Read from a table, delete the line that was read
 
@@ -76,11 +76,10 @@ class Database:
 
         return rows
 
-    def get_from_time(self, time):
+    def get_for_user(self, time):
         con = self.connect()
         cursor = con.cursor()
         if time == None:
-
             select = ('SELECT * FROM log ORDER BY log_id')
         else:
             select = ('SELECT * FROM log WHERE TIMESTAMP(time_issued) > TIMESTAMP(%s) ORDER BY log_id' %(time))

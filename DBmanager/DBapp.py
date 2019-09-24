@@ -193,6 +193,7 @@ class Command(SecuredResource):
         except Exception as e:
             return str(e), 500
 
+
 class GetData(SecuredResource):
     """
     Retrieves data from database
@@ -238,11 +239,11 @@ class GetData(SecuredResource):
             time = request.args.get('time')
             time = self.process_time(time)  # process the time intoa valid format
             if node_id != None:     # if node_id was sent
-                rows = self.db.get_log(node_id, time)    # get data from log for the node_id and (optional) time
-            elif time != None:  # elif time was provided
-                rows = self.db.get_from_time(time)  # get all data from log since given time
+                rows = self.db.get_for_system(node_id, time)    # get data from log for the node_id and (optional) time
+            #elif time != None:  # elif time was provided
+            #rows = self.db.get_for_user(time)  # get all data from log since given time
             else:
-                return [], 204  # if neither node_id or time was provided, return no data
+                return False, 400  # if neither node_id or time was provided, return no data
             if rows:    # if there were data in log meeting the user's specifications
                 return rows, 200    # return them
             else:

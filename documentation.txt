@@ -175,14 +175,14 @@ ENDPOINT: /log
 
 TYPE: GET
 
-URL ARGUMENTS: 1) ?time=YYMMDDHHMMSS   -> return all data from given time
-               2) ?node=x              -> return all unseen data from node.
-               3) ?node=x&time=YYMMDDHHMMSS  -> return all data from given time for given node
+URL ARGUMENTS: 1) ?node=x              -> return all unseen data from node.
+               2) ?node=x&time=YYMMDDHHMMSS  -> return all data from given time for given node
 
 
 POSSIBLE RESPONSES:
     401, 'Invalid Credentials' -> invalid credentials in the auth argument in post request
     500, 'Internal server error' -> error occured on PBRcontrol, report immediately
+    400, 'Node_id not provided'
     404, 'Server not found' -> PBRcontrol is not running
     200, [data] -> success, return log data in a list ordered from oldest to most recent
     204, '[]' -> no data to show for given parameters

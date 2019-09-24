@@ -187,7 +187,7 @@ def change_time(node, time_period):
     requests.post('https://localhost:5000/command?node_id='+str(node), str({'time': t, 'cmd_id': 35, 'args': str([time_period]), 'source': 'external'}), verify=False, auth=('BioArInEO', 'sybila'))
 
 def get_log():
-    e = requests.get('https://localhost:5000/log?time=20180101000000', verify=False, auth=('BioArInEO', 'sybila'))
+    e = requests.get('https://localhost:5000/log?node_id=2', verify=False, auth=('BioArInEO', 'sybila'))
     print(e.status_code)
     print(e.text)
 
@@ -255,9 +255,9 @@ def add_device(node, device):
     requests.post('https://localhost:5000/add_device?node_id='+str(node),
                   str(data), verify=False,
                   auth=('BioArInEO', 'sybila'))
-#get_log()
+get_log()
 #test_all()
-add_node(2)
+#add_node(2)
 #change_time(2, 30)
 #post_cmd(1, 'GAS01', 31, [2])
 #end_device(2, 'PBR')
