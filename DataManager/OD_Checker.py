@@ -84,7 +84,6 @@ class ODcheck:
 
             self.q_new_item.set()
 
-
     def calculate_average(self):
 
         my_list = []
