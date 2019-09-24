@@ -42,15 +42,15 @@ class ODcheck:
             if lower <= upper:
                 self.device_setup['lower_outlier_tol'] = lower
                 self.device_setup['upper_outlier_tol'] = upper
-                return (lower, upper)
+                return lower, upper
             else:
                 raise TypeError
         if lower and lower <= self.device_setup['upper_outlier_tol']:
             self.device_setup['lower_outlier_tol'] = lower
-            return (lower, self.device_setup['upper_outlier_tol'])
+            return lower, self.device_setup['upper_outlier_tol']
         if upper and upper >= self.device_setup['lower_outlier_tol']:
             self.device_setup['upper_outlier_tol'] = upper
-            return (self.device_setup['lower_outlier_tol'], upper)
+            return self.device_setup['lower_outlier_tol'], upper
         raise TypeError
 
     def set_max_outliers(self, n):
@@ -92,7 +92,6 @@ class ODcheck:
             my_list.append(self.last_results.pop())
 
         return sum(my_list)/len(my_list)
-
 
     def detect_outlier(self, result):
 
