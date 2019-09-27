@@ -255,13 +255,15 @@ def add_device(node, device):
     requests.post('https://localhost:5000/add_device?node_id='+str(node),
                   str(data), verify=False,
                   auth=('BioArInEO', 'sybila'))
-get_log()
-#test_all()
+#get_log()
+test_all()
 #add_node(2)
+get_log()
+sleep(2)
 #change_time(2, 30)
 #post_cmd(1, 'GAS01', 31, [2])
 #end_device(2, 'PBR')
 #end_node(2)
-#end_program()
+end_program()
 #print(get_node_endpoints(2))
 #add_device(2, 'PBR')
