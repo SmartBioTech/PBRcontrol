@@ -3,7 +3,7 @@ from HWdevices.PSI_java.Device import Device
 
 class GMS(Device):
     def __init__(self, ID, address):
-        super(GMS, self).__init__(ID, address, "./lib/config/device_GMS.config")
+        super(GMS, self).__init__(ID, address, "/home/pi/PBRcontrol/HWdevices/PSI_java/lib/config/device_GMS.config")
 
     def get_valve_flow(self, valve):
         """
