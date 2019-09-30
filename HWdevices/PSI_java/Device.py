@@ -17,7 +17,7 @@ class Device:
 
     def connect(self, device_config):
         jpype.startJVM(jpype.getDefaultJVMPath(),
-                       "-Djava.class.path=bioreactor-commander-0.8.7.jar")
+                       "-Djava.class.path=./lib/jar/bioreactor-commander-0.8.7.jar")
 
         CommanderConnector = jpype.JClass("psi.bioreactor.commander.CommanderConnector")
         device = CommanderConnector(device_config, self.address, 115200)
