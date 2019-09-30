@@ -17,9 +17,9 @@ class PBR(Device):
             raise Exception(msg.getError())
 
         return {
-            "temp": msg.getDoubleParam(0),
-            "min_temp": msg.getDoubleParam(1),
-            "max_temp": msg.getDoubleParam(2),
+            "temp_set": msg.getDoubleParam(0),
+            "temp_min": msg.getDoubleParam(1),
+            "temp_max": msg.getDoubleParam(2),
             "state": msg.getBoolParam(3)
         }
 
@@ -80,12 +80,12 @@ class PBR(Device):
             raise Exception(msg.getError())
 
         return {
-            "direction": msg.getIntParam(0),
-            "on": msg.getBoolParam(1),
-            "valves": msg.getIntParam(2),
-            "flow": msg.getDoubleParam(3),
-            "min": msg.getDoubleParam(4),
-            "max": msg.getDoubleParam(5)
+            "pump_direction": msg.getIntParam(0),
+            "pump_on": msg.getBoolParam(1),
+            "pump_valves": msg.getIntParam(2),
+            "pump_flow": msg.getDoubleParam(3),
+            "pump_min": msg.getDoubleParam(4),
+            "pump_max": msg.getDoubleParam(5)
         }
 
     def set_pump_params(self, pump, direction, flow):
@@ -123,9 +123,9 @@ class PBR(Device):
             raise Exception(msg.getError())
 
         return {
-            "uE-intensity": msg.getDoubleParam(0),
-            "uE-max": msg.getDoubleParam(1),
-            "on": msg.getBoolParam(2)
+            "light_intensity": msg.getDoubleParam(0),
+            "light_max": msg.getDoubleParam(1),
+            "light_on": msg.getBoolParam(2)
         }
 
     def set_light_intensity(self, channel, intensity):
@@ -162,10 +162,10 @@ class PBR(Device):
             raise Exception(msg.getError())
 
         return {
-            "pulse": msg.getIntParam(0),
-            "pulse_min": msg.getIntParam(1),
-            "pulse_max": msg.getIntParam(2),
-            "on": msg.getParam(3),
+            "pwm_pulse": msg.getIntParam(0),
+            "pwm_min": msg.getIntParam(1),
+            "pwm_max": msg.getIntParam(2),
+            "pwm_on": msg.getParam(3),
         }
 
     def set_pwm(self, value, on):
@@ -210,9 +210,9 @@ class PBR(Device):
         msg = self.device.send("get-tr-settings")
         return {
             "temp": msg.getDoubleParam(0),
-            "min_temp": msg.getDoubleParam(1),
-            "max_temp": msg.getDoubleParam(2),
-            "state": msg.getIntParam(3),
+            "temp_min": msg.getDoubleParam(1),
+            "temp_max": msg.getDoubleParam(2),
+            "temp_on": msg.getIntParam(3),
         }
 
     def set_thermoregulator_state(self, on):
@@ -261,57 +261,57 @@ class PBR(Device):
         try:
             measure_all_dictionary["pwm_settings"] = self.get_pwm_settings()
         except Exception:
-            print("Cannot get pwm settings")
+            measure_all_dictionary["pwm_settings"] = "Cannot get pwm settings"
 
         try:
             measure_all_dictionary["light_0"] = self.get_light_intensity(0)
         except Exception:
-            print("Cannot get light_0")
+            measure_all_dictionary["light_0"] = "Cannot get light_0"
 
         try:
             measure_all_dictionary["light_1"] = self.get_light_intensity(1)
         except Exception:
-            print("Cannot get light_1")
+            measure_all_dictionary["light_1"] = "Cannot get light_1"
 
         try:
             measure_all_dictionary["od_0"] = self.measure_od(0, 30)
         except Exception:
-            print("Cannot get od_0")
+            measure_all_dictionary["od_0"] = "Cannot get od_0"
 
         try:
             measure_all_dictionary["od_1"] = self.measure_od(1, 30)
         except Exception:
-            print("Cannot get od_1")
+            measure_all_dictionary["od_1"] = "Cannot get od_1"
 
         try:
             measure_all_dictionary["ph"] = self.get_ph(5, 0),
         except Exception:
-            print("Cannot get ph")
+            measure_all_dictionary["ph"] = "Cannot get ph"
 
         try:
             measure_all_dictionary["temp"] = self.get_temp(),
         except Exception:
-            print("Cannot get temp")
+            measure_all_dictionary["temp"] = "Cannot get temp"
 
         try:
             measure_all_dictionary["pump"] = self.get_pump_params(pump),
         except Exception:
-            print("Cannot get pump")
+            measure_all_dictionary["pump"] = "Cannot get pump"
 
         try:
             measure_all_dictionary["o2"] = self.get_o2()
         except Exception:
-            print("Cannot get o2")
+            measure_all_dictionary["o2"] = "Cannot get o2"
 
         try:
             measure_all_dictionary["co2"] = self.get_co2()
         except Exception:
-            print("Cannot get co2")
+            measure_all_dictionary["co2"] = "Cannot get co2"
 
         try:
             measure_all_dictionary["ft"] = self.measure_ft(channel)
         except Exception:
-            print("Cannot measure ft")
+            measure_all_dictionary["ft"] = "Cannot measure ft"
 
         return measure_all_dictionary
 
