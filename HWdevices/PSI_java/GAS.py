@@ -107,26 +107,21 @@ class GAS(Device):
         """
         Measures all basic measurable values.
         """
+        measure_all_dict = dict()
 
-        def measure_all(self):
-            """
-            Measures all basic measurable values.
-            """
-            measure_all_dict = dict()
+        try:
+            measure_all_dict["co2_air"] = self.get_co2_air()
+        except Exception:
+            measure_all_dict["co2_air"] = "cannot measure co2 air"
 
-            try:
-                measure_all_dict["co2_air"] = self.get_co2_air()
-            except Exception:
-                print("cannot measure co2 air")
+        try:
+            measure_all_dict["flow"] = self.get_flow(5)
+        except Exception:
+            measure_all_dict["flow"] = "cannot get flow"
 
-            try:
-                measure_all_dict["flow"] = self.get_flow(5)
-            except Exception:
-                print("cannot get flow")
+        try:
+            measure_all_dict["pressure"] = self.get_pressure(5, 0)
+        except Exception:
+            measure_all_dict["pressure"] = "cannot get pressure"
 
-            try:
-                measure_all_dict["pressure"] = self.get_pressure(5, 0)
-            except Exception:
-                print("cannot get pressure")
-
-            return measure_all_dict
+        return measure_all_dict
