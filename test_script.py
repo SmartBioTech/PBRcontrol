@@ -291,6 +291,7 @@ def real_test():
                 }
             }]}}
 
-    requests.post('https://192.168.17.59:5000/initiate', str(my_dict), verify=False, auth=('BioArInEO', 'sybila'))
+    x = requests.post('https://192.168.17.59:5000/initiate', str(my_dict), verify=False, auth=('BioArInEO', 'sybila'))
+    print(x.text)
 
 real_test()

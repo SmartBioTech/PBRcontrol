@@ -39,7 +39,7 @@ class PeriodicalMeasurement(Thread):
         self.experiment_details['sleep_time'] = t
         return True
 
-    def __init__(self, node_id, devices, experiment_details, pump_id):
+    def __init__(self, node_id, devices, experiment_details):
         """
         :param node_id: int
         :param devices: list of devices on the node
