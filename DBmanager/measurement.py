@@ -51,7 +51,6 @@ class PeriodicalMeasurement(Thread):
         self.devices = devices
         self.node_id = node_id
         self.logger = localdb.Database()
-        self.pump_id = pump_id
 
         self.codes = {'PBR': 19,
                       'GAS': 28}
