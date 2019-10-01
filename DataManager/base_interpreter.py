@@ -29,6 +29,7 @@ class BaseInterpreter:
 
     def execute(self, time_issued, node_id, device_type, id, args, source):
         is_ok = True
+
         try:
             result = self.device_con(id, args)
         except Exception as exc:

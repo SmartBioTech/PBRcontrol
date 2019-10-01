@@ -189,7 +189,7 @@ def change_time(node, time_period):
 
 def get_log():
     context = 'MyCertificate.crt'
-    e = requests.get('https://localhost:5000/log?node_id=2', verify=context, auth=('BioArInEO', 'sybila'))
+    e = requests.get('https://localhost:5000/log?node_id=1', verify=context, auth=('BioArInEO', 'sybila'))
     print(e.status_code)
     print(e.text)
 
@@ -228,7 +228,7 @@ def end_device(node, device):
 
 def end_program():
     context = 'MyCertificate.crt'
-    requests.get('https://localhost:5000/end', verify=context, auth=('BioArInEO', 'sybila'))
+    requests.get('https://192.168.17.59:5000/end', verify=False, auth=('BioArInEO', 'sybila'))
 
 
 def get_node_endpoints(node):
@@ -265,7 +265,7 @@ def add_device(node, device):
 #get_log()
 #sleep(2)
 #change_time(2, 30)
-post_cmd(1, 'PBR', 6, [5])
+#post_cmd(1, 'PBR', 6, [5])
 #end_device(2, 'PBR')
 #end_node(2)
 #end_program()
@@ -293,4 +293,4 @@ def real_test():
 
     requests.post('https://192.168.17.59:5000/initiate', str(my_dict), verify=False, auth=('BioArInEO', 'sybila'))
 
-#real_test()
+real_test()

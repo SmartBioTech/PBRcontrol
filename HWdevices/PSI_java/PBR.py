@@ -68,9 +68,9 @@ class PBR(Device):
         if msg.isError():
             raise Exception(msg.getError())
 
-        od = msg.getDoubleParam(0)
+        od = msg.getDoubleParam(0), msg.getDoubleParam(1)
 
-        return -log10(od/40000)
+        return -log10((int(od[0])-int(od[1]))/40000)
 
     def get_pump_params(self, pump):
         """
