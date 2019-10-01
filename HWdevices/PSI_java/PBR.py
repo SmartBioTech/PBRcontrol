@@ -70,7 +70,7 @@ class PBR(Device):
 
         od = msg.getDoubleParam(0)
 
-        return log10(od/40000)
+        return -log10(od/40000)
 
     def get_pump_params(self, pump):
         """
