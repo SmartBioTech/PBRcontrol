@@ -1,4 +1,5 @@
 from HWdevices.PSI_java.Device import Device
+from math import log10
 
 
 class PBR(Device):
@@ -67,7 +68,9 @@ class PBR(Device):
         if msg.isError():
             raise Exception(msg.getError())
 
-        return msg.getDoubleParam(0)
+        od = msg.getDoubleParam(0)
+
+        return log10(od/40000)
 
     def get_pump_params(self, pump):
         """
