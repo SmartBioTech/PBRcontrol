@@ -9,7 +9,7 @@ class BaseInterpreter:
 
     def device_con(self, id, args):
         args = eval(args)
-        result=[]
+        result = []
         count = 0
         if not isinstance(id, int):
             raise Exception('Invalid Input')

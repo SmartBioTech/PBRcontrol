@@ -92,14 +92,17 @@ class Device:
         :param cmd: dict, check documentation.txt
         :return: None
         """
-        processed = (
+        processed = [
             cmd.get('time', (datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"))),
             self.data['node_id'],
             self.device_type,
             cmd['cmd_id'],
             cmd['args'],
             cmd.get('source', 'internal')
-        )
+        ]
+        if self.device_type == 'PBR' and processed[3] == 19:
+            processed[4] = str([self.data['setup']['pump_id']])
+
         self.q.put(processed)   # put it to queue
         self.q_new_item.set()   # notify checker that a new object has been added to queue
 
