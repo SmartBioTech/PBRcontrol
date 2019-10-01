@@ -4,7 +4,7 @@ from math import log10
 
 class PBR(Device):
     def __init__(self, ID, address):
-        super(PBR, self).__init__(ID, address, "./lib/config/device_PBR.config")
+        super(PBR, self).__init__(ID, address, "/home/pi/PBRcontrol/HWdevices/PSI_java/lib/config/device_PBR.config")
 
     def get_temp_settings(self):
         """
