@@ -195,10 +195,12 @@ class AbstractPBR(Device):
         """
         raise NotImplementedError("The method not implemented")
 
-    def measure_all(self):
+    def measure_all(self, ft_channel=5, pump_id=5):
         """
         Measures all basic measurable values.
 
+        :param ft_channel: channel for ft_measure
+        :param pump_id: id of particular pump
         :return: dictionary of all measured values
         """
         raise NotImplementedError("The method not implemented")

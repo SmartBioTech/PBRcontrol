@@ -211,10 +211,12 @@ class PBR(AbstractPBR):
         """
         raise NotImplementedError("The method not implemented")
 
-    def measure_all(self):
+    def measure_all(self, ft_channel=5, pump_id=5):
         """
         Measures all basic measurable values.
 
+        :param ft_channel: channel for ft_measure
+        :param pump_id: id of particular pump
         :return: dictionary of all measured values
         """
         # do all measurements,for that communication has to generally take multiple commands
