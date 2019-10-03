@@ -263,7 +263,7 @@ def repeat_log():
         get_log()
         sleep(3)
 
-#repeat_log()
+repeat_log()
 #test_all()
 #add_node(2)
 #get_log()
@@ -300,6 +300,3 @@ def real_test():
 
 #real_test()
 
-response = Response(status = 204)
-
-print(response.body)

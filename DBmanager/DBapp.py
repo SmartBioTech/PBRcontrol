@@ -244,12 +244,7 @@ class GetData(SecuredResource):
             #rows = self.db.get_for_user(time)  # get all data from log since given time
             else:
                 return False, 400  # if neither node_id or time was provided, return no data
-            if rows:    # if there were data in log meeting the user's specifications
-                return rows, 200    # return them
-            else:
-                resp = make_response('', 204)
-                resp.headers['Content-Length'] = 0
-                return resp # otherwise return no data
+            return rows, 200
 
         except Exception as e:  # if an exception has occured
             return str(e), 500  # return it to the user
