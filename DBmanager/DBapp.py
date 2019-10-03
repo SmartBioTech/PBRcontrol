@@ -1,4 +1,4 @@
-from flask import request, Flask, Response
+from flask import request, Flask, make_response
 from flask_restful import Resource, Api
 from DataManager import datamanager
 from DBmanager import localdb
@@ -247,7 +247,9 @@ class GetData(SecuredResource):
             if rows:    # if there were data in log meeting the user's specifications
                 return rows, 200    # return them
             else:
-                return Response(status=204)  # otherwise return no data
+                resp = make_response('', 204)
+                resp.headers['Content-Length'] = 0
+                return resp # otherwise return no data
 
         except Exception as e:  # if an exception has occured
             return str(e), 500  # return it to the user
