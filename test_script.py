@@ -263,6 +263,7 @@ def repeat_log():
         get_log()
         sleep(3)
 
+repeat_log()
 #test_all()
 #add_node(2)
 #get_log()
