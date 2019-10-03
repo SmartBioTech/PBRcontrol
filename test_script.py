@@ -190,7 +190,6 @@ def change_time(node, time_period):
 def get_log():
     e = requests.get('https://192.168.17.59:5000/log?node_id=1',verify=False, auth=('BioArInEO', 'sybila'))
     print(e.status_code)
-    print(e.text)
 
 def add_node(node_number):
     '''

@@ -247,7 +247,7 @@ class GetData(SecuredResource):
             if rows:    # if there were data in log meeting the user's specifications
                 return rows, 200    # return them
             else:
-                return '', 204  # otherwise return no data
+                return 204  # otherwise return no data
 
         except Exception as e:  # if an exception has occured
             return str(e), 500  # return it to the user
