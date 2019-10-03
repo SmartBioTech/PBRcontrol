@@ -188,8 +188,7 @@ def change_time(node, time_period):
     requests.post('https://192.168.17.59:5000/command?node_id='+str(node), str({'time': t, 'cmd_id': 35, 'args': str([time_period]), 'source': 'external'}), verify=False, auth=('BioArInEO', 'sybila'))
 
 def get_log():
-    context = 'MyCertificate.crt'
-    e = requests.get('https://localhost:5000/log?node_id=1', verify=context, auth=('BioArInEO', 'sybila'))
+    e = requests.get('https://192.168.17.59:5000/log?node_id=1',verify=False, auth=('BioArInEO', 'sybila'))
     print(e.status_code)
     print(e.text)
 
@@ -227,7 +226,6 @@ def end_device(node, device):
     requests.get('https://192.168.17.59:5000/end?node_id='+str(node)+'&device_type='+device, verify=False, auth=('BioArInEO', 'sybila'))
 
 def end_program():
-    context = 'MyCertificate.crt'
     requests.get('https://192.168.17.59:5000/end', verify=False, auth=('BioArInEO', 'sybila'))
 
 
@@ -259,15 +257,20 @@ def add_device(node, device):
     requests.post('https://192.168.17.59:5000/add_device?node_id='+str(node),
                   str(data), verify=False,
                   auth=('BioArInEO', 'sybila'))
-#get_log()
+
+def repeat_log():
+    while True:
+        get_log()
+        sleep(3)
+
 #test_all()
 #add_node(2)
 #get_log()
 #sleep(2)
 #change_time(2, 30)
-#post_cmd(1, 'PBR', 6, [5])
+#post_cmd(1, 'PBR', 10, [1, 30])
 #end_device(2, 'PBR')
-#end_node(2)
+#end_node(1)
 #end_program()
 #print(get_node_endpoints(2))
 #add_device(2, 'PBR')
@@ -285,8 +288,8 @@ def real_test():
                     'lower_outlier_tol': 5,
                     'upper_outlier_tol': 5,
                     'max_outliers': 5,
-                    'min_OD': 0.1,
-                    'max_OD': 2,
+                    'min_OD': 0.48,
+                    'max_OD': 0.52,
                     'pump_id': 5
                 }
             }]}}
@@ -294,4 +297,4 @@ def real_test():
     x = requests.post('https://192.168.17.59:5000/initiate', str(my_dict), verify=False, auth=('BioArInEO', 'sybila'))
     print(x.text)
 
-real_test()
+#real_test()
