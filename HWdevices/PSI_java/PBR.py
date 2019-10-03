@@ -255,9 +255,12 @@ class PBR(Device):
 
         return msg.getDoubleParam(0)
 
-    def measure_all(self, channel=0, pump=0):
+    def measure_all(self, ft_channel=5, pump_id=5):
         """
         Measures all basic measurable values.
+
+        :param ft_channel: channel for ft_measure
+        :param pump_id: id of particular pump
         :return: dictionary of all measured values
         """
         measure_all_dictionary = dict()
@@ -297,7 +300,7 @@ class PBR(Device):
             measure_all_dictionary["temp"] = "Cannot get temp"
 
         try:
-            measure_all_dictionary["pump"] = self.get_pump_params(pump),
+            measure_all_dictionary["pump"] = self.get_pump_params(pump_id),
         except Exception:
             measure_all_dictionary["pump"] = "Cannot get pump"
 
@@ -312,7 +315,7 @@ class PBR(Device):
             measure_all_dictionary["co2"] = "Cannot get co2"
 
         try:
-            measure_all_dictionary["ft"] = self.measure_ft(channel)
+            measure_all_dictionary["ft"] = self.measure_ft(ft_channel)
         except Exception:
             measure_all_dictionary["ft"] = "Cannot measure ft"
 
