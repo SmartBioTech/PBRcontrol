@@ -1,4 +1,4 @@
-from flask import request, Flask
+from flask import request, Flask, make_response
 from flask_restful import Resource, Api
 from DataManager import datamanager
 from DBmanager import localdb
@@ -244,10 +244,7 @@ class GetData(SecuredResource):
             #rows = self.db.get_for_user(time)  # get all data from log since given time
             else:
                 return False, 400  # if neither node_id or time was provided, return no data
-            if rows:    # if there were data in log meeting the user's specifications
-                return rows, 200    # return them
-            else:
-                return [], 204  # otherwise return no data
+            return rows, 200
 
         except Exception as e:  # if an exception has occured
             return str(e), 500  # return it to the user

@@ -209,10 +209,12 @@ class PBR(AbstractPBR):
         """
         return 5
 
-    def measure_all(self):
+    def measure_all(self, ft_channel=5, pump_id=5):
         """
         Measures all basic measurable values.
 
+        :param ft_channel: channel for ft_measure
+        :param pump_id: id of particular pump
         :return: dictionary of all measured values
         """
         result = dict()
@@ -223,10 +225,10 @@ class PBR(AbstractPBR):
         result["od_1"] = self.measure_od(1)
         result["ph"] = self.get_ph()
         result["temp"] = self.get_temp()
-        result["pump"] = self.get_pump_params(5)
+        result["pump"] = self.get_pump_params(pump_id)
         result["o2"] = self.get_o2()
         result["co2"] = self.get_co2()
-        result["ft"] = self.measure_ft(5)
+        result["ft"] = self.measure_ft(ft_channel)
 
         return result
 
