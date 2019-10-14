@@ -67,10 +67,17 @@ class PBR(Device):
         msg = self.device.send("measure-od", channel, repeats)
         if msg.isError():
             raise Exception(msg.getError())
+        
+        # get photon intensity for measuring light and background light
+        pi = msg.getDoubleParam(0), msg.getDoubleParam(1)
 
-        od = msg.getDoubleParam(0), msg.getDoubleParam(1)
+        # check for dense cultures
+        if int(pi[0]) > 100:
+            od = -log10((int(pi[0])-int(pi[1]))/40000)
+        else:
+            od = 4.0
 
-        return -log10((int(od[0])-int(od[1]))/40000)
+        return od
 
     def get_pump_params(self, pump):
         """
