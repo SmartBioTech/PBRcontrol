@@ -110,18 +110,18 @@ class GAS(Device):
         measure_all_dict = dict()
 
         try:
-            measure_all_dict["co2_air"] = self.get_co2_air()
+            measure_all_dict["co2_air"] = True, self.get_co2_air()
         except Exception:
-            measure_all_dict["co2_air"] = "cannot measure co2 air"
+            measure_all_dict["co2_air"] = False, "cannot measure co2 air"
 
         try:
-            measure_all_dict["flow"] = self.get_flow(5)
+            measure_all_dict["flow"] = True, self.get_flow(5)
         except Exception:
-            measure_all_dict["flow"] = "cannot get flow"
+            measure_all_dict["flow"] = False, "cannot get flow"
 
         try:
-            measure_all_dict["pressure"] = self.get_pressure(5, 0)
+            measure_all_dict["pressure"] = True, self.get_pressure(5, 0)
         except Exception:
-            measure_all_dict["pressure"] = "cannot get pressure"
+            measure_all_dict["pressure"] = False, "cannot get pressure"
 
         return measure_all_dict

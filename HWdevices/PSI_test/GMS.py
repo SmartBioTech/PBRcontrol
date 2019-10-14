@@ -14,7 +14,7 @@ class GMS(AbstractGMS):
         :param valve: ID of the valve (0 for CO2, 1 for Air)
         :return: The current settings of the valve flow and actual value, both in (L/min).
         """
-        return {"valve_flow_current": 5, "valve_flow_set": 10}
+        return True, {"valve_flow_current": 5, "valve_flow_set": 10}
 
     def set_valve_flow(self, valve, value):
         """
@@ -33,4 +33,4 @@ class GMS(AbstractGMS):
         :param valve: ID of the valve (0 for CO2, 1 for Air)
         :return: A dictionary with gas type and maximal allowed flow.
         """
-        return {"valve_max_flow": 10, "valve_gas_type": self.GAS_TYPES[0]}
+        return True, {"valve_max_flow": 10, "valve_gas_type": self.GAS_TYPES[0]}

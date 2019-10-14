@@ -26,7 +26,7 @@ class PeriodicalMeasurement(Thread):
             is_ok = False
 
         # save the response to log
-        self.logger.update_log(time_issued, self.node_id, 'None', cmd_id, args, (is_ok,response), source)
+        self.logger.update_log(time_issued, self.node_id, 'None', cmd_id, args, (is_ok, response), source)
 
     def change_time_period(self, t):
         """
@@ -78,7 +78,7 @@ class PeriodicalMeasurement(Thread):
         """
         for device_key in self.devices:
             device = self.devices[device_key]
-            if device == 'GMS':
+            if device.device_type == 'GMS':
                 continue
             cmd = {'time': (datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")),
                    'source' : 'internal',

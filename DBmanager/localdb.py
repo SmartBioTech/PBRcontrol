@@ -33,8 +33,10 @@ class Database:
         cursor = con.cursor()
         query = ('CREATE DATABASE IF NOT EXISTS %s' % self.db)
         cursor.execute(query)
+        con.commit()
 
         con.commit()
+
         cursor.close()
         con.close()
 

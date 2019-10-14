@@ -280,16 +280,13 @@ class ApiInit():
         context.load_cert_chain('MyCertificate.crt', 'MyKey.key')
         self.app.run(host='0.0.0.0', ssl_context=context)
 
-
     def run(self):
         """
         Wrap the app into a process, initiate endpoints and start the server.
         :return: None, function waits for the end_program Event() to be set
         """
         active_nodes = {}   # dictionary of all active_nodes, it is updated whenever new nodes are added/deleted
-        server = Process(target=self.run_app)   # wrap the app into a process
-        
-        
+
         self.api.add_resource(NodeInitiation, '/initiate',
                               resource_class_kwargs={'api': self.api,
                                                      'active_nodes': active_nodes}
@@ -314,9 +311,13 @@ class ApiInit():
         self.api.add_resource(AddDevice, '/add_device', resource_class_kwargs={'api': self.api,
                                                                                'active_nodes': active_nodes})
 
+        self.run_app()
+        '''
+        server = Process(target=self.run_app)   # wrap the app into a process
+
         server.start()  # start the process
 
         self.end_program.wait()   # wait for the Event() to be set by user
-
+        
         server.terminate()  # then terminate the process and end application
-
+        '''

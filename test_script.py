@@ -27,13 +27,15 @@ def initialize_experiment():
 
     my_dict = {
         1 : {
-            'experiment_details' : {'sleep_time' : 120},
+            'experiment_details' : {'sleep_time' : 3},
             'devices' : [{
                     'device_type' : 'PBR',
                     'device_class' : 'PSI_test',
                     'address' : None,
                     'setup' : {
-                        'initial_commands' : [{'time': (datetime.datetime.utcnow().strftime("%Y-%m-%d, %H:%M:%S")),'cmd_id': 8, 'args': '[1, True]'}],
+                        'initial_commands' : [{'time': (datetime.datetime.utcnow().strftime("%Y-%m-%d, %H:%M:%S")),
+                                               'cmd_id': 8,
+                                               'args': '[1, True]'}],
                         'lower_outlier_tol' : 2,
                         'upper_outlier_tol' : 3,
                         'max_outliers' : 6,
@@ -53,7 +55,7 @@ def initialize_experiment():
             ]
             },
     2 : {
-        'experiment_details' : {'sleep_time' : 180},
+        'experiment_details' : {'sleep_time' : 3},
         'devices' : [{
                 'device_type' : 'PBR',
                 'device_class' : 'PSI_test',
@@ -80,7 +82,7 @@ def initialize_experiment():
         }
     }
 
-    requests.post('https://192.168.17.59:5000/initiate', str(my_dict), verify=False, auth=('BioArInEO', 'sybila'))
+    requests.post('https://localhost:5000/initiate', str(my_dict), verify=False, auth=('BioArInEO', 'sybila'))
 
 def cmds_PBR():
     '''
@@ -156,21 +158,21 @@ def test_all():
     gms = cmds_GMS()
     while id < 23:
         t = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-        r = requests.post('https://192.168.17.59:5000/command?node_id=1&device_type=PBR', str([{'time': t, 'cmd_id': id, 'args': str(pbr[id]), 'source' : 'external'}]), verify=False, auth=('BioArInEO', 'sybila'))
+        r = requests.post('https://localhost:5000/command?node_id=1&device_type=PBR', str([{'time': t, 'cmd_id': id, 'args': str(pbr[id]), 'source' : 'external'}]), verify=False, auth=('BioArInEO', 'sybila'))
         print(r.status_code, r.text)
         id+=1
         sleep(1)
 
     while id < 32:
         t = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-        r=requests.post('https://192.168.17.59:5000/command?node_id=1&device_type=GAS', str([{'time': t, 'cmd_id': id, 'args': str(gas[id]), 'source' : 'external'}]), verify=False, auth=('BioArInEO', 'sybila'))
+        r=requests.post('https://localhost:5000/command?node_id=1&device_type=GAS', str([{'time': t, 'cmd_id': id, 'args': str(gas[id]), 'source' : 'external'}]), verify=False, auth=('BioArInEO', 'sybila'))
         print(r.status_code, r.text)
         sleep(1)
         id+=1
 
     while id < 35:
         t = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-        r = requests.post('https://192.168.17.59:5000/command?node_id=2&device_type=GMS', str([{'time': t, 'cmd_id': id, 'args': str(gms[id]), 'source' : 'external'}]), verify=False, auth=('BioArInEO', 'sybila'))
+        r = requests.post('https://localhost:5000/command?node_id=2&device_type=GMS', str([{'time': t, 'cmd_id': id, 'args': str(gms[id]), 'source' : 'external'}]), verify=False, auth=('BioArInEO', 'sybila'))
         print(r.status_code, r.text)
 
         sleep(1)
@@ -186,10 +188,10 @@ def change_time(node, time_period):
     :return: None
     '''
     t = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-    requests.post('https://192.168.17.59:5000/command?node_id='+str(node), str({'time': t, 'cmd_id': 35, 'args': str([time_period]), 'source': 'external'}), verify=False, auth=('BioArInEO', 'sybila'))
+    requests.post('https://localhost:5000/command?node_id='+str(node), str({'time': t, 'cmd_id': 35, 'args': str([time_period]), 'source': 'external'}), verify=False, auth=('BioArInEO', 'sybila'))
 
 def get_log():
-    e = requests.get('https://192.168.17.59:5000/log?node_id=1',verify=False, auth=('BioArInEO', 'sybila'))
+    e = requests.get('https://localhost:5000/log?node_id=1',verify=False, auth=('BioArInEO', 'sybila'))
     print(e.status_code)
 
 def add_node(node_number):
@@ -200,7 +202,7 @@ def add_node(node_number):
     :return:
     '''
     str_dict = str({node_number: {'experiment_details': {'sleep_time': 5}, 'devices': [{'device_type': 'PBR', 'device_class': 'PSI_test', 'address': None, 'setup': {'initial_commands': [{'cmd_id': 16, 'args': '[1]'}, {'cmd_id': 13, 'args': '[50, True]'}, {'cmd_id': 8, 'args': '[5, False]'}], 'lower_outlier_tol': 2, 'upper_outlier_tol': 3, 'max_outliers': 6, 'min_OD': 0.45, 'max_OD': 0.5, 'pump_id': 5}}, {'device_type': 'GAS', 'device_class': 'PSI_test', 'address': None, 'setup': {'initial_commands': []}}]}})
-    x = requests.post("https://192.168.17.59:5000/initiate", str_dict, verify=False, auth=('BioArInEO', 'sybila'))
+    x = requests.post("https://localhost:5000/initiate", str_dict, verify=False, auth=('BioArInEO', 'sybila'))
     print(x.text)
 
 def post_cmd(node, device_type, cmd_id, args):
@@ -214,19 +216,19 @@ def post_cmd(node, device_type, cmd_id, args):
 
     '''
     t = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-    x = requests.post('https://192.168.17.59:5000/command?node_id=1&device_type=PBR',
+    x = requests.post('https://localhost:5000/command?node_id=1&device_type=PBR',
                   str([{'time': t, 'cmd_id': cmd_id, 'args': str(args), 'source': 'external'}]), verify=False,
                   auth=('BioArInEO', 'sybila'))
     print(x.text)
 
 def end_node(node):
-    requests.get('https://192.168.17.59:5000/end?node_id='+str(node), verify=False, auth=('BioArInEO', 'sybila'))
+    requests.get('https://localhost:5000/end?node_id='+str(node), verify=False, auth=('BioArInEO', 'sybila'))
 
 def end_device(node, device):
-    requests.get('https://192.168.17.59:5000/end?node_id='+str(node)+'&device_type='+device, verify=False, auth=('BioArInEO', 'sybila'))
+    requests.get('https://localhost:5000/end?node_id='+str(node)+'&device_type='+device, verify=False, auth=('BioArInEO', 'sybila'))
 
 def end_program():
-    requests.get('https://192.168.17.59:5000/end', verify=False, auth=('BioArInEO', 'sybila'))
+    requests.get('https://localhost:5000/end', verify=False, auth=('BioArInEO', 'sybila'))
 
 
 def get_node_endpoints(node):
@@ -235,7 +237,7 @@ def get_node_endpoints(node):
     :param node: int
     :return: list of active devices on given node
     '''
-    r = requests.get('https://192.168.17.59:5000/' + str(node), verify=False, auth=('BioArInEO', 'sybila'))
+    r = requests.get('https://localhost:5000/' + str(node), verify=False, auth=('BioArInEO', 'sybila'))
     return r.text
 
 def add_device(node, device):
@@ -254,7 +256,7 @@ def add_device(node, device):
                             }
                             }
     t = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-    requests.post('https://192.168.17.59:5000/add_device?node_id='+str(node),
+    requests.post('https://localhost:5000/add_device?node_id='+str(node),
                   str(data), verify=False,
                   auth=('BioArInEO', 'sybila'))
 
@@ -263,8 +265,8 @@ def repeat_log():
         get_log()
         sleep(3)
 
-repeat_log()
-#test_all()
+#repeat_log()
+test_all()
 #add_node(2)
 #get_log()
 #sleep(2)
@@ -295,7 +297,7 @@ def real_test():
                 }
             }]}}
 
-    x = requests.post('https://192.168.17.59:5000/initiate', str(my_dict), verify=False, auth=('BioArInEO', 'sybila'))
+    x = requests.post('https://localhost:5000/initiate', str(my_dict), verify=False, auth=('BioArInEO', 'sybila'))
     print(x.text)
 
 #real_test()

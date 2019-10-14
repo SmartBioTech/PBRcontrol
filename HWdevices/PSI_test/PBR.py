@@ -218,17 +218,17 @@ class PBR(AbstractPBR):
         :return: dictionary of all measured values
         """
         result = dict()
-        result["pwm_setting"] = self.get_pwm_settings()
-        result["light_0"] = self.get_light_intensity(0)
-        result["light_1"] = self.get_light_intensity(1)
-        result["od_0"] = self.measure_od(0)
-        result["od_1"] = self.measure_od(1)
-        result["ph"] = self.get_ph()
-        result["temp"] = self.get_temp()
-        result["pump"] = self.get_pump_params(pump_id)
-        result["o2"] = self.get_o2()
-        result["co2"] = self.get_co2()
-        result["ft"] = self.measure_ft(ft_channel)
+        result["pwm_setting"] = True, self.get_pwm_settings()
+        result["light_0"] = True, self.get_light_intensity(0)
+        result["light_1"] = True, self.get_light_intensity(1)
+        result["od_0"] = True, self.measure_od(0)
+        result["od_1"] = True, self.measure_od(1)
+        result["ph"] = True, self.get_ph()
+        result["temp"] = True, self.get_temp()
+        result["pump"] = True, self.get_pump_params(pump_id)
+        result["o2"] = True, self.get_o2()
+        result["co2"] = True, self.get_co2()
+        result["ft"] = True, self.measure_ft(ft_channel)
 
         return result
 
@@ -247,7 +247,7 @@ class PBR(AbstractPBR):
 
         :return: True if was successful, False otherwise
         """
-        return "flashLED"
+        return True
 
     def get_hardware_address(self):
         """

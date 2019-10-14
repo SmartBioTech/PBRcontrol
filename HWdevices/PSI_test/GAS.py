@@ -95,8 +95,8 @@ class GAS(AbstractGAS):
         :return: dictionary of all measured values
         """
         result = dict()
-        result["co2_air"] = self.get_co2_air()
-        result["flow"] = self.get_flow(5)
-        result["pressure"] = self.get_pressure(1)
+        result["co2_air"] = True, self.get_co2_air()
+        result["flow"] = True, self.get_flow(5)
+        result["pressure"] = True, self.get_pressure(1)
 
         return result

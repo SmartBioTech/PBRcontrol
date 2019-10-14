@@ -16,7 +16,7 @@ class GMS(Device):
         if msg.isError():
             raise Exception(msg.getError())
 
-        return {
+        return True, {
             "valve_flow_current": msg.getDoubleParam(0),
             "valve_flow_set": msg.getDoubleParam(1),
             "warning": msg.getBoolParam(2)
@@ -43,7 +43,7 @@ class GMS(Device):
         if msg.isError():
             raise Exception(msg.getError())
 
-        return {
+        return True, {
             "valve_max_flow": msg.getDoubleParam(0),
             "valve_gas_type": msg.getIntParam(1),
             "user_gas_type": msg.getIntParam(2)

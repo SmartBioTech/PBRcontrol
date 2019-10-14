@@ -1,5 +1,6 @@
 from time import sleep
 
+
 class BaseInterpreter:
 
     def __init__(self, device_details, device_class, log):
@@ -27,18 +28,14 @@ class BaseInterpreter:
             raise Exception('Could not reach device')
         return result
 
-    def execute(self, time_issued, node_id, device_type, id, args, source):
+    def execute(self, time_issued, node_id, device_type, command_id, args, source):
         is_ok = True
-
         try:
-            result = self.device_con(id, args)
+            result = self.device_con(command_id, args)
+            if id == 19 and result['od_1'][0]:
+                self.OD_checker.stabilize(result)
         except Exception as exc:
             is_ok = False
             result = str(exc)
 
-        if not isinstance(result, str):
-            if id == 19:
-                self.OD_checker.stabilize(result)
-
-
-        return (time_issued, node_id, device_type, id, args, (is_ok,result), source)
+        return time_issued, node_id, device_type, command_id, args, (is_ok, result), source

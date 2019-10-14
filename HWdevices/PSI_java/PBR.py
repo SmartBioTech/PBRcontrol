@@ -265,59 +265,59 @@ class PBR(Device):
         """
         measure_all_dictionary = dict()
         try:
-            measure_all_dictionary["pwm_settings"] = self.get_pwm_settings()
+            measure_all_dictionary["pwm_settings"] = True, self.get_pwm_settings()
         except Exception:
-            measure_all_dictionary["pwm_settings"] = "Cannot get pwm settings"
+            measure_all_dictionary["pwm_settings"] = False, "Cannot get pwm settings"
 
         try:
-            measure_all_dictionary["light_0"] = self.get_light_intensity(0)
+            measure_all_dictionary["light_0"] = True, self.get_light_intensity(0)
         except Exception:
-            measure_all_dictionary["light_0"] = "Cannot get light_0"
+            measure_all_dictionary["light_0"] = False, "Cannot get light_0"
 
         try:
-            measure_all_dictionary["light_1"] = self.get_light_intensity(1)
+            measure_all_dictionary["light_1"] = True, self.get_light_intensity(1)
         except Exception:
-            measure_all_dictionary["light_1"] = "Cannot get light_1"
+            measure_all_dictionary["light_1"] = False, "Cannot get light_1"
 
         try:
-            measure_all_dictionary["od_0"] = self.measure_od(0, 30)
+            measure_all_dictionary["od_0"] = True, self.measure_od(0, 30)
         except Exception:
-            measure_all_dictionary["od_0"] = "Cannot get od_0"
+            measure_all_dictionary["od_0"] = False, "Cannot get od_0"
 
         try:
-            measure_all_dictionary["od_1"] = self.measure_od(1, 30)
+            measure_all_dictionary["od_1"] = True, self.measure_od(1, 30)
         except Exception:
-            measure_all_dictionary["od_1"] = "Cannot get od_1"
+            measure_all_dictionary["od_1"] = False, "Cannot get od_1"
 
         try:
-            measure_all_dictionary["ph"] = self.get_ph(5, 0),
+            measure_all_dictionary["ph"] = True, self.get_ph(5, 0),
         except Exception:
-            measure_all_dictionary["ph"] = "Cannot get ph"
+            measure_all_dictionary["ph"] = False, "Cannot get ph"
 
         try:
-            measure_all_dictionary["temp"] = self.get_temp(),
+            measure_all_dictionary["temp"] = True, self.get_temp(),
         except Exception:
-            measure_all_dictionary["temp"] = "Cannot get temp"
+            measure_all_dictionary["temp"] = False, "Cannot get temp"
 
         try:
-            measure_all_dictionary["pump"] = self.get_pump_params(pump_id),
+            measure_all_dictionary["pump"] = True, self.get_pump_params(pump_id),
         except Exception:
-            measure_all_dictionary["pump"] = "Cannot get pump"
+            measure_all_dictionary["pump"] = False, "Cannot get pump"
 
         try:
-            measure_all_dictionary["o2"] = self.get_o2()
+            measure_all_dictionary["o2"] = True, self.get_o2()
         except Exception:
-            measure_all_dictionary["o2"] = "Cannot get o2"
+            measure_all_dictionary["o2"] = False, "Cannot get o2"
 
         try:
-            measure_all_dictionary["co2"] = self.get_co2()
+            measure_all_dictionary["co2"] = True, self.get_co2()
         except Exception:
-            measure_all_dictionary["co2"] = "Cannot get co2"
+            measure_all_dictionary["co2"] = False, "Cannot get co2"
 
         try:
-            measure_all_dictionary["ft"] = self.measure_ft(ft_channel)
+            measure_all_dictionary["ft"] = True, self.measure_ft(ft_channel)
         except Exception:
-            measure_all_dictionary["ft"] = "Cannot measure ft"
+            measure_all_dictionary["ft"] = False, "Cannot measure ft"
 
         return measure_all_dictionary
 

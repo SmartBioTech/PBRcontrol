@@ -58,13 +58,13 @@ class ODcheck:
         return n
 
     def stabilize(self, result):
-        self.last_results.appendleft(result['od_1'])
+        self.last_results.appendleft(result['od_1'][1])
         if not self.detect_outlier(result):
             cmd_id = 8
             pump_id = self.device_setup['pump_id']
-            if result['od_1'][0] > self.device_setup['max_OD']:
+            if result['od_1'][1] > self.device_setup['max_OD']:
                 switch = True
-            elif result['od_1'][0] < self.device_setup['min_OD']:
+            elif result['od_1'][1] < self.device_setup['min_OD']:
                 switch = False
             else:
                 return
@@ -95,7 +95,7 @@ class ODcheck:
 
     def detect_outlier(self, result):
 
-        if self.tolerance(-self.device_setup['lower_outlier_tol']) <= result['od_1'] <= self.tolerance(self.device_setup['upper_outlier_tol']):
+        if self.tolerance(-self.device_setup['lower_outlier_tol']) <= result['od_1'][1] <= self.tolerance(self.device_setup['upper_outlier_tol']):
             self.outliers = 0
             self.average = self.calculate_average()
             result['od_1'] = (result['od_1'], False)
@@ -108,7 +108,7 @@ class ODcheck:
                 result['od_1'] = (result['od_1'], False)
                 return False
             else:
-                result['od_1'] = (result['od_1'], True)
+                result['od_1'] = (result['od_1'][0], (result['od_1'][1], True))
                 return True
 
 
