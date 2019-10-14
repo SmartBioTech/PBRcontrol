@@ -53,6 +53,7 @@ class Checker(Thread):
 
                     cmd = self.q.get()  # get 1st command in queue
                     if not cmd:     # if the command is False
+                        device.end()
                         return      # end the loop and exit
                     response = device.execute(*cmd)     # execute the command on the device and save the response
                     log.update_log(*response)   # upload the response to log

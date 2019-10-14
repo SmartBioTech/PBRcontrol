@@ -266,7 +266,7 @@ def repeat_log():
         sleep(3)
 
 #repeat_log()
-test_all()
+#test_all()
 #add_node(2)
 #get_log()
 #sleep(2)
@@ -281,13 +281,13 @@ test_all()
 def real_test():
     my_dict = {
         1: {
-            'experiment_details': {'sleep_time': 60},
+            'experiment_details': {'sleep_time': 0.2},
             'devices': [{
                 'device_type': 'PBR',
-                'device_class': 'PSI_java',
+                'device_class': 'PSI_test',
                 'address': '/dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_D-if00-port0',
                 'setup': {
-                    'initial_commands': [],
+                    'initial_commands': [{'time': (datetime.datetime.utcnow().strftime("%Y-%m-%d, %H:%M:%S")),'cmd_id': 8, 'args': '[5, False]'}],
                     'lower_outlier_tol': 5,
                     'upper_outlier_tol': 5,
                     'max_outliers': 5,

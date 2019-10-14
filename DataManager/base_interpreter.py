@@ -8,6 +8,9 @@ class BaseInterpreter:
         self.log = log
         self.device = device_class(self.device_details['device_type'], self.device_details['address'])
 
+    def end(self):
+        self.device.disconnect()
+
     def device_con(self, id, args):
         args = eval(args)
         result = []

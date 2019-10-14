@@ -240,14 +240,15 @@ class GetData(SecuredResource):
             time = self.process_time(time)  # process the time intoa valid format
             if node_id != None:     # if node_id was sent
                 rows = self.db.get_for_system(node_id, time)    # get data from log for the node_id and (optional) time
-            #elif time != None:  # elif time was provided
-            #rows = self.db.get_for_user(time)  # get all data from log since given time
+            # elif time != None:  # elif time was provided
+            # rows = self.db.get_for_user(time)  # get all data from log since given time
             else:
                 return False, 400  # if neither node_id or time was provided, return no data
             return rows, 200
 
-        except Exception as e:  # if an exception has occured
+        except Exception as e:  # if an exception has occurred
             return str(e), 500  # return it to the user
+
 
 class ApiInit():
     """

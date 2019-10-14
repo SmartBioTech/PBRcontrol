@@ -8,3 +8,6 @@ class Device:
 
     def __repr__(self):
         return "Device(" + self.ID + ", " + str(self.address) + ")"
+
+    def disconnect(self):
+        print('Test device disconnecting')
