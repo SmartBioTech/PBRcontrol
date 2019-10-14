@@ -32,7 +32,7 @@ class BaseInterpreter:
         is_ok = True
         try:
             result = self.device_con(command_id, args)
-            if id == 19 and result['od_1'][0]:
+            if command_id == 19 and result['od_1'][0]:
                 self.OD_checker.stabilize(result)
         except Exception as exc:
             is_ok = False
