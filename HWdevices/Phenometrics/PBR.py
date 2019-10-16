@@ -229,9 +229,37 @@ class PBR(AbstractPBR):
         :param pump_id: id of particular pump
         :return: dictionary of all measured values
         """
-        # do all measurements,for that communication has to generally take multiple commands
-        # (was originally done in example script)
-        raise NotImplementedError("The method not implemented")
+        measure_all_dictionary = dict()
+        measure_all_dictionary["pwm_settings"] = False, "pwm settings not available for this device"
+        measure_all_dictionary["light_0"] = False, "light_0 not available for this device"
+        measure_all_dictionary["light_1"] = False, "light_1 not available for this device"
+
+        try:
+            measure_all_dictionary["od_0"] = True, self.measure_od(0)
+        except Exception:
+            measure_all_dictionary["od_0"] = False, "Cannot get od_0"
+
+        try:
+            measure_all_dictionary["od_1"] = True, self.measure_od(1)
+        except Exception:
+            measure_all_dictionary["od_1"] = False, "Cannot get od_1"
+
+        try:
+            measure_all_dictionary["ph"] = True, self.get_ph(),
+        except Exception:
+            measure_all_dictionary["ph"] = False, "Cannot get ph"
+
+        try:
+            measure_all_dictionary["temp"] = True, self.get_temp(),
+        except Exception:
+            measure_all_dictionary["temp"] = False, "Cannot get temp"
+
+        measure_all_dictionary["pump"] = False, "pump settings not available for this device"
+        measure_all_dictionary["o2"] = False, "o2 settings not available for this device"
+        measure_all_dictionary["co2"] = False, "co2 settings not available for this device"
+        measure_all_dictionary["ft"] = False, "ft settings not available for this device"
+
+        return measure_all_dictionary
 
     def measure_AUX(self, channel):
         """
