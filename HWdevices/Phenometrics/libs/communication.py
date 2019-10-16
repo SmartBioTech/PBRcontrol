@@ -48,5 +48,5 @@ class Connection:
     def construct_command(device, command, args):
         return device + "->" + command + "(" + ", ".join(map(str, args)) + ")"
 
-    def exit(self):
+    def disconnect(self):
         self.sock.close()

@@ -308,3 +308,6 @@ class PBR(AbstractPBR):
         if not success:
             raise Exception(result)
         return result.lstrip()
+
+    def disconnect(self):
+        self.connection.disconnect()
