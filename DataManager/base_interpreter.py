@@ -1,4 +1,5 @@
 from time import sleep
+import datetime
 
 
 class BaseInterpreter:
@@ -9,6 +10,9 @@ class BaseInterpreter:
         self.device = device_class(self.device_details['device_type'], self.device_details['address'])
 
     def end(self):
+        if self.device_details['device_type'] == 'PBR':
+            response = self.device.set_pump_state(self.device_details['setup']['pump_id'], False)
+            self.log.update_log(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"), self.device_details['node_id'], response)
         self.device.disconnect()
 
     def device_con(self, id, args):

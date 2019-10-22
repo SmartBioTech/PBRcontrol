@@ -12,7 +12,6 @@ class Database:
         self.host = "127.0.0.1"
         self.password = ""
         self.node_unseen = {}
-        self.create_database()  # initialize the database
         self.create_table()     # initialize the table
 
     def connect(self):
@@ -22,23 +21,6 @@ class Database:
         :return: mysql.connector.connect object
         """
         return cn.connect(host=self.host, user=self.user, password=self.password, db=self.db)
-
-    def create_database(self):
-        """
-        create the database
-
-        :return: None
-        """
-        con = cn.connect(user=self.user)
-        cursor = con.cursor()
-        query = ('CREATE DATABASE IF NOT EXISTS %s' % self.db)
-        cursor.execute(query)
-        con.commit()
-
-        con.commit()
-
-        cursor.close()
-        con.close()
 
     def create_table(self):
         """

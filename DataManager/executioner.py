@@ -1,8 +1,6 @@
 from threading import Thread
 from DBmanager import localdb
 from importlib import import_module
-from time import sleep
-
 
 class Checker(Thread):
     """

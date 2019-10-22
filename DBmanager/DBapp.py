@@ -1,8 +1,8 @@
-from flask import request, Flask, make_response
+from flask import request, Flask
 from flask_restful import Resource, Api
 from DataManager import datamanager
 from DBmanager import localdb
-from multiprocessing import Process, Event
+from multiprocessing import Event
 import ssl
 
 
