@@ -11,8 +11,19 @@ class BaseInterpreter:
 
     def end(self):
         if self.device_details['device_type'] == 'PBR':
-            response = self.device.set_pump_state(self.device_details['setup']['pump_id'], False)
-            self.log.update_log(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"), self.device_details['node_id'], response)
+            counter = 0
+            while counter < 60:
+                try:
+                    response = True, self.device.set_pump_state(self.device_details['setup']['pump_id'], False)
+                except Exception as e:
+                    response = False, e
+                self.log.update_log(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"), self.device_details['node_id'], response)
+                if response[0]:
+                    break
+                else:
+                    counter += 1
+                    sleep(3)
+
         self.device.disconnect()
 
     def device_con(self, id, args):

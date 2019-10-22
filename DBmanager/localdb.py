@@ -46,7 +46,6 @@ class Database:
         cursor.close()
         con.close()
 
-
     def get_for_system(self, node_id, time):
         """
         Getter - retrieves data from log and remembers which data have been shown in the current session. Already seen

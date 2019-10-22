@@ -173,7 +173,7 @@ class Command(SecuredResource):
             data = request.get_data()
             data = eval(data)
             if not isinstance(data, list):
-                raise Exception('Commmands must be ordered in a list')
+                raise Exception('Commands must be ordered in a list')
 
             if node_id:     
                 node_id = int(node_id)
@@ -238,6 +238,7 @@ class GetData(SecuredResource):
             node_id = request.args.get('node_id')  
             time = request.args.get('time')
             time = self.process_time(time)  # process the time intoa valid format
+            print(time)
             if node_id != None:     # if node_id was sent
                 rows = self.db.get_for_system(node_id, time)    # get data from log for the node_id and (optional) time
             # elif time != None:  # elif time was provided
@@ -250,7 +251,7 @@ class GetData(SecuredResource):
             return str(e), 500  # return it to the user
 
 
-class ApiInit():
+class ApiInit:
     """
     Initializes the API
     """
@@ -262,12 +263,9 @@ class ApiInit():
 
         # Initialize the database
         self.db = localdb.Database()
-        self.db.create_database()
         self.db.connect()
-        self.db.create_table()
 
         self.end_program = Event()  # object through which we control when the program ends
-
 
     def run_app(self):
         """
