@@ -23,5 +23,11 @@ pip3 install JPype1
 pip3 install Flask
 pip3 install Flask-RESTful
 
+echo "Installing Java dependencies..."
+
+apt -y install default-jre
+mkdir ~/.jssc/linux
+cp ./libjSSC-2.9_armhf.so ~/.jssc/linux
+
 echo "PBRControl is ready to run!"
 
