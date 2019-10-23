@@ -22,6 +22,8 @@ pip3 install Flask
 pip3 install Flask-RESTful
 pip3 install pycrypto
 
+apt-get -y install libatlas3-base
+
 echo "Installing Java dependencies..."
 
 apt -y install default-jre
