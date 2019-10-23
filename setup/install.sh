@@ -27,7 +27,7 @@ pip3 install pycrypto
 echo "Installing Java dependencies..."
 
 apt -y install default-jre
-mkdir ~/.jssc/linux
+mkdir -p ~/.jssc/linux
 cp ./libjSSC-2.9_armhf.so ~/.jssc/linux
 
 echo "PBRControl is ready to run!"
