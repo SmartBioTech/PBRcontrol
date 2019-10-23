@@ -27,7 +27,7 @@ def initialize_experiment():
 
     my_dict = {
         1 : {
-            'experiment_details' : {'sleep_time' : 3},
+            'experiment_details' : {'sleep_time' : 2},
             'devices' : [{
                     'device_type' : 'PBR',
                     'device_class' : 'PSI_test',
@@ -191,8 +191,8 @@ def change_time(node, time_period):
     requests.post('https://localhost:5000/command?node_id='+str(node), str({'time': t, 'cmd_id': 35, 'args': str([time_period]), 'source': 'external'}), verify=False, auth=('BioArInEO', 'sybila'))
 
 def get_log():
-    e = requests.get('https://localhost:5000/log?node_id=1',verify=False, auth=('BioArInEO', 'sybila'))
-    print(e.status_code)
+    e = requests.get('https://localhost:5000/log?node_id=1&time=20191014090837', verify=False, auth=('BioArInEO', 'sybila'))
+    print(e.text)
 
 def add_node(node_number):
     '''
@@ -268,7 +268,7 @@ def repeat_log():
 #repeat_log()
 #test_all()
 #add_node(2)
-#get_log()
+get_log()
 #sleep(2)
 #change_time(2, 30)
 #post_cmd(1, 'PBR', 10, [1, 30])
