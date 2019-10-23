@@ -22,6 +22,7 @@ pip3 install mysql-connector
 pip3 install JPype1
 pip3 install Flask
 pip3 install Flask-RESTful
+pip3 install pycrypto
 
 echo "Installing Java dependencies..."
 
