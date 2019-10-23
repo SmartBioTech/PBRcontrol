@@ -7,9 +7,7 @@ echo "Setting up MySQL database..."
 apt-get -y install mysql-server
 service mysql start
 
-mysql "create user 'PBRcontrol'@'localhost';"
-mysql "create database 'localdb';"
-mysql "grant all privileges on localdb.* to 'PBRcontrol'@'localhost identified by '';"
+mysql < "database-setup.sql"
 
 echo "Setting up Python environment..."
 
