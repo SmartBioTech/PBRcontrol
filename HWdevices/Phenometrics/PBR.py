@@ -1,11 +1,11 @@
+from HWdevices.Phenometrics.libs.communication import Connection
 from HWdevices.abstract.AbstractPBR import AbstractPBR
 
 
 class PBR(AbstractPBR):
-    def __init__(self, ID, address):
-        super(PBR, self).__init__(ID, address)
-
-        # create an object with connection providing send/receive method
+    def __init__(self, ID, host_address='localhost', host_port=6161, encryption_key='t2ih72c0husyrayh'):
+        super(PBR, self).__init__(ID, host_address)
+        self.connection = Connection(host_address, host_port, encryption_key)
 
     def get_temp_settings(self):
         """
@@ -22,8 +22,10 @@ class PBR(AbstractPBR):
 
         :return: The current temperature.
         """
-        # measureTemperature()  # vrátí teplotu suspense ve °C
-        raise NotImplementedError("The method not implemented")
+        success, result = self.connection.send_command(self.ID, 'measureTemperature', [])
+        if not success:
+            raise Exception(result)
+        return float(result)
 
     def set_temp(self, temp):
         """
@@ -32,8 +34,10 @@ class PBR(AbstractPBR):
         :param temp: The temperature.
         :return: True if was successful, False otherwise.
         """
-        # setTemperature(degrees C)  # nastaví teplotu termoregulátoru a vrátí tuto hodnotu
-        raise NotImplementedError("The method not implemented")
+        success, result = self.connection.send_command(self.ID, 'setTemperature', [temp])
+        if not success:
+            raise Exception(result)
+        return float(result) == temp
 
     def get_ph(self):
         """
@@ -43,22 +47,23 @@ class PBR(AbstractPBR):
         :param wait: waiting time between individual repeats
         :return: The current pH.
         """
-        # measurePH()  # vrátí měřenou hodnotu pH
-        raise NotImplementedError("The method not implemented")
+        success, result = self.connection.send_command(self.ID, 'measurePH', [])
+        if not success:
+            raise Exception(result)
+        return float(result)
 
     def measure_od(self, channel=0):
         """
         Measure current Optical Density (OD, dimensionless).
 
         :param channel: which channel should be measured
-        :param repeats: the number of measurement repeats
         :return: Measured OD
         """
-        # if channel == 0:
-        #     measureOD1()  # vrátí hodnotu optické hustoty pro řídkou suspenzi
-        # else:
-        #     measureOD2()  # vrátí hodnotu optické hustoty pro hustou suspenzi
-        raise NotImplementedError("The method not implemented")
+        variant = ["measureOD1", "measureOD2"]
+        success, result = self.connection.send_command(self.ID, variant[channel], [])
+        if not success:
+            raise Exception(result)
+        return float(result)
 
     def get_pump_params(self, pump):
         """
@@ -88,8 +93,10 @@ class PBR(AbstractPBR):
         :param on: True to turn on, False to turn off
         :return: True if was successful, False otherwise.
         """
-        # setAux1()  # Typicky se používá na nastavení peristaltické pumpy
-        raise NotImplementedError("The method not implemented")
+        success, result = self.connection.send_command(self.ID, 'setAux1', [int(on)])
+        if not success:
+            raise Exception(result)
+        return int(result) == int(on)
 
     def get_light_intensity(self, channel):
         """
@@ -112,9 +119,10 @@ class PBR(AbstractPBR):
         :param intensity: Desired intensity
         :return: True if was successful, False otherwise.
         """
-        # setSolarLED(value)  # nastavuje intenzitu světelného panelu (jednotky uE PAR, rozsah od 0 do cca 2000 uE, v závislosti na kalibraci)
-        # nastavuje bílé (sluneční) světlo
-        raise NotImplementedError("The method not implemented")
+        success, result = self.connection.send_command(self.ID, 'setSolarLED', [intensity])
+        if not success:
+            raise Exception(result)
+        return float(result) == float(intensity)
 
     def turn_on_light(self, channel, on):
         """
@@ -148,8 +156,10 @@ class PBR(AbstractPBR):
         :param on: True turns on, False turns off
         :return: True if was successful, False otherwise.
         """
-        # setStir(revolutions per minute)  # nastaví otáčky míchadla a vrátí hodnotu
-        raise NotImplementedError("The method not implemented")
+        success, result = self.connection.send_command(self.ID, 'setStir', [value])
+        if not success:
+            raise Exception(result)
+        return float(result) == float(value)
 
     def get_o2(self, raw=True, repeats=5, wait=0):
         """
@@ -187,10 +197,10 @@ class PBR(AbstractPBR):
         :param on: 1 -> on, 0 -> freeze, -1 -> off
         :return: True if was successful, False otherwise.
         """
-        # stopTemperatureControl()  # zásadě set_thermoregulator_state na 0
-        # Jejich setTemperature(n) nastaví teplotu na požadovanou hodnotu a
-        # zapne termoregulaci, takže vypínání řeší speciálním příkazem
-        raise NotImplementedError("The method not implemented")
+        success, result = self.connection.send_command(self.ID, 'stopTemperatureControl', [])
+        if not success:
+            raise Exception(result)
+        return result == "stopTemperatureControl"
 
     def measure_ft(self, channel):
         """
@@ -219,9 +229,37 @@ class PBR(AbstractPBR):
         :param pump_id: id of particular pump
         :return: dictionary of all measured values
         """
-        # do all measurements,for that communication has to generally take multiple commands
-        # (was originally done in example script)
-        raise NotImplementedError("The method not implemented")
+        measure_all_dictionary = dict()
+        measure_all_dictionary["pwm_settings"] = False, "pwm settings not available for this device"
+        measure_all_dictionary["light_0"] = False, "light_0 not available for this device"
+        measure_all_dictionary["light_1"] = False, "light_1 not available for this device"
+
+        try:
+            measure_all_dictionary["od_0"] = True, self.measure_od(0)
+        except Exception:
+            measure_all_dictionary["od_0"] = False, "Cannot get od_0"
+
+        try:
+            measure_all_dictionary["od_1"] = True, self.measure_od(1)
+        except Exception:
+            measure_all_dictionary["od_1"] = False, "Cannot get od_1"
+
+        try:
+            measure_all_dictionary["ph"] = True, self.get_ph(),
+        except Exception:
+            measure_all_dictionary["ph"] = False, "Cannot get ph"
+
+        try:
+            measure_all_dictionary["temp"] = True, self.get_temp(),
+        except Exception:
+            measure_all_dictionary["temp"] = False, "Cannot get temp"
+
+        measure_all_dictionary["pump"] = False, "pump settings not available for this device"
+        measure_all_dictionary["o2"] = False, "o2 settings not available for this device"
+        measure_all_dictionary["co2"] = False, "co2 settings not available for this device"
+        measure_all_dictionary["ft"] = False, "ft settings not available for this device"
+
+        return measure_all_dictionary
 
     def measure_AUX(self, channel):
         """
@@ -230,17 +268,24 @@ class PBR(AbstractPBR):
         :param channel: ???
         :return: ???
         """
-        # measureAux1()/measureAux2()  # vrátí hodnotu napětí přídavného vstupu AUX1
-        raise NotImplementedError("The method not implemented")
+        variant = ["measureAux1", "measureAux2"]
+        success, result = self.connection.send_command(self.ID, variant[channel], [])
+        if not success:
+            raise Exception(result)
+        return float(result)
 
     def flash_LED(self):
         """
         Triggers a flashing sequence and is used to physically identify the PBR.
 
+        !!! random blank spaces compicate things. Is it like that also with "real" PBR?
+
         :return: True if was successful, False otherwise
         """
-        # flashLED()  # provede záblesk a vrátí "flashLED" po dokončení příkazu
-        raise NotImplementedError("The method not implemented")
+        success, result = self.connection.send_command(self.ID, "flashLED", [])
+        if not success:
+            raise Exception(result)
+        return result.lstrip() == "flashLED"
 
     def get_hardware_address(self):
         """
@@ -248,8 +293,10 @@ class PBR(AbstractPBR):
 
         :return: the MAC address
         """
-        # getHardwareAddress()  # vrátí MAC adresu PBR
-        raise NotImplementedError("The method not implemented")
+        success, result = self.connection.send_command(self.ID, "getHardwareAddress", [])
+        if not success:
+            raise Exception(result)
+        return result.lstrip()
 
     def get_cluster_name(self):
         """
@@ -257,5 +304,10 @@ class PBR(AbstractPBR):
 
         :return: the cluster name
         """
-        # getMatrixName()  # vrátí název PBR klastru
-        raise NotImplementedError("The method not implemented")
+        success, result = self.connection.send_command(self.ID, "getMatrixName", [])
+        if not success:
+            raise Exception(result)
+        return result.lstrip()
+
+    def disconnect(self):
+        self.connection.disconnect()

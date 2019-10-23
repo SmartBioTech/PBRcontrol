@@ -197,7 +197,7 @@ class PBR(AbstractPBR):
         :param channel: ???
         :return: ???
         """
-        return 13.4
+        return {'flash': 2816, 'background': 0}
 
     def get_co2(self, raw=True, repeats=5):
         """
@@ -218,7 +218,7 @@ class PBR(AbstractPBR):
         :return: dictionary of all measured values
         """
         result = dict()
-        result["pwm_setting"] = True, self.get_pwm_settings()
+        result["pwm_settings"] = True, self.get_pwm_settings()
         result["light_0"] = True, self.get_light_intensity(0)
         result["light_1"] = True, self.get_light_intensity(1)
         result["od_0"] = True, self.measure_od(0)
@@ -227,7 +227,7 @@ class PBR(AbstractPBR):
         result["temp"] = True, self.get_temp()
         result["pump"] = True, self.get_pump_params(pump_id)
         result["o2"] = True, self.get_o2()
-        result["co2"] = True, self.get_co2()
+        result["co2"] = False, "Cannot get co2"
         result["ft"] = True, self.measure_ft(ft_channel)
 
         return result
