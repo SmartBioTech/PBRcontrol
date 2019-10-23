@@ -77,7 +77,6 @@ class AddDevice(SecuredResource):
         super(AddDevice, self).__init__(api)
         self.nodes = active_nodes
 
-
     def post(self):
         if self.check_credentials(request.authorization):   # check if the user is authorized
             return 'Invalid Credentials', 401
@@ -238,7 +237,6 @@ class GetData(SecuredResource):
             node_id = request.args.get('node_id')  
             time = request.args.get('time')
             time = self.process_time(time)  # process the time intoa valid format
-            print(time)
             if node_id != None:     # if node_id was sent
                 rows = self.db.get_for_system(node_id, time)    # get data from log for the node_id and (optional) time
             # elif time != None:  # elif time was provided
