@@ -2,6 +2,7 @@
 
 import mysql.connector as cn
 import datetime
+import sys
 
 
 class Database:
@@ -30,6 +31,10 @@ class Database:
         """
         con = self.connect()
         cursor = con.cursor()
+
+        if len(sys.argv) > 1 and (sys.argv[1] == "True" or sys.argv[1] == 'true') and sys.argv[1]:
+            cursor.execute('DROP TABLE log')
+            con.commit()
         cursor.execute(
             'CREATE TABLE IF NOT EXISTS log (log_id int NOT NULL auto_increment,'
             'time_issued VARCHAR(255),'
