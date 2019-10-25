@@ -63,11 +63,15 @@ class Database:
         con = self.connect()
         cursor = con.cursor()
         if node_id not in self.node_unseen:
-            self.node_unseen[node_id] = 0
-        if time == None:
-            select = ('SELECT * FROM log WHERE log_id > %s AND node_id = %s ORDER BY log_id' %(self.node_unseen[node_id], node_id))
-        else:
-            select = ('SELECT * FROM log WHERE (node_id = %s AND TIMESTAMP(time_issued) >= TIMESTAMP(%s)) ORDER BY log_id' %(node_id, time))
+            self.node_unseen[node_id] = [0, "'0000-00-00 00:00:00'"]
+
+        if time != None:
+            self.node_unseen[node_id] = [0, time]
+
+        select = ('SELECT * FROM log WHERE (log_id > %s AND '
+                  'node_id = %s AND '
+                  'TIMESTAMP(time_issued) >= TIMESTAMP(%s)) '
+                  'ORDER BY log_id' %(self.node_unseen[node_id][0], node_id, self.node_unseen[node_id][1]))
 
         cursor.execute(select)
         rows = cursor.fetchall()
@@ -75,7 +79,7 @@ class Database:
         con.close()
 
         if rows:
-            self.node_unseen[node_id] = rows[-1][0]
+            self.node_unseen[node_id][0] = rows[-1][0]
 
         return rows
     '''
