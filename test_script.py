@@ -191,7 +191,7 @@ def change_time(node, time_period):
     requests.post('https://localhost:5000/command?node_id='+str(node), str({'time': t, 'cmd_id': 35, 'args': str([time_period]), 'source': 'external'}), verify=False, auth=('BioArInEO', 'sybila'))
 
 def get_log():
-    e = requests.get('https://localhost:5000/log?node_id=1&time=20191014090837', verify=False, auth=('BioArInEO', 'sybila'))
+    e = requests.get('https://localhost:5000/log?node_id=1&time=20191014090837', verify=False)
     print(e.text)
 
 def add_node(node_number):
@@ -284,10 +284,10 @@ def real_test():
             'experiment_details': {'sleep_time': 0.2},
             'devices': [{
                 'device_type': 'PBR',
-                'device_class': 'Phenometrics',
+                'device_class': 'PSI_java',
                 'device_id': 'Jozef',
                 'device_port': 9000,
-                'address': '/dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_D-if00-port0',
+                'address': 'invalid_address',
                 'setup': {
                     'initial_commands': [{'time': (datetime.datetime.utcnow().strftime("%Y-%m-%d, %H:%M:%S")),'cmd_id': 8, 'args': '[5, False]'}],
                     'lower_outlier_tol': 5,
@@ -297,7 +297,28 @@ def real_test():
                     'max_OD': 0.52,
                     'pump_id': 5
                 }
-            }]}}
+            }]},
+        2: {
+            'experiment_details': {'sleep_time': 0.2},
+            'devices': [{
+                'device_type': 'PBR',
+                'device_class': 'PSI_java',
+                'device_id': 'Jozef',
+                'device_port': 9000,
+                'address': 'invalid_address',
+                'setup': {
+                    'initial_commands': [
+                        {'time': (datetime.datetime.utcnow().strftime("%Y-%m-%d, %H:%M:%S")), 'cmd_id': 8,
+                         'args': '[5, False]'}],
+                    'lower_outlier_tol': 5,
+                    'upper_outlier_tol': 5,
+                    'max_outliers': 5,
+                    'min_OD': 0.48,
+                    'max_OD': 0.52,
+                    'pump_id': 5
+                }
+            }]}
+    }
 
     x = requests.post('https://localhost:5000/initiate', str(my_dict), verify=False, auth=('BioArInEO', 'sybila'))
     print(x.text)
