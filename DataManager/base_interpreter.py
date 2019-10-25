@@ -17,14 +17,24 @@ class BaseInterpreter:
         self.device = device_class(*args)
 
     def end(self):
+        pump_id = self.device_details['setup']['pump_id']
         if self.device_details['device_type'] == 'PBR':
             counter = 0
             while counter < 60:
                 try:
-                    response = True, self.device.set_pump_state(self.device_details['setup']['pump_id'], False)
+                    result = True, self.device.set_pump_state(pump_id, False)
                 except Exception as e:
-                    response = False, e
-                self.log.update_log(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"), self.device_details['node_id'], response)
+                    result = False, e
+
+                response = [(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")),
+                            self.device_details['node_id'],
+                            self.device_details['device_type'],
+                            8,
+                            [pump_id, False],
+                            result,
+                            'internal']
+
+                self.log.update_log(*response)
                 if response[0]:
                     break
                 else:

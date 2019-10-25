@@ -284,12 +284,12 @@ def real_test():
             'experiment_details': {'sleep_time': 0.2},
             'devices': [{
                 'device_type': 'PBR',
-                'device_class': 'PSI_java',
+                'device_class': 'PSI_test',
                 'device_id': 'Jozef',
                 'device_port': 9000,
                 'address': 'invalid_address',
                 'setup': {
-                    'initial_commands': [{'time': (datetime.datetime.utcnow().strftime("%Y-%m-%d, %H:%M:%S")),'cmd_id': 8, 'args': '[5, False]'}],
+                    'initial_commands': [{'time': (datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")),'cmd_id': 8, 'args': '[5, False]'}],
                     'lower_outlier_tol': 5,
                     'upper_outlier_tol': 5,
                     'max_outliers': 5,
@@ -298,30 +298,12 @@ def real_test():
                     'pump_id': 5
                 }
             }]},
-        2: {
-            'experiment_details': {'sleep_time': 0.2},
-            'devices': [{
-                'device_type': 'PBR',
-                'device_class': 'PSI_java',
-                'device_id': 'Jozef',
-                'device_port': 9000,
-                'address': 'invalid_address',
-                'setup': {
-                    'initial_commands': [
-                        {'time': (datetime.datetime.utcnow().strftime("%Y-%m-%d, %H:%M:%S")), 'cmd_id': 8,
-                         'args': '[5, False]'}],
-                    'lower_outlier_tol': 5,
-                    'upper_outlier_tol': 5,
-                    'max_outliers': 5,
-                    'min_OD': 0.48,
-                    'max_OD': 0.52,
-                    'pump_id': 5
-                }
-            }]}
+
     }
 
     x = requests.post('https://localhost:5000/initiate', str(my_dict), verify=False, auth=('BioArInEO', 'sybila'))
     print(x.text)
 
-real_test()
+#real_test()
+requests.get('https://localhost:5000/end?node_id=1', verify=False, auth=('BioArInEO', 'sybila'))
 
