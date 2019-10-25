@@ -7,7 +7,7 @@ import numpy as np
 
 class DeviceManager(base_interpreter.BaseInterpreter):
 
-    def initial_OD(self):
+    def initial_od(self):
         data = []
         while len(data) < 5:
             try:
@@ -42,7 +42,6 @@ class DeviceManager(base_interpreter.BaseInterpreter):
                 data = data[:-1]
         return average
 
-
     def __init__(self, device_details, q, q_new_item, log, device_class):
         self.q = q
         self.q_new_item = q_new_item
@@ -68,14 +67,18 @@ class DeviceManager(base_interpreter.BaseInterpreter):
             17: self.device.measure_ft,
             18: self.device.get_co2,
             19: self.device.measure_all,
+            20: self.device.measure_AUX,
+            21: self.device.flash_LED,
+            22: self.device.get_hardware_address,
+            23: self.device.get_cluster_name
         }
 
-        self.OD_checker = OD_Checker.ODcheck(self.device_details, self.q, self.q_new_item, self.initial_OD())
+        self.OD_checker = OD_Checker.ODcheck(self.device_details, self.q, self.q_new_item, self.initial_od())
 
         self.commands.update({
-            20: self.OD_checker.set_max_outliers,
-            21: self.OD_checker.set_od_bounds,
-            22: self.OD_checker.set_tolerance
+            24: self.OD_checker.set_max_outliers,
+            25: self.OD_checker.set_od_bounds,
+            26: self.OD_checker.set_tolerance
         })
 
 

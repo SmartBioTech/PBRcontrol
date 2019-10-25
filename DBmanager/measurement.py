@@ -53,9 +53,9 @@ class PeriodicalMeasurement(Thread):
         self.logger = localdb.Database()
 
         self.codes = {'PBR': 19,
-                      'GAS': 28}
+                      'GAS': 32}
 
-        self.commands = {35: self.change_time_period}
+        self.commands = {39: self.change_time_period}
 
     def run(self):
         """

@@ -7,8 +7,8 @@ class DeviceManager(base_interpreter.BaseInterpreter):
         super(DeviceManager, self).__init__(device_details, device_class, log)
 
         self.commands = {
-                32: self.device.get_valve_info,
-                33: self.device.get_valve_flow,
-                34: self.device.set_valve_flow,
+                36: self.device.get_valve_info,
+                37: self.device.get_valve_flow,
+                38: self.device.set_valve_flow,
             }
 

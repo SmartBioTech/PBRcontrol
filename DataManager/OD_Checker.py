@@ -109,7 +109,6 @@ class ODcheck:
                 result['od_1'] = (result['od_1'][0], (result['od_1'][1], True))
                 return True
 
-
     def tolerance(self, value):
         return ((100 + value) / 100) * self.average
 
