@@ -7,7 +7,14 @@ class BaseInterpreter:
     def __init__(self, device_details, device_class, log):
         self.device_details = device_details
         self.log = log
-        self.device = device_class(self.device_details['device_type'], self.device_details['address'])
+        args = [self.device_details.get('device_id', self.device_details['device_type']),
+                self.device_details.get('address', 'localhost')]
+
+        if self.device_details['device_class'] == 'Phenometrics':
+            args.append(self.device_details.get('host_port', 6161))
+            args.append(self.device_details.get('encryption_key', 't2ih72c0husyrayh'))
+
+        self.device = device_class(*args)
 
     def end(self):
         if self.device_details['device_type'] == 'PBR':

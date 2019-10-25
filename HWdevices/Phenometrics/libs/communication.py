@@ -8,7 +8,7 @@ ESCAPE_CHAR = '\\'
 
 
 class Connection:
-    def __init__(self, host_address='localhost', host_port=6161, encryption_key='t2ih72c0husyrayh', timeout=10):
+    def __init__(self, host_address, host_port, encryption_key, timeout=10):
         self.unescaped = DELIMITER
         self.escaped = ESCAPE_CHAR + DELIMITER
         while len(encryption_key.encode("utf8")) < 16:

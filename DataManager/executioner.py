@@ -2,6 +2,7 @@ from threading import Thread
 from DBmanager import localdb
 from importlib import import_module
 
+
 class Checker(Thread):
     """
     Checks the shared queue for commands and forwards them to its actual device.

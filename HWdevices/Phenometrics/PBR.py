@@ -3,7 +3,7 @@ from HWdevices.abstract.AbstractPBR import AbstractPBR
 
 
 class PBR(AbstractPBR):
-    def __init__(self, ID, host_address='localhost', host_port=6161, encryption_key='t2ih72c0husyrayh'):
+    def __init__(self, ID, host_address, host_port, encryption_key):
         super(PBR, self).__init__(ID, host_address)
         self.connection = Connection(host_address, host_port, encryption_key)
 
