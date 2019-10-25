@@ -266,7 +266,7 @@ class Ping(SecuredResource):
             response[node.node_id] = []
             for device_type in node.devices:
                 device = node.devices[device_type]
-                response[node.node_id].append(device.device_class + '-' + device.device_type)
+                response[node.node_id].append([device.device_class, device.device_type, device.device_id])
         return response, 200
 
 
@@ -279,7 +279,8 @@ class ApiInit:
         script_location = Path(__file__).absolute().parent
         with open(str(script_location / 'config.json'), 'r') as config_file:
             config = load(config_file)
-            self.app.config['USERNAME'] = config.get('username', None)  # if no auth is specified in config, no auth will be required
+            # if no auth is specified in config, no auth will be required
+            self.app.config['USERNAME'] = config.get('username', None)
             self.app.config['PASSWORD'] = config.get('password', None)
         self.api = Api(self.app)
 

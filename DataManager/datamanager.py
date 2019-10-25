@@ -3,7 +3,8 @@ from DataManager import executioner
 import queue
 import datetime
 from DBmanager import measurement
-
+import random
+import string
 
 class Node:
 
@@ -76,15 +77,21 @@ class Device:
         """
         :param data: dictionary, check documentation.txt
         """
-        self.thread_name = str(data['node_id']) + data['device_type']
         self.data = data
         self.device_type = data['device_type']
         self.device_class = data['device_class']
+        self.device_id = data.get('device_id', self.generate_random_id())
+        self.data['device_id'] = self.device_id
+        self.thread_name = str(data['node_id']) + data['device_type'] + data['device_id']
+
         self.q = queue.Queue()      # Queue object - all commands will be stacking here and waiting for execution
         self.q_new_item = Event()   # Event object - notifies that a new command has been added to queue
 
         # start the checker of the queue
         self.checker = executioner.Checker(self.q, self.q_new_item, self.data, self.thread_name)
+
+    def generate_random_id(self):
+        return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(10))
 
     def accept_command(self, cmd):
         """
