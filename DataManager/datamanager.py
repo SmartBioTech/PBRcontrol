@@ -79,6 +79,7 @@ class Device:
         self.thread_name = str(data['node_id']) + data['device_type']
         self.data = data
         self.device_type = data['device_type']
+        self.device_class = data['device_class']
         self.q = queue.Queue()      # Queue object - all commands will be stacking here and waiting for execution
         self.q_new_item = Event()   # Event object - notifies that a new command has been added to queue
 

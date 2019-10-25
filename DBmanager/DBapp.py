@@ -251,6 +251,25 @@ class GetData(SecuredResource):
             return str(e), 500  # return it to the user
 
 
+class Ping(SecuredResource):
+
+    def __init__(self, api, nodes):
+        super(Ping, self).__init__(api)
+        self.nodes = nodes
+
+    def get(self):
+        if self.check_credentials(request.authorization):   # check if the user has provided the correct credentials
+            return 'Invalid Credentials', 401
+        response = {}
+        for node_id in self.nodes:
+            node = self.nodes[node_id]
+            response[node.node_id] = []
+            for device_type in node.devices:
+                device = node.devices[device_type]
+                response[node.node_id].append(device.device_class + '-' + device.device_type)
+        return response, 200
+
+
 class ApiInit:
     """
     Initializes the API
@@ -288,6 +307,11 @@ class ApiInit:
         :return: None, function waits for the end_program Event() to be set
         """
         active_nodes = {}   # dictionary of all active_nodes, it is updated whenever new nodes are added/deleted
+
+        self.api.add_resource(Ping, '/ping',
+                              resource_class_kwargs={'api': self.api,
+                                                     'nodes': active_nodes}
+                              )
 
         self.api.add_resource(NodeInitiation, '/initiate',
                               resource_class_kwargs={'api': self.api,
