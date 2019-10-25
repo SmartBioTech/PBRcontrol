@@ -260,7 +260,7 @@ class ApiInit:
         script_location = Path(__file__).absolute().parent
         with open(script_location / 'config.json', 'r') as config_file:
             config = load(config_file)
-            self.app.config['USERNAME'] = config.get('username', None)
+            self.app.config['USERNAME'] = config.get('username', None)  # if no auth is specified in config, no auth will be required
             self.app.config['PASSWORD'] = config.get('password', None)
         self.api = Api(self.app)
 
