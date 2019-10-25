@@ -4,6 +4,8 @@ from DataManager import datamanager
 from DBmanager import localdb
 from multiprocessing import Event
 import ssl
+from json import load
+from pathlib import Path
 
 
 class SecuredResource(Resource):
@@ -255,8 +257,11 @@ class ApiInit:
     """
     def __init__(self):
         self.app = Flask(__name__)
-        self.app.config['USERNAME'] = 'BioArInEO'
-        self.app.config['PASSWORD'] = 'sybila'
+        script_location = Path(__file__).absolute().parent
+        with open(script_location / 'config.json', 'r') as config_file:
+            config = load(config_file)
+            self.app.config['USERNAME'] = config.get('username', None)
+            self.app.config['PASSWORD'] = config.get('password', None)
         self.api = Api(self.app)
 
         # Initialize the database

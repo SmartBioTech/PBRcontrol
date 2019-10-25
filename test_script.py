@@ -2,10 +2,10 @@ import requests
 import datetime
 from time import sleep
 from flask import Response
-#from urllib3 import disable_warnings
+from urllib3 import disable_warnings
 import ssl
 
-#disable_warnings()
+disable_warnings()
 
 '''
 
@@ -268,7 +268,7 @@ def repeat_log():
 #repeat_log()
 #test_all()
 #add_node(2)
-get_log()
+#get_log()
 #sleep(2)
 #change_time(2, 30)
 #post_cmd(1, 'PBR', 10, [1, 30])
@@ -284,7 +284,9 @@ def real_test():
             'experiment_details': {'sleep_time': 0.2},
             'devices': [{
                 'device_type': 'PBR',
-                'device_class': 'PSI_test',
+                'device_class': 'Phenometrics',
+                'device_id': 'Jozef',
+                'device_port': 9000,
                 'address': '/dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_D-if00-port0',
                 'setup': {
                     'initial_commands': [{'time': (datetime.datetime.utcnow().strftime("%Y-%m-%d, %H:%M:%S")),'cmd_id': 8, 'args': '[5, False]'}],
@@ -300,5 +302,5 @@ def real_test():
     x = requests.post('https://localhost:5000/initiate', str(my_dict), verify=False, auth=('BioArInEO', 'sybila'))
     print(x.text)
 
-#real_test()
+real_test()
 
