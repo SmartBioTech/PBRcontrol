@@ -16,9 +16,6 @@ class Device:
         self.device = self.connect(device_config)
 
     def connect(self, device_config):
-        jpype.startJVM(jpype.getDefaultJVMPath(),
-                       "-Djava.class.path=/home/pi/PBRcontrol/HWdevices/PSI_java/lib/jar/bioreactor-commander-0.8.7.jar")
-
         CommanderConnector = jpype.JClass("psi.bioreactor.commander.CommanderConnector")
         device = CommanderConnector(device_config, self.address, 115200)
 
@@ -30,7 +27,6 @@ class Device:
 
     def disconnect(self):
         self.device.disconnect()
-        jpype.shutdownJVM()
 
     def __str__(self):
         return self.ID + " @ " + str(self.address)
