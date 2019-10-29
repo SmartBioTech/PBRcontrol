@@ -11,7 +11,7 @@ class Database:
         self.user = "PBRcontrol"
         self.db = "localdb"
         self.host = "127.0.0.1"
-        self.password = ""
+        self.password = "&Bioairneo1"
         self.node_unseen = {}
         self.create_table()     # initialize the table
 
