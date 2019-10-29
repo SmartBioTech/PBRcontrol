@@ -25,6 +25,12 @@ class Device:
 
         return device
 
+    def get_state(self):
+        return self.device.getLastStatusEvent().name()
+
+    def is_connected(self):
+        return self.device.getLastStatusEvent().name() == 'connected'
+
     def disconnect(self):
         self.device.disconnect()
 
