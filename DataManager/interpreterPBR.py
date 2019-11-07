@@ -3,7 +3,7 @@ from time import sleep
 import datetime
 from DataManager import base_interpreter
 import numpy as np
-
+from threading import Thread
 
 class DeviceManager(base_interpreter.BaseInterpreter):
 
@@ -84,7 +84,41 @@ class DeviceManager(base_interpreter.BaseInterpreter):
             24: self.OD_checker.set_max_outliers,
             25: self.OD_checker.set_od_bounds,
             26: self.OD_checker.set_tolerance
-        })
+        }
+        )
+
+        self.pump_manager = PhenometricsPumpManager(self.pump_state, self.device, self.log)
+
+
+class PhenometricsPumpManager(Thread):
+
+    def __init__(self, pump_state, device, log):
+        super(PhenometricsPumpManager, self).__init__(daemon=True)
+        self.pump_state = pump_state
+        self.device = device
+        self.log = log
+
+    def pump_on(self):
+        self.pump_state[0] = True
+        od = 100
+
+        while od > self.device.device_details["max_OD"]:
+            try:
+                self.device.connection.send_command(self.device.ID, 'setAux2', [1])    # this turns on the pump (works only if the pump goes from 0 to 1)
+                sleep(20)  # sleep 20 seconds, should be enough to accomplish steps 1. and 2.
+                self.device.connection.send_command(self.device.ID, 'setAux2', [0])   # reset the pump to zero state that is necessary for success of next set of the pump
+                sleep(20)
+                od = self.device.measure_od(1)
+            except Exception:
+                continue
+
+        time_issued = (datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"))
+        node_id = self.device.device_details["node_id"]
+        device_type = self.device.device_details["device_type"]
+        command_id = 8
+        args = self.device.device_details['setup']['pump_id'], False
+        self.log.update_log(time_issued, node_id, device_type, command_id, args, (True, True), "internal")
+        self.pump_state[0] = False
 
 
 

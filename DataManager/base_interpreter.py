@@ -66,7 +66,12 @@ class BaseInterpreter:
     def execute(self, time_issued, node_id, device_type, command_id, args, source):
         is_ok = True
         try:
-            result = self.device_con(command_id, args)
+            if self.device_details["device_class"] == "Phenometrics" and command_id == 8:
+                if args[1]:
+                    self.pump_manager.pump_on()
+                result = True
+            else:
+                result = self.device_con(command_id, args)
             if command_id == 19 and result['od_1'][0]:
                 self.OD_checker.stabilize(result)
         except Exception as exc:
