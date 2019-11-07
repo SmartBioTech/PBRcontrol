@@ -1,6 +1,7 @@
 from threading import Thread
 from DBmanager import localdb
 from importlib import import_module
+from HWdevices.PSI_java import JVMController
 
 
 class Checker(Thread):
@@ -32,6 +33,10 @@ class Checker(Thread):
 
         # import the right class for the specific device
         hw_class = getattr(import_module('HWdevices.'+self.device_details['device_class']+'.'+device_type), device_type)
+
+        if self.device_details['device_class'] == "PSI_java":
+            if not JVMController.isJVMStarted():
+                JVMController.startJVM()
 
         # import interpreter for the specific device type
         interpreter = import_module('DataManager.interpreter' + device_type)
