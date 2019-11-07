@@ -46,7 +46,8 @@ class DeviceManager(base_interpreter.BaseInterpreter):
         self.q = q
         self.q_new_item = q_new_item
         super(DeviceManager, self).__init__(device_details, device_class, log)
-
+        self.device.set_pump_state(device_details['setup']['pump_id'], False)
+        self.pump_state = [False]
         self.commands = {
             1: self.device.get_temp_settings,
             2: self.device.get_temp,
@@ -73,7 +74,11 @@ class DeviceManager(base_interpreter.BaseInterpreter):
             23: self.device.get_cluster_name
         }
 
-        self.OD_checker = OD_Checker.ODcheck(self.device_details, self.q, self.q_new_item, self.initial_od())
+        self.OD_checker = OD_Checker.ODcheck(self.device_details,
+                                             self.q,
+                                             self.q_new_item,
+                                             self.initial_od(),
+                                             self.pump_state)
 
         self.commands.update({
             24: self.OD_checker.set_max_outliers,

@@ -4,7 +4,7 @@ from collections import deque
 
 class ODcheck:
 
-    def __init__(self, device_details, q, q_new_item, average):
+    def __init__(self, device_details, q, q_new_item, average, pump_state):
         self.device_details = device_details
         self.device_setup = device_details['setup']
         self.q = q
@@ -12,11 +12,11 @@ class ODcheck:
         self.outliers = 0
         self.average = average
         self.last_results = deque(maxlen=2)
-        self.pump_state = False
+        self.pump_state = pump_state
 
     def change_pump_state(self, value):
 
-        self.pump_state = value
+        self.pump_state[0] = value
 
     def set_od_bounds(self, min, max):
 
@@ -68,7 +68,7 @@ class ODcheck:
                 switch = False
             else:
                 return
-            if switch == self.pump_state:
+            if switch == self.pump_state[0]:
                 return
 
             self.change_pump_state(switch)

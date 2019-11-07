@@ -35,7 +35,7 @@ class BaseInterpreter:
                             'internal']
 
                 self.log.update_log(*response)
-                if response[0]:
+                if result[0]:
                     break
                 else:
                     counter += 1

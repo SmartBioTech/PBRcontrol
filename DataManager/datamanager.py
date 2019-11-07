@@ -109,7 +109,7 @@ class Device:
             cmd.get('source', 'internal')
         ]
         if self.device_type == 'PBR' and processed[3] == 19:
-            processed[4] = str([0,self.data['setup']['pump_id']])
+            processed[4] = str([0, self.data['setup']['pump_id']])
 
         self.q.put(processed)   # put it to queue
         self.q_new_item.set()   # notify checker that a new object has been added to queue
