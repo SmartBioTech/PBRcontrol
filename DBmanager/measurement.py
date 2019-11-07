@@ -80,9 +80,15 @@ class PeriodicalMeasurement(Thread):
             device = self.devices[device_key]
             if device.device_type == 'GMS':
                 continue
+            elif device.device_type == 'GAS':
+                args = '[]'
+            else:
+                pump_id = device.data['setup']['pump_id']
+                ft_channel = device.data['setup']['ft_channel']
+                args = str([ft_channel, pump_id])
             cmd = {'time': (datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")),
                    'source' : 'internal',
-                   'args' : '[]',
+                   'args' : args,
                    'cmd_id': self.codes[device.device_type]}
 
             device.accept_command(cmd)
