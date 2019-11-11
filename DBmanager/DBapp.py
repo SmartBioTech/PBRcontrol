@@ -5,6 +5,7 @@ from DBmanager import localdb
 from multiprocessing import Event
 from json import load
 from pathlib import Path
+from HWdevices.PSI_java.JVMController import JVMController
 
 
 class SecuredResource(Resource):
@@ -266,6 +267,7 @@ class Ping(SecuredResource):
             for device_type in node.devices:
                 device = node.devices[device_type]
                 response[node.node_id].append([device.device_class, device.device_type, device.device_id])
+        response['jvm'] = JVMController.isJVMStarted()
         return response, 200
 
 
