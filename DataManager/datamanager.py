@@ -33,7 +33,7 @@ class Node:
 
         for cmd in device_data['setup']['initial_commands']: # execute the initial commands
             device.accept_command(cmd)
-        return True
+        return 1
 
     def accept_command(self, cmd):
         """

@@ -131,7 +131,7 @@ class NodeInitiation(SecuredResource):
                 data[node_id]['node_id'] = node_id
                 
                 if node_id in self.active_nodes:    # if the node is already initiated in the system
-                    response[node_id] = False   # inform the user that the node could not be initiated
+                    response[node_id] = 0   # inform the user that the node could not be initiated
                     continue    # loop to another node
                     
                 else:   # if the request is valid
@@ -166,7 +166,7 @@ class Command(SecuredResource):
 
     def post(self):
         if self.check_credentials(request.authorization):   # check if the user is Authorized
-            return False, 401
+            return 0, 401
         try:
             node_id = request.args.get('node_id', False)
             device = request.args.get('device_type', False)
@@ -179,18 +179,18 @@ class Command(SecuredResource):
             if node_id:     
                 node_id = int(node_id)
                 if node_id not in self.nodes:   # if the requested node is not initiated
-                    return False, 400
+                    return 0, 400
                 if device:
                     if device not in self.nodes[node_id].devices:  # if the requested device doesn't exist on given node
-                        return False, 400
+                        return 0, 400
                     for command in data:   # for each command in the list
                         self.nodes[node_id].devices[device].accept_command(command)  # forward the command to device
                 else:   # if no device was specified, the node handles the command
                     for command in data:    # for each command in the list
                         self.nodes[node_id].accept_command(command)   # forward the command to node
             else:
-                return False, 400
-            return True, 200
+                return 0, 400
+            return 1, 200
         except Exception as e:
             return str(e), 500
 
@@ -244,7 +244,7 @@ class GetData(SecuredResource):
             # elif time != None:  # elif time was provided
             # rows = self.db.get_for_user(time)  # get all data from log since given time
             else:
-                return False, 400  # if neither node_id or time was provided, return no data
+                return 0, 400  # if neither node_id or time was provided, return no data
             return rows, 200
 
         except Exception as e:  # if an exception has occurred
@@ -339,12 +339,3 @@ class ApiInit:
                                                                                'active_nodes': active_nodes})
 
         self.run_app()
-        '''
-        server = Process(target=self.run_app)   # wrap the app into a process
-
-        server.start()  # start the process
-
-        self.end_program.wait()   # wait for the Event() to be set by user
-        
-        server.terminate()  # then terminate the process and end application
-        '''
