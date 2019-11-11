@@ -3,7 +3,6 @@ from flask_restful import Resource, Api
 from DataManager import datamanager
 from DBmanager import localdb
 from multiprocessing import Event
-import ssl
 from json import load
 from pathlib import Path
 
