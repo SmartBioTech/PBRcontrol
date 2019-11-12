@@ -6,6 +6,7 @@ from multiprocessing import Event
 from json import load
 from pathlib import Path
 from HWdevices.PSI_java.JVMController import JVMController
+import ssl
 
 
 class SecuredResource(Resource):
@@ -299,7 +300,9 @@ class ApiInit:
 
         :return: None, process is stuck on app.run() 
         """
-        self.app.run(host='0.0.0.0')
+        context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+        context.load_cert_chain('MyCertificate.crt', 'MyKey.key')
+        self.app.run(host='0.0.0.0', ssl_context=context)
 
     def run(self):
         """
