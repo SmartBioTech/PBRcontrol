@@ -80,7 +80,7 @@ class Device:
         self.data = data
         self.device_type = data['device_type']
         self.device_class = data['device_class']
-        self.data['device_id'] = self.device_id
+        self.device_id = data['device_id']
         self.thread_name = str(data['node_id']) + '-' + self.device_class + '-' + self.device_type
         self.device_id = data.get('device_id', self.thread_name)
 
