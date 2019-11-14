@@ -72,10 +72,11 @@ class PBR(Device):
         pi = msg.getDoubleParam(0), msg.getDoubleParam(1)
 
         # check for dense cultures
+        # TODO develop better handling of dense cultures detection. Combine treshold and background readouts.
         if int(pi[0]) > 100:
             od = -log10((int(pi[0])-int(pi[1]))/40000)
         else:
-            od = 4.0
+            od = 3.0
 
         return od
 
