@@ -11,7 +11,7 @@ class DeviceManager(base_interpreter.BaseInterpreter):
         data = []
         while len(data) < 5:
             try:
-                data.append(self.device_con(5, '[]'))
+                data.append(self.device_con(5, '[1]'))
             except Exception:
                 time_issued = datetime.datetime.utcnow()
                 time_issued = time_issued.strftime("%m-%d-%Y %H:%M:%S")
