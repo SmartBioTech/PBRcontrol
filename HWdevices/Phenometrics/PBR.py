@@ -93,7 +93,7 @@ class PBR(AbstractPBR):
         :param on: True to turn on, False to turn off
         :return: True if was successful, False otherwise.
         """
-        success, result = self.connection.send_command(self.ID, 'setAux1', [int(on)])
+        success, result = self.connection.send_command(self.ID, 'setAux2', [int(on)])
         if not success:
             raise Exception(result)
         return int(result) == int(on)
@@ -278,7 +278,7 @@ class PBR(AbstractPBR):
         """
         Triggers a flashing sequence and is used to physically identify the PBR.
 
-        !!! random blank spaces compicate things. Is it like that also with "real" PBR?
+        !!! random blank spaces complicate things. Is it like that also with "real" PBR?
 
         :return: True if was successful, False otherwise
         """
