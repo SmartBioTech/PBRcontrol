@@ -104,6 +104,7 @@ class PhenometricsPumpManager(Thread):
         od = 100
 
         while od > self.device_details["setup"]["max_OD"]:
+            print("Turning on pump...")
             try:
                 self.device.connection.send_command(self.device.ID, 'setAux2', [1])    # this turns on the pump (works only if the pump goes from 0 to 1)
                 sleep(20)  # sleep 20 seconds, should be enough to accomplish steps 1. and 2.
