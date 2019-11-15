@@ -68,7 +68,7 @@ class BaseInterpreter:
         try:
             if self.device_details["device_class"] == "Phenometrics" and command_id == 8:
                 if args[1]:
-                    self.pump_manager.pump_on()
+                    self.pump_manager.run()
                 result = True
             else:
                 result = self.device_con(command_id, args)

@@ -99,7 +99,7 @@ class PhenometricsPumpManager(Thread):
         self.log = log
         self.device_details = device_details
 
-    def pump_on(self):
+    def run(self):
         self.pump_state[0] = True
         od = 100
 
