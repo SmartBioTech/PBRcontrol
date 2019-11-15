@@ -24,7 +24,7 @@ class Node:
 
         device_type = device_data.get('device_type')
         if device_type in self.devices or device_type == None:  # raise exception if device already exists on node
-            return False
+            return 0
         device_data['node_id'] = self.node_id
         device = Device(device_data)
         self.devices[device_type] = device

@@ -87,16 +87,17 @@ class DeviceManager(base_interpreter.BaseInterpreter):
         }
         )
 
-        self.pump_manager = PhenometricsPumpManager(self.pump_state, self.device, self.log)
+        self.pump_manager = PhenometricsPumpManager(self.pump_state, self.device, self.device_details, self.log)
 
 
 class PhenometricsPumpManager(Thread):
 
-    def __init__(self, pump_state, device, log):
+    def __init__(self, pump_state, device, device_details, log):
         super(PhenometricsPumpManager, self).__init__(daemon=True)
         self.pump_state = pump_state
         self.device = device
         self.log = log
+        self.device_details = device_details
 
     def pump_on(self):
         self.pump_state[0] = True
@@ -113,10 +114,10 @@ class PhenometricsPumpManager(Thread):
                 continue
 
         time_issued = (datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"))
-        node_id = self.device.device_details["node_id"]
-        device_type = self.device.device_details["device_type"]
+        node_id = self.device_details["node_id"]
+        device_type = self.device_details["device_type"]
         command_id = 8
-        args = self.device.device_details['setup']['pump_id'], False
+        args = self.device_details['setup']['pump_id'], False
         self.log.update_log(time_issued, node_id, device_type, command_id, args, (True, True), "internal")
         self.pump_state[0] = False
 
