@@ -118,7 +118,7 @@ class PhenometricsPumpManager(Thread):
         node_id = self.device_details["node_id"]
         device_type = self.device_details["device_type"]
         command_id = 8
-        args = self.device_details['setup']['pump_id'], False
+        args = [self.device_details['setup']['pump_id'], False]
         self.log.update_log(time_issued, node_id, device_type, command_id, args, (True, True), "internal")
         self.pump_state[0] = False
 
