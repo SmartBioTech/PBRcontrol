@@ -116,12 +116,10 @@ class PhenometricsPumpManager(threading.Thread):
             self.device_details['setup']['upper_outlier_tol'] *= 2
 
             self.pump_state[0] = True  # is this necessary?
-            print("Log pump on")
 
             while self.last_OD > self.device_details["setup"]["min_OD"]:
                 self.od_changed.clear()
                 self.stored_OD = self.last_OD
-                print("Turning on pump...")
                 try:
                     # this turns on the pump (works only if the pump goes from 0 to 1)
                     self.device.connection.send_command(self.device.ID, 'setAux2', [1])
@@ -138,7 +136,6 @@ class PhenometricsPumpManager(threading.Thread):
             self.device_details['setup']['lower_outlier_tol'] /= 2
             self.device_details['setup']['upper_outlier_tol'] /= 2
 
-            print("Log pump off")
             self.start_pumping_event.wait()
 
     def start_pumping(self):
