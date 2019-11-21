@@ -88,19 +88,20 @@ class DeviceManager(base_interpreter.BaseInterpreter):
         }
         )
 
-        self.pump_manager = PhenometricsPumpManager(self.pump_state, self.device, self.device_details, self.log)
+        self.pump_manager = PhenometricsPumpManager(self.pump_state, self.device, self.device_details, self.log,
+                                                    self.OD_checker.average)
         self.pump_manager.start()
 
 
 class PhenometricsPumpManager(threading.Thread):
 
-    def __init__(self, pump_state, device, device_details, log):
+    def __init__(self, pump_state, device, device_details, log, last_OD):
         super(PhenometricsPumpManager, self).__init__(daemon=True)
         self.pump_state = pump_state
         self.device = device
         self.log = log
         self.device_details = device_details
-        self.last_OD = None
+        self.last_OD = last_OD
         self.stop_request = threading.Event()
         self.start_pumping_event = threading.Event()
 
