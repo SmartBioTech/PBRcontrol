@@ -3,7 +3,8 @@ from time import sleep
 import datetime
 from DataManager import base_interpreter
 import numpy as np
-from threading import Thread
+import threading
+
 
 class DeviceManager(base_interpreter.BaseInterpreter):
 
@@ -88,9 +89,10 @@ class DeviceManager(base_interpreter.BaseInterpreter):
         )
 
         self.pump_manager = PhenometricsPumpManager(self.pump_state, self.device, self.device_details, self.log)
+        self.pump_manager.start()
 
 
-class PhenometricsPumpManager(Thread):
+class PhenometricsPumpManager(threading.Thread):
 
     def __init__(self, pump_state, device, device_details, log):
         super(PhenometricsPumpManager, self).__init__(daemon=True)
@@ -98,30 +100,42 @@ class PhenometricsPumpManager(Thread):
         self.device = device
         self.log = log
         self.device_details = device_details
+        self.last_OD = None
+        self.stop_request = threading.Event()
+        self.start_pumping_event = threading.Event()
 
     def run(self):
-        self.pump_state[0] = True
-        od = 100
+        while not self.stop_request.isSet():
+            self.start_pumping_event.clear()
 
-        while od > self.device_details["setup"]["max_OD"]:
-            print("Turning on pump...")
-            try:
-                self.device.connection.send_command(self.device.ID, 'setAux2', [1])    # this turns on the pump (works only if the pump goes from 0 to 1)
-                sleep(20)  # sleep 20 seconds, should be enough to accomplish steps 1. and 2.
-                self.device.connection.send_command(self.device.ID, 'setAux2', [0])   # reset the pump to zero state that is necessary for success of next set of the pump
-                sleep(20)
-                od = self.device.measure_od(1)
-            except Exception:
-                continue
+            self.pump_state[0] = True  # is this necessary?
+            while self.last_OD > self.device_details["setup"]["min_OD"]:
+                print("Turning on pump...")
+                try:
+                    # this turns on the pump (works only if the pump goes from 0 to 1)
+                    self.device.connection.send_command(self.device.ID, 'setAux2', [1])
+                    # sleep 20 seconds, should be enough to accomplish steps 1. and 2.
+                    sleep(2)
+                    # reset the pump to zero state that is necessary for success of next set of the pump
+                    self.device.connection.send_command(self.device.ID, 'setAux2', [0])
+                    sleep(60)  # this should be waiting time from periodical measurement
+                except Exception:
+                    continue
 
+            self.log_details()
+            self.pump_state[0] = False  # is this necessary?
+            self.start_pumping_event.wait()
+
+    def start_pumping(self):
+        self.start_pumping_event.set()
+
+    def log_details(self):
         time_issued = (datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"))
         node_id = self.device_details["node_id"]
         device_type = self.device_details["device_type"]
         command_id = 8
         args = [self.device_details['setup']['pump_id'], False]
         self.log.update_log(time_issued, node_id, device_type, command_id, args, (True, True), "internal")
-        self.pump_state[0] = False
 
-
-
-
+    def exit(self):
+        self.stop_request.set()

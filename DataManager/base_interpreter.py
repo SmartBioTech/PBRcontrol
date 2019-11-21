@@ -68,12 +68,14 @@ class BaseInterpreter:
         try:
             if self.device_details["device_class"] == "Phenometrics" and command_id == 8:
                 if args[1]:
-                    self.pump_manager.start()
+                    self.pump_manager.start_pumping()
                 result = True
             else:
                 result = self.device_con(command_id, args)
             if command_id == 19 and result['od_1'][0]:
                 self.OD_checker.stabilize(result)
+                if self.device_details["device_class"] == "Phenometrics":
+                    self.pump_manager.last_OD = self.OD_checker.average
         except Exception as exc:
             is_ok = False
             result = str(exc)
