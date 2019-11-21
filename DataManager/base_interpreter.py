@@ -76,6 +76,8 @@ class BaseInterpreter:
                 self.OD_checker.stabilize(result)
                 if self.device_details["device_class"] == "Phenometrics":
                     self.pump_manager.last_OD = self.OD_checker.average
+                    if self.pump_manager.last_OD != self.pump_manager.stored_OD:
+                        self.pump_manager.od_changed.set()
         except Exception as exc:
             is_ok = False
             result = str(exc)

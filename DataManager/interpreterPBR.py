@@ -105,6 +105,7 @@ class PhenometricsPumpManager(threading.Thread):
         self.stored_OD = last_OD
         self.stop_request = threading.Event()
         self.start_pumping_event = threading.Event()
+        self.od_changed = threading.Event()
         self.wait_time = experimental_details['sleep_time']
 
     def run(self):
@@ -117,19 +118,19 @@ class PhenometricsPumpManager(threading.Thread):
             print("Log pump on")
 
             while self.last_OD > self.device_details["setup"]["min_OD"]:
-                if self.stored_OD != self.last_OD:
-                    self.stored_OD = self.last_OD
-                    print("Turning on pump...")
-                    try:
-                        # this turns on the pump (works only if the pump goes from 0 to 1)
-                        self.device.connection.send_command(self.device.ID, 'setAux2', [1])
-                        # sleep 20 seconds, should be enough to accomplish steps 1. and 2.
-                        sleep(2)
-                        # reset the pump to zero state that is necessary for success of next set of the pump
-                        self.device.connection.send_command(self.device.ID, 'setAux2', [0])
-                        sleep(self.wait_time)  # this should be waiting time from periodical measurement
-                    except Exception:
-                        continue
+                self.od_changed.clear()
+                self.stored_OD = self.last_OD
+                print("Turning on pump...")
+                try:
+                    # this turns on the pump (works only if the pump goes from 0 to 1)
+                    self.device.connection.send_command(self.device.ID, 'setAux2', [1])
+                    # sleep 20 seconds, should be enough to accomplish steps 1. and 2.
+                    sleep(2)
+                    # reset the pump to zero state that is necessary for success of next set of the pump
+                    self.device.connection.send_command(self.device.ID, 'setAux2', [0])
+                except Exception:
+                    continue
+                self.od_changed.wait()  # we wait until OD has changed
 
             self.pump_state[0] = False  # is this necessary?
             # self.log_pump_change(self.pump_state[0])
