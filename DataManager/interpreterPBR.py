@@ -106,6 +106,7 @@ class PhenometricsPumpManager(threading.Thread):
         self.start_pumping_event = threading.Event()
 
     def run(self):
+        self.start_pumping_event.wait()
         while not self.stop_request.isSet():
             self.start_pumping_event.clear()
 
