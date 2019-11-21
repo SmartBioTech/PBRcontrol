@@ -72,7 +72,7 @@ class BaseInterpreter:
                 result = True
             else:
                 result = self.device_con(command_id, args)
-            if command_id == 19 and result['od_1'][0]:
+            if command_id == 19 and result[self.OD_checker.od_variant][0]:
                 self.OD_checker.stabilize(result)
                 if self.device_details["device_class"] == "Phenometrics":
                     self.pump_manager.last_OD = self.OD_checker.average

@@ -13,6 +13,7 @@ class ODcheck:
         self.average = average
         self.last_results = deque(maxlen=2)
         self.pump_state = pump_state
+        self.od_variant = 'od_1' if self.device_setup['OD_channel'] == 1 else 'od_0'
 
     def change_pump_state(self, value):
 
@@ -58,13 +59,13 @@ class ODcheck:
         return n
 
     def stabilize(self, result):
-        self.last_results.appendleft(result['od_1'][1])
+        self.last_results.appendleft(result[self.od_variant][1])
         if not self.detect_outlier(result):
             cmd_id = 8
             pump_id = self.device_setup['pump_id']
-            if result['od_1'][1][0] > self.device_setup['max_OD']:
+            if result[self.od_variant][1][0] > self.device_setup['max_OD']:
                 switch = True
-            elif result['od_1'][1][0] < self.device_setup['min_OD']:
+            elif result[self.od_variant][1][0] < self.device_setup['min_OD']:
                 switch = False
             else:
                 return
@@ -93,20 +94,20 @@ class ODcheck:
 
     def detect_outlier(self, result):
 
-        if self.tolerance(-self.device_setup['lower_outlier_tol']) <= result['od_1'][1] <= self.tolerance(self.device_setup['upper_outlier_tol']):
+        if self.tolerance(-self.device_setup['lower_outlier_tol']) <= result[self.od_variant][1] <= self.tolerance(self.device_setup['upper_outlier_tol']):
             self.outliers = 0
             self.average = self.calculate_average()
-            result['od_1'] = (result['od_1'][0], (result['od_1'][1], False))
+            result[self.od_variant] = (result[self.od_variant][0], (result[self.od_variant][1], False))
             return False
         else:
             self.outliers += 1
             if self.outliers > self.device_setup['max_outliers']:
                 self.outliers = 0
                 self.average = self.calculate_average()
-                result['od_1'] = (result['od_1'][0], (result['od_1'][1], False))
+                result[self.od_variant] = (result[self.od_variant][0], (result[self.od_variant][1], False))
                 return False
             else:
-                result['od_1'] = (result['od_1'][0], (result['od_1'][1], True))
+                result[self.od_variant] = (result[self.od_variant][0], (result[self.od_variant][1], True))
                 return True
 
     def tolerance(self, value):
