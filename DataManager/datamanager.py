@@ -26,7 +26,7 @@ class Node:
         if device_type in self.devices or device_type == None:  # raise exception if device already exists on node
             return 0
         device_data['node_id'] = self.node_id
-        device = Device(device_data, self.experimental_details)
+        device = Device(device_data, self.experiment_details)
         self.devices[device_type] = device
         device.checker.start()  # start the queue checker
 
