@@ -80,9 +80,8 @@ class ODcheck:
                         str(self.device_details['node_id']),
                         self.device_details['device_type'],
                         cmd_id,
-                        str([pump_id, switch]),
+                        [pump_id, switch],
                         'internal'))
-
             self.q_new_item.set()
 
     def calculate_average(self):
