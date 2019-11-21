@@ -43,7 +43,7 @@ class DeviceManager(base_interpreter.BaseInterpreter):
                 data = data[:-1]
         return average
 
-    def __init__(self, device_details, q, q_new_item, log, device_class):
+    def __init__(self, device_details, q, q_new_item, log, device_class, experimental_details):
         self.q = q
         self.q_new_item = q_new_item
         super(DeviceManager, self).__init__(device_details, device_class, log)
@@ -89,13 +89,13 @@ class DeviceManager(base_interpreter.BaseInterpreter):
         )
 
         self.pump_manager = PhenometricsPumpManager(self.pump_state, self.device, self.device_details, self.log,
-                                                    self.OD_checker.average)
+                                                    self.OD_checker.average, experimental_details)
         self.pump_manager.start()
 
 
 class PhenometricsPumpManager(threading.Thread):
 
-    def __init__(self, pump_state, device, device_details, log, last_OD):
+    def __init__(self, pump_state, device, device_details, log, last_OD, experimental_details):
         super(PhenometricsPumpManager, self).__init__(daemon=True)
         self.pump_state = pump_state
         self.device = device
@@ -104,6 +104,7 @@ class PhenometricsPumpManager(threading.Thread):
         self.last_OD = last_OD
         self.stop_request = threading.Event()
         self.start_pumping_event = threading.Event()
+        self.wait_time = experimental_details['sleep_time']
 
     def run(self):
         self.start_pumping_event.wait()
@@ -123,7 +124,7 @@ class PhenometricsPumpManager(threading.Thread):
                     sleep(2)
                     # reset the pump to zero state that is necessary for success of next set of the pump
                     self.device.connection.send_command(self.device.ID, 'setAux2', [0])
-                    sleep(60)  # this should be waiting time from periodical measurement
+                    sleep(2*self.wait_time)  # this should be waiting time from periodical measurement
                 except Exception:
                     continue
 

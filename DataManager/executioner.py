@@ -8,7 +8,7 @@ class Checker(Thread):
     Checks the shared queue for commands and forwards them to its actual device.
     """
 
-    def __init__(self, q, q_new_item, device_details, thread_name):
+    def __init__(self, q, q_new_item, device_details, thread_name, experimental_details):
         """
         :param q: queue.Queue() object, commands are put in it
         :param q_new_item: queue.Event() object, is set when new commands are added to it, which triggers the checker
@@ -20,6 +20,7 @@ class Checker(Thread):
         self.q = q
         self.q_new_item = q_new_item
         self.device_details = device_details
+        self.experimental_details = experimental_details
 
     def run(self):
         """
@@ -40,7 +41,7 @@ class Checker(Thread):
         # The queue of commands must be passed on the PBRs
 
         if device_type == 'PBR':
-            arguments = [self.device_details, self.q, self.q_new_item, log, hw_class]
+            arguments = [self.device_details, self.q, self.q_new_item, log, hw_class, self.experimental_details]
         else:
             arguments = [self.device_details, log, hw_class]
 

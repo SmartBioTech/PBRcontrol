@@ -26,7 +26,7 @@ class Node:
         if device_type in self.devices or device_type == None:  # raise exception if device already exists on node
             return 0
         device_data['node_id'] = self.node_id
-        device = Device(device_data)
+        device = Device(device_data, self.experimental_details)
         self.devices[device_type] = device
         device.checker.start()  # start the queue checker
 
@@ -72,11 +72,12 @@ class Node:
 
 class Device:
 
-    def __init__(self, data):
+    def __init__(self, data, experimental_details):
         """
         :param data: dictionary, check documentation.txt
         """
         self.data = data
+        self.experimental_details = experimental_details
         self.device_type = data['device_type']
         self.device_class = data['device_class']
         self.device_id = data['device_id']
@@ -87,7 +88,8 @@ class Device:
         self.q_new_item = Event()   # Event object - notifies that a new command has been added to queue
 
         # start the checker of the queue
-        self.checker = executioner.Checker(self.q, self.q_new_item, self.data, self.thread_name)
+        self.checker = executioner.Checker(self.q, self.q_new_item, self.data,
+                                           self.thread_name, self.experimental_details)
 
     def accept_command(self, cmd):
         """
