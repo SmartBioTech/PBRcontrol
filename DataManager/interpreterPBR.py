@@ -94,7 +94,6 @@ class DeviceManager(base_interpreter.BaseInterpreter):
 
 
 class PhenometricsPumpManager(threading.Thread):
-
     def __init__(self, pump_state, device, device_details, log, last_OD, experimental_details):
         super(PhenometricsPumpManager, self).__init__(daemon=True)
         self.pump_state = pump_state
@@ -113,8 +112,10 @@ class PhenometricsPumpManager(threading.Thread):
         while not self.stop_request.isSet():
             self.start_pumping_event.clear()
 
+            self.device_details['setup']['lower_outlier_tol'] *= 2
+            self.device_details['setup']['upper_outlier_tol'] *= 2
+
             self.pump_state[0] = True  # is this necessary?
-            # self.log_pump_change(self.pump_state[0])
             print("Log pump on")
 
             while self.last_OD > self.device_details["setup"]["min_OD"]:
@@ -133,7 +134,10 @@ class PhenometricsPumpManager(threading.Thread):
                 self.od_changed.wait()  # we wait until OD has changed
 
             self.pump_state[0] = False  # is this necessary?
-            # self.log_pump_change(self.pump_state[0])
+
+            self.device_details['setup']['lower_outlier_tol'] /= 2
+            self.device_details['setup']['upper_outlier_tol'] /= 2
+
             print("Log pump off")
             self.start_pumping_event.wait()
 
