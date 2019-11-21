@@ -110,6 +110,9 @@ class PhenometricsPumpManager(threading.Thread):
             self.start_pumping_event.clear()
 
             self.pump_state[0] = True  # is this necessary?
+            self.log_pump_change(self.pump_state[0])
+            print("Log pump on")
+
             while self.last_OD > self.device_details["setup"]["min_OD"]:
                 print("Turning on pump...")
                 try:
@@ -123,19 +126,20 @@ class PhenometricsPumpManager(threading.Thread):
                 except Exception:
                     continue
 
-            self.log_details()
             self.pump_state[0] = False  # is this necessary?
+            self.log_pump_change(self.pump_state[0])
+            print("Log pump off")
             self.start_pumping_event.wait()
 
     def start_pumping(self):
         self.start_pumping_event.set()
 
-    def log_details(self):
+    def log_pump_change(self, state):
         time_issued = (datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"))
         node_id = self.device_details["node_id"]
         device_type = self.device_details["device_type"]
         command_id = 8
-        args = [self.device_details['setup']['pump_id'], False]
+        args = [self.device_details['setup']['pump_id'], state]
         self.log.update_log(time_issued, node_id, device_type, command_id, args, (True, True), "internal")
 
     def exit(self):
