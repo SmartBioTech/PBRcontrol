@@ -18,11 +18,18 @@ class Connection:
         self.decrypter = AES.new(secret_key, AES.MODE_ECB)
         self.empty_block = (PAD_CHAR * 16).encode("utf8")
 
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.settimeout(timeout)
-        self.sock.connect((host_address, host_port))
+        self.host_address = host_address
+        self.host_port = host_port
+        self.timeout = timeout
+
+    def connect(self):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(self.timeout)
+        sock.connect((self.host_address, self.host_port))
+        return sock
 
     def send_command(self, device, command, args):
+        sock = self.connect()
         command = self.construct_command(device, command, args)
         com_msg = command.replace(self.unescaped, self.escaped) + DELIMITER
         data = com_msg.encode("utf8") + self.empty_block
@@ -31,9 +38,9 @@ class Connection:
         cipher_text = self.encrypter.encrypt(data)
 
         try:
-            self.sock.send(cipher_text)
+            sock.send(cipher_text)
             recv_buffer = ""
-            packet = self.decrypter.decrypt(self.sock.recv(4096)).decode("utf-8")
+            packet = self.decrypter.decrypt(sock.recv(4096)).decode("utf-8")
 
             for c in packet:
                 if c == DELIMITER and (len(recv_buffer) == 0 or recv_buffer[-1] != ESCAPE_CHAR):
@@ -41,6 +48,7 @@ class Connection:
                 else:
                     recv_buffer += c
 
+            self.disconnect(sock)
         except socket.timeout:
             return False, "Error: socket timed out"
 
@@ -48,5 +56,6 @@ class Connection:
     def construct_command(device, command, args):
         return device + "->" + command + "(" + ", ".join(map(str, args)) + ")"
 
-    def disconnect(self):
-        self.sock.close()
+    @staticmethod
+    def disconnect(sock):
+        sock.close()
