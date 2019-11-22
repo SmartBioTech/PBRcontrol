@@ -113,7 +113,6 @@ class PhenometricsPumpManager(threading.Thread):
             self.start_pumping_event.clear()
 
             self.device_details['setup']['lower_outlier_tol'] *= 2
-            self.device_details['setup']['upper_outlier_tol'] *= 2
 
             self.pump_state[0] = True  # is this necessary?
 
@@ -134,7 +133,6 @@ class PhenometricsPumpManager(threading.Thread):
             self.pump_state[0] = False  # is this necessary?
 
             self.device_details['setup']['lower_outlier_tol'] /= 2
-            self.device_details['setup']['upper_outlier_tol'] /= 2
 
             self.start_pumping_event.wait()
 
