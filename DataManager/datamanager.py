@@ -30,8 +30,9 @@ class Node:
         self.devices[device_type] = device
         device.checker.start()  # start the queue checker
 
-        for cmd in device_data['setup']['initial_commands']: # execute the initial commands
-            device.accept_command(cmd)
+        if 'initial_commands' in device_data['setup']:
+            for cmd in device_data['setup']['initial_commands']: # execute the initial commands
+                device.accept_command(cmd)
         return 1
 
     def accept_command(self, cmd):
