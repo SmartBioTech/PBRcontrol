@@ -9,20 +9,27 @@ import threading
 class DeviceManager(base_interpreter.BaseInterpreter):
 
     def initial_od(self):
+        """
+        Is executed when the device is initiated, provides information about the current state of OD in the PBR
+
+        :return: float, average OD
+        """
         data = []
+        # collect the OD value from 5 measurements
         while len(data) < 5:
             try:
                 data.append(self.device_con(5, '[1]'))
             except Exception:
+                # in case of connection error, log it
                 time_issued = datetime.datetime.utcnow()
-                time_issued = time_issued.strftime("%m-%d-%Y %H:%M:%S")
-                address = '/' + str(self.device_details['node']) + '/' + str(self.device_details['device_id'])
-                self.log.update_log(time_issued, address, 5, [], 'Waiting for connection...')
+                time_issued = time_issued.strftime("%Y-%m-%d %H:%M:%S")
+                self.log.update_log(time_issued, self.device_details['node_id'], self.device_details['device_type'], 5, [], 'Waiting for connection...', 'internal')
                 sleep(2)
 
         data.sort()
         computed = False
 
+        # calculate the average OD from the measured data
         while not computed:
 
             mean = np.mean(data)
@@ -47,8 +54,6 @@ class DeviceManager(base_interpreter.BaseInterpreter):
         self.q = q
         self.q_new_item = q_new_item
         super(DeviceManager, self).__init__(device_details, device_class, log)
-        self.device.set_pump_state(device_details['setup']['pump_id'], False)
-        self.pump_state = [False]
         self.commands = {
             1: self.device.get_temp_settings,
             2: self.device.get_temp,
@@ -74,6 +79,14 @@ class DeviceManager(base_interpreter.BaseInterpreter):
             22: self.device.get_hardware_address,
             23: self.device.get_cluster_name
         }
+        try:
+            self.device_con(8, str([device_details['setup']['pump_id'], False]))
+        except Exception:
+            pass
+            # TODO: if there are problems with connection on initiation,
+            #  conduct this info to BioArInEO and don't start the virtual device
+
+        self.pump_state = [False]
 
         self.OD_checker = OD_Checker.ODcheck(self.device_details,
                                              self.q,
