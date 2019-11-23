@@ -18,8 +18,8 @@ class JVMController:
 
     @staticmethod
     def startJVM():
-        jpype.startJVM(jpype.getDefaultJVMPath(),
-                       "-Djava.class.path=/home/pi/PBRcontrol/HWdevices/PSI_java/lib/jar/bioreactor-commander-0.8.7.jar")
+        jpype.startJVM(jvmpath=jpype.getDefaultJVMPath(), convertStrings=False,
+                       classpath="/home/pi/PBRcontrol/HWdevices/PSI_java/lib/jar/bioreactor-commander-0.8.7.jar")
 
     @staticmethod
     def shutdownJVM():
