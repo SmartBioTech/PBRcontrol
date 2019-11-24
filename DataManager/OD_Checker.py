@@ -75,15 +75,15 @@ class ODcheck:
             return self.device_setup['lower_outlier_tol'], upper
         raise TypeError("Lower outlier tolerance must be smaller than Upper outlier tolerance")
 
-    def set_max_outliers(self, n):
+    def set_max_outliers(self, outliers):
         """
         Change the number of maximum outliers.
 
         :param n: int
         """
 
-        self.device_setup['max_outliers'] = n
-        return n
+        self.device_setup['max_outliers'] = outliers
+        return outliers
 
     def stabilize(self, result):
         """
