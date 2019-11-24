@@ -5,7 +5,7 @@ class Protocol:
 
     device_keys = ['device_type',
                    'device_class',
-                   'setup']
+                   ]
 
     PBR_setup = ['lower_outlier_tol',
                  'upper_outlier_tol',
