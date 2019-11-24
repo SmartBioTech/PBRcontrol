@@ -108,7 +108,8 @@ class AddDevice(SecuredResource):
             if response:
                 return response, 200
 
-            return response, 400
+            checked.append('Device of requested type already exists on node %d' % node_id)
+            return checked, 400
         except Exception as e:
             return str(e), 500
 
