@@ -21,8 +21,10 @@ class Protocol:
                          'host_address',
                          'encryption_key']
 
+    java_keys = ['host_address']
+
     device_variants = {'PSI_test': [],
-                       'PSI_java': [],
+                       'PSI_java': java_keys,
                        'Phenometrics': phenometrics_keys}
 
     def check_protocol(self, protocol):
