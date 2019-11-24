@@ -8,7 +8,7 @@ class BaseInterpreter:
         self.device_details = device_details
         self.log = log
         args = [self.device_details.get('device_id', self.device_details['device_type']),
-                self.device_details.get('address', 'localhost')]
+                self.device_details.get('host_address')]
 
         if self.device_details['device_class'] == 'Phenometrics':
             args.append(self.device_details.get('host_port', 6161))

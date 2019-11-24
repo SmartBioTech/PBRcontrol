@@ -7,12 +7,14 @@ from json import load
 from pathlib import Path
 from HWdevices.PSI_java.JVMController import JVMController
 import ssl
+from DBmanager import protocolChecker
 
 
 class SecuredResource(Resource):
     """
     Parent class for all resources, makes sure the incoming request is authorized.
     """
+
     def __init__(self, api):
         """
         :param api: parent Flask Api
@@ -22,7 +24,6 @@ class SecuredResource(Resource):
         self.password = api.app.config['PASSWORD']
 
     def check_credentials(self, auth):
-
         if auth != None and (auth['username'] == self.username and auth['password'] == self.password):
             return False
         return True
@@ -32,6 +33,7 @@ class End(SecuredResource):
     """
     End device, node or the whole program
     """
+
     def __init__(self, api, active_nodes, end_program):
         """
         :param api: parent Flask Api, used for authorization of connecting users
@@ -43,58 +45,65 @@ class End(SecuredResource):
         self.end_program = end_program
 
     def get(self):
-        if self.check_credentials(request.authorization):   # check if the user is authorized
+        if self.check_credentials(request.authorization):  # check if the user is authorized
             return 'Invalid Credentials', 401
 
         node_id = request.args.get('node_id', False)
         device_type = request.args.get('device_type', False)
-
-        if node_id:     # if node was specified
-            node_id = int(node_id)
-            if node_id not in self.nodes:   # if node isn't initialized
-                return 'Requested node is not initialized', 400     # return error response
-            if device_type:     # if device was specified
-                if device_type not in self.nodes[node_id].devices:  # if device isn't initialized
-                    return 'Device doesnt exist on node' + str(node_id), 400    # return error response
-                self.nodes[node_id].end_device(device_type)     # end the device
+        try:
+            if node_id:  # if node was specified
+                node_id = int(node_id)
+                if node_id not in self.nodes:  # if node isn't initialized
+                    return 'Requested node is not initialized', 400  # return error response
+                if device_type:  # if device was specified
+                    if device_type not in self.nodes[node_id].devices:  # if device isn't initialized
+                        return 'Device doesnt exist on node' + str(node_id), 400  # return error response
+                    self.nodes[node_id].end_device(device_type)  # end the device
+                    return  # return success response
+                self.nodes[node_id].end_node()  # end node
+                self.nodes.pop(node_id)  # delete the node from the dict of active nodes
                 return  # return success response
-            self.nodes[node_id].end_node()      # end node
-            self.nodes.pop(node_id)     # delete the node from the dict of active nodes
-            return  # return success response
-        else:   # if node wasn't specified
-            for node in self.nodes:
-                self.nodes[node].end_node()     # end all nodes
+            else:  # if node wasn't specified
+                for node in self.nodes:
+                    self.nodes[node].end_node()  # end all nodes
 
-            self.end_program.set()      # end program
+                self.end_program.set()  # end program
+        except Exception as e:
+            return e, 500
 
 
 class AddDevice(SecuredResource):
     """
     Assign device to an existing node
     """
-    def __init__(self, api, active_nodes):
+
+    def __init__(self, api, active_nodes, protocol):
         """
         :param api: parent Flask Api, used for authorization of connecting users
         :param active_nodes: dictionary of all currently active nodes
         """
         super(AddDevice, self).__init__(api)
         self.nodes = active_nodes
+        self.protocol = protocol
 
     def post(self):
-        if self.check_credentials(request.authorization):   # check if the user is authorized
+        if self.check_credentials(request.authorization):  # check if the user is authorized
             return 'Invalid Credentials', 401
         try:
-            node_id = request.args.get('node_id')
-            if node_id == None: # if no node is specified
-                return 'Node number unspecified', 400   # return an error response number
-            node_id = int(node_id)
-            if node_id not in self.nodes:   # if node not initialized
-                return 'Requested node is not initialized', 400     # return an error response number
-
             data = request.get_data()
             data = eval(data)
 
-            response = self.nodes[node_id].initiate_device(data)    # True if initialized, False otherwise
+            checked = self.protocol.check_protocol(data)
+            node_id = request.args.get('node_id')
+            if node_id == None:  # if no node is specified
+                checked.append('Node number unspecified')   # add error to list of errors to return
+            node_id = int(node_id)
+            if node_id not in self.nodes:  # if node not initialized
+                checked.append('Requested node is not initialized')     # add error to list of errors to return
+            if checked:
+                return checked, 400
+
+            response = self.nodes[node_id].initiate_device(data)  # True if initialized, False otherwise
 
             if response:
                 return response, 200
@@ -109,7 +118,8 @@ class NodeInitiation(SecuredResource):
     Create node and its devices on POST request. Provide detailed response as to which nodes and devices have been
     successfully created.     
     """
-    def __init__(self, api, active_nodes):
+
+    def __init__(self, api, active_nodes, protocol):
         """
         :param api: parent Flask Api, used for authorization of connecting users
         :param active_nodes: dictionary of all currently active nodes
@@ -117,33 +127,37 @@ class NodeInitiation(SecuredResource):
         super(NodeInitiation, self).__init__(api)
         self.api = api
         self.active_nodes = active_nodes
+        self.protocol = protocol
 
     def post(self):
-        
-        if self.check_credentials(request.authorization):   # check if the user is Authorized
+
+        if self.check_credentials(request.authorization):  # check if the user is Authorized
             return 'Invalid Credentials', 401
-        
+
         try:
             data = request.get_data()
             data = eval(data)
+            checked = self.protocol.check_protocol(data)
+            if checked:
+                return checked, 400
             response = {}
-            
-            for node_id in data:    # for each node in the request
+
+            for node_id in data:  # for each node in the request
                 data[node_id]['node_id'] = node_id
-                
-                if node_id in self.active_nodes:    # if the node is already initiated in the system
-                    response[node_id] = 0   # inform the user that the node could not be initiated
-                    continue    # loop to another node
-                    
-                else:   # if the request is valid
+
+                if node_id in self.active_nodes:  # if the node is already initiated in the system
+                    response[node_id] = 0  # inform the user that the node could not be initiated
+                    continue  # loop to another node
+
+                else:  # if the request is valid
                     response[node_id] = {}  # create a dict in the response 
 
                 node = datamanager.Node(data[node_id])  # create the node
-                self.active_nodes[node_id] = node   # put it into the active_nodes dict
-                
-                for device in data[node_id]['devices']: # initiate all device
-                    initiated = node.initiate_device(device)    # True/False
-                    
+                self.active_nodes[node_id] = node  # put it into the active_nodes dict
+
+                for device in data[node_id]['devices']:  # initiate all devices
+                    initiated = node.initiate_device(device)  # True/False
+
                     # inform the user whether the device was successfully created
                     response[node_id][device['device_type']] = initiated
 
@@ -157,6 +171,7 @@ class Command(SecuredResource):
     """
     Receives commands from users on POST request and forwards them to corresponding nodes and devices
     """
+
     def __init__(self, api, active_nodes):
         """
         :param api: parent Flask Api, used for authorization of connecting users
@@ -166,8 +181,8 @@ class Command(SecuredResource):
         self.nodes = active_nodes
 
     def post(self):
-        if self.check_credentials(request.authorization):   # check if the user is Authorized
-            return 0, 401
+        if self.check_credentials(request.authorization):  # check if the user is Authorized
+            return 'Invalid Credentials', 401
         try:
             node_id = request.args.get('node_id', False)
             device = request.args.get('device_type', False)
@@ -177,18 +192,18 @@ class Command(SecuredResource):
             if not isinstance(data, list):
                 raise Exception('Commands must be ordered in a list')
 
-            if node_id:     
+            if node_id:
                 node_id = int(node_id)
-                if node_id not in self.nodes:   # if the requested node is not initiated
+                if node_id not in self.nodes:  # if the requested node is not initiated
                     return 0, 400
                 if device:
                     if device not in self.nodes[node_id].devices:  # if the requested device doesn't exist on given node
                         return 0, 400
-                    for command in data:   # for each command in the list
+                    for command in data:  # for each command in the list
                         self.nodes[node_id].devices[device].accept_command(command)  # forward the command to device
-                else:   # if no device was specified, the node handles the command
-                    for command in data:    # for each command in the list
-                        self.nodes[node_id].accept_command(command)   # forward the command to node
+                else:  # if no device was specified, the node handles the command
+                    for command in data:  # for each command in the list
+                        self.nodes[node_id].accept_command(command)  # forward the command to node
             else:
                 return 0, 400
             return 1, 200
@@ -200,6 +215,7 @@ class GetData(SecuredResource):
     """
     Retrieves data from database
     """
+
     def __init__(self, api, db):
         """
         :param api: the parent Flask api, used for authorization of Users
@@ -233,15 +249,15 @@ class GetData(SecuredResource):
         :return: list of data and corresponding HTTP response code
 
         """
-        if self.check_credentials(request.authorization):   # check if the user has provided the correct credentials
+        if self.check_credentials(request.authorization):  # check if the user has provided the correct credentials
             return 'Invalid Credentials', 401
 
         try:
-            node_id = request.args.get('node_id')  
+            node_id = request.args.get('node_id')
             time = request.args.get('time')
             time = self.process_time(time)  # process the time intoa valid format
-            if node_id != None:     # if node_id was sent
-                rows = self.db.get_for_system(node_id, time)    # get data from log for the node_id and (optional) time
+            if node_id != None:  # if node_id was sent
+                rows = self.db.get_for_system(node_id, time)  # get data from log for the node_id and (optional) time
             # elif time != None:  # elif time was provided
             # rows = self.db.get_for_user(time)  # get all data from log since given time
             else:
@@ -259,7 +275,7 @@ class Ping(SecuredResource):
         self.nodes = nodes
 
     def get(self):
-        if self.check_credentials(request.authorization):   # check if the user has provided the correct credentials
+        if self.check_credentials(request.authorization):  # check if the user has provided the correct credentials
             return 'Invalid Credentials', 401
         response = {}
         for node_id in self.nodes:
@@ -276,6 +292,7 @@ class ApiInit:
     """
     Initializes the API
     """
+
     def __init__(self):
         self.app = Flask(__name__)
         script_location = Path(__file__).absolute().parent
@@ -285,6 +302,7 @@ class ApiInit:
             self.app.config['USERNAME'] = config.get('username', None)
             self.app.config['PASSWORD'] = config.get('password', None)
         self.api = Api(self.app)
+        self.protocol = protocolChecker.Protocol()
 
         # Initialize the database
         self.db = localdb.Database()
@@ -309,7 +327,7 @@ class ApiInit:
         Wrap the app into a process, initiate endpoints and start the server.
         :return: None, function waits for the end_program Event() to be set
         """
-        active_nodes = {}   # dictionary of all active_nodes, it is updated whenever new nodes are added/deleted
+        active_nodes = {}  # dictionary of all active_nodes, it is updated whenever new nodes are added/deleted
 
         self.api.add_resource(Ping, '/ping',
                               resource_class_kwargs={'api': self.api,
@@ -318,7 +336,8 @@ class ApiInit:
 
         self.api.add_resource(NodeInitiation, '/initiate',
                               resource_class_kwargs={'api': self.api,
-                                                     'active_nodes': active_nodes}
+                                                     'active_nodes': active_nodes,
+                                                     'protocol': self.protocol}
                               )
 
         self.api.add_resource(GetData, '/log',
@@ -332,12 +351,13 @@ class ApiInit:
                                   'end_program': self.end_program,
                                   'active_nodes': active_nodes}
                               )
-        
-        self.api.add_resource(Command, '/command', 
+
+        self.api.add_resource(Command, '/command',
                               resource_class_kwargs={'api': self.api,
                                                      'active_nodes': active_nodes})
 
         self.api.add_resource(AddDevice, '/add_device', resource_class_kwargs={'api': self.api,
-                                                                               'active_nodes': active_nodes})
+                                                                               'active_nodes': active_nodes,
+                                                                               'protocol': self.protocol})
 
         self.run_app()
