@@ -310,4 +310,4 @@ class PBR(AbstractPBR):
         return result.lstrip()
 
     def disconnect(self):
-        self.connection.disconnect()
+        pass
