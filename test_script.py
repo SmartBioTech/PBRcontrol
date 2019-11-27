@@ -27,7 +27,7 @@ def initialize_experiment():
 
     my_dict = {
         1 : {
-            'experiment_details' : {'sleep_time' : 2},
+            'experiment_details' : {'sleep_time' : 15},
             'devices' : [{
                     'device_type' : 'PBR',
                     'device_class' : 'PSI_test',
@@ -55,7 +55,7 @@ def initialize_experiment():
             ]
             },
     2 : {
-        'experiment_details' : {'sleep_time' : 3},
+        'experiment_details' : {'sleep_time' : 10},
         'devices' : [{
                 'device_type' : 'PBR',
                 'device_class' : 'PSI_test',
@@ -191,8 +191,10 @@ def change_time(node, time_period):
     requests.post('https://localhost:5000/command?node_id='+str(node), str({'time': t, 'cmd_id': 35, 'args': str([time_period]), 'source': 'external'}), verify=False, auth=('BioArInEO', 'sybila'))
 
 def get_log():
-    e = requests.get('https://localhost:5000/log?node_id=1&time=20191014090837', verify=False)
-    print(e.text)
+    e = requests.get('https://localhost:5000/log?node_id=19&time=20191107150000', verify=False, auth=('BioArInEO', 'sybila'))
+    x = eval(e.text)
+    for i in x:
+        print(i)
 
 def add_node(node_number):
     '''
@@ -271,31 +273,33 @@ def repeat_log():
 #get_log()
 #sleep(2)
 #change_time(2, 30)
-#post_cmd(1, 'PBR', 10, [1, 30])
+#post_cmd(2, 'PBR', 8, [5, True])
 #end_device(2, 'PBR')
 #end_node(1)
 #end_program()
 #print(get_node_endpoints(2))
 #add_device(2, 'PBR')
+#initialize_experiment()
+
 
 def real_test():
     my_dict = {
-        1: {
-            'experiment_details': {'sleep_time': 0.2},
+        19: {
+            'experiment_details': {'sleep_time': 60},
             'devices': [{
                 'device_type': 'PBR',
-                'device_class': 'PSI_test',
-                'device_id': 'Jozef',
+                'device_class': 'PSI_java',
+                'device_id': 'PBR19',
                 'device_port': 9000,
-                'address': 'invalid_address',
+                'address': '/dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_D-if00-port0',
                 'setup': {
                     'initial_commands': [{'time': (datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")),'cmd_id': 8, 'args': '[5, False]'}],
                     'lower_outlier_tol': 5,
-                    'upper_outlier_tol': 5,
                     'max_outliers': 5,
                     'min_OD': 0.48,
                     'max_OD': 0.52,
-                    'pump_id': 5
+                    'pump_id': 5,
+                    'ft_channel': 5,
                 }
             }]},
 
@@ -304,6 +308,12 @@ def real_test():
     x = requests.post('https://localhost:5000/initiate', str(my_dict), verify=False, auth=('BioArInEO', 'sybila'))
     print(x.text)
 
-#real_test()
-requests.get('https://localhost:5000/end?node_id=1', verify=False, auth=('BioArInEO', 'sybila'))
+real_test()
+#r = requests.get('https://localhost:5000/ping', verify=False)
+#print(r.status_code, r.text)
+
+
+#t = datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S")
+#r = requests.get('https://localhost:5000/log?node_id=1&time=' + t, verify='MyCertificate.crt', auth=('BioArInEO', 'sybila'))
+#print(r.status_code, r.text)
 
