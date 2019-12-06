@@ -1,13 +1,13 @@
 from flask import request, Flask
 from flask_restful import Resource, Api
-from DataManager import datamanager
-from DBmanager import localdb
+from virtual_devices import virtualDeviceManager
+from database import localDatabase
 from multiprocessing import Event
 from json import load
 from pathlib import Path
 from HWdevices.PSI_java.JVMController import JVMController
 import ssl
-from DBmanager import protocolChecker
+from server import protocolChecker
 
 
 class SecuredResource(Resource):
@@ -57,7 +57,7 @@ class End(SecuredResource):
                     return 'Requested node is not initialized', 400  # return error response
                 if device_type:  # if device was specified
                     if device_type not in self.nodes[node_id].devices:  # if device isn't initialized
-                        return 'Device doesnt exist on node' + str(node_id), 400  # return error response
+                        return 'VirtualDevice doesnt exist on node' + str(node_id), 400  # return error response
                     self.nodes[node_id].end_device(device_type)  # end the device
                     return  # return success response
                 self.nodes[node_id].end_node()  # end node
@@ -108,7 +108,7 @@ class AddDevice(SecuredResource):
             if response:
                 return response, 200
 
-            checked.append('Device of requested type already exists on node %d' % node_id)
+            checked.append('VirtualDevice of requested type already exists on node %d' % node_id)
             return checked, 400
         except Exception as e:
             return str(e), 500
@@ -153,7 +153,7 @@ class NodeInitiation(SecuredResource):
                 else:  # if the request is valid
                     response[node_id] = {}  # create a dict in the response 
 
-                node = datamanager.Node(data[node_id])  # create the node
+                node = virtualDeviceManager.Node(data[node_id])  # create the node
                 self.active_nodes[node_id] = node  # put it into the active_nodes dict
 
                 for device in data[node_id]['devices']:  # initiate all devices
@@ -297,7 +297,7 @@ class ApiInit:
     def __init__(self):
         self.app = Flask(__name__)
         script_location = Path(__file__).absolute().parent
-        with open(str(script_location / 'config.json'), 'r') as config_file:
+        with open(str(script_location / 'server_config.json'), 'r') as config_file:
             config = load(config_file)
             # if no auth is specified in config, no auth will be required
             self.app.config['USERNAME'] = config.get('username', None)
@@ -306,7 +306,7 @@ class ApiInit:
         self.protocol = protocolChecker.Protocol()
 
         # Initialize the database
-        self.db = localdb.Database()
+        self.db = localDatabase.Database()
         self.db.connect()
 
         self.end_program = Event()  # object through which we control when the program ends

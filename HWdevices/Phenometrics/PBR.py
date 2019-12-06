@@ -1,11 +1,18 @@
+import threading
+import datetime
+from time import sleep
+
 from HWdevices.Phenometrics.libs.communication import Connection
 from HWdevices.abstract.AbstractPBR import AbstractPBR
 
 
 class PBR(AbstractPBR):
-    def __init__(self, ID, host_address, host_port, encryption_key):
+    def __init__(self, ID, host_address, host_port, encryption_key, pump_args):
         super(PBR, self).__init__(ID, host_address)
         self.connection = Connection(host_address, host_port, encryption_key)
+        pump_args.append(self)
+        self.pump_manager = PhenometricsPumpManager(*pump_args)
+        self.pump_manager.start()
 
     def get_temp_settings(self):
         """
@@ -93,10 +100,9 @@ class PBR(AbstractPBR):
         :param on: True to turn on, False to turn off
         :return: True if was successful, False otherwise.
         """
-        success, result = self.connection.send_command(self.ID, 'setAux2', [int(on)])
-        if not success:
-            raise Exception(result)
-        return int(result) == int(on)
+        if on:
+            self.pump_manager.start_pumping()
+        return True
 
     def get_light_intensity(self, channel):
         """
@@ -311,3 +317,59 @@ class PBR(AbstractPBR):
 
     def disconnect(self):
         pass
+
+
+class PhenometricsPumpManager(threading.Thread):
+    def __init__(self, pump_state, device_details, log, last_OD, experimental_details, device):
+        super(PhenometricsPumpManager, self).__init__(daemon=True)
+        self.pump_state = pump_state
+        self.device = device
+        self.log = log
+        self.device_details = device_details
+        self.last_OD = last_OD
+        self.stored_OD = last_OD
+        self.stop_request = threading.Event()
+        self.start_pumping_event = threading.Event()
+        self.od_changed = threading.Event()
+        self.wait_time = experimental_details['sleep_time']
+
+    def run(self):
+        self.start_pumping_event.wait()
+        while not self.stop_request.isSet():    # if we set this flag but never set start_pumping_event_flag, will the thread truly exit?
+            self.start_pumping_event.clear()
+
+            self.device_details['setup']['lower_outlier_tol'] *= 2
+
+            self.pump_state[0] = True  # is this necessary?
+
+            while self.last_OD > self.device_details["setup"]["min_OD"]:
+                self.od_changed.clear()
+                self.stored_OD = self.last_OD
+                try:
+                    # this turns on the pump (works only if the pump goes from 0 to 1)
+                    self.device.connection.send_command(self.device.ID, 'setAux2', [1])
+                    # sleep 20 seconds, should be enough to accomplish steps 1. and 2.
+                    sleep(2)
+                    # reset the pump to zero state that is necessary for success of next set of the pump
+                    self.device.connection.send_command(self.device.ID, 'setAux2', [0])
+                except Exception:
+                    continue
+                self.od_changed.wait()  # we wait until OD has changed
+
+            self.device_details['setup']['lower_outlier_tol'] /= 2
+
+            self.start_pumping_event.wait()
+
+    def start_pumping(self):
+        self.start_pumping_event.set()
+
+    def log_pump_change(self, state):
+        time_issued = (datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"))
+        node_id = self.device_details["node_id"]
+        device_type = self.device_details["device_type"]
+        command_id = 8
+        args = [self.device_details['setup']['pump_id'], state]
+        self.log.update_log(time_issued, node_id, device_type, command_id, args, (True, True), "internal")
+
+    def exit(self):
+        self.stop_request.set()

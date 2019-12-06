@@ -1,6 +1,6 @@
 from threading import Thread, Event
 import time
-from DBmanager import localdb
+from database import localDatabase
 import datetime
 
 
@@ -50,7 +50,7 @@ class PeriodicalMeasurement(Thread):
         self.end_measurement = Event()
         self.devices = devices
         self.node_id = node_id
-        self.logger = localdb.Database()
+        self.logger = localDatabase.Database()
 
         self.codes = {'PBR': 19,
                       'GAS': 32}

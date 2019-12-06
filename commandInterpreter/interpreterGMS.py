@@ -1,4 +1,4 @@
-from DataManager import base_interpreter
+from commandInterpreter import base_interpreter
 
 
 class DeviceManager(base_interpreter.BaseInterpreter):

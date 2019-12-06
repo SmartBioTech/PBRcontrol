@@ -1,5 +1,5 @@
 from threading import Thread
-from DBmanager import localdb
+from database import localDatabase
 from importlib import import_module
 
 
@@ -28,14 +28,15 @@ class Checker(Thread):
 
         :return: None
         """
-        log = localdb.Database()
+        log = localDatabase.Database()
         device_type = self.device_details['device_type']
+        device_class = self.device_details['device_class']
 
         # import the right class for the specific device
-        hw_class = getattr(import_module('HWdevices.'+self.device_details['device_class']+'.'+device_type), device_type)
+        hw_class = getattr(import_module('HWdevices.'+ device_class + '.' + device_type), device_type)
 
         # import interpreter for the specific device type
-        interpreter = import_module('DataManager.interpreter' + device_type)
+        interpreter = import_module('commandInterpreter.interpreter' + device_type)
 
         # PBRs need to work with the queue directly (to control the device's pumps)
         # The queue of commands must be passed on the PBRs

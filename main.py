@@ -1,4 +1,4 @@
-from DBmanager import DBapp
+from server import DBapp
 
 if __name__ == '__main__':
     api = DBapp.ApiInit()

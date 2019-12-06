@@ -44,7 +44,7 @@ class Protocol:
                 for device_key in self.device_keys:
                     if device_key not in device:
                         missing.append(
-                            "Device %d on Node %s is missing %s" % (device_counter, node, device_key))
+                            "VirtualDevice %d on Node %s is missing %s" % (device_counter, node, device_key))
 
                 if 'device_type' in device and device['device_type'] == 'PBR':
                     for setup_key in self.PBR_setup:
@@ -54,7 +54,7 @@ class Protocol:
                 if 'device_class' in device:
                     for key in self.device_variants[device['device_class']]:
                         if key not in device:
-                            missing.append("Device of %s is missing %s" % (device['device_class'], key))
+                            missing.append("VirtualDevice of %s is missing %s" % (device['device_class'], key))
                 device_counter += 1
 
         return missing

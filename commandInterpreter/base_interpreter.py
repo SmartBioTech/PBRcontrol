@@ -4,15 +4,19 @@ import datetime
 
 class BaseInterpreter:
 
-    def __init__(self, device_details, device_class, log):
+    def __init__(self, device_details, device_class, log, pump_state=None, OD_checker=None, experiment_details=None):
         self.device_details = device_details
         self.log = log
         args = [self.device_details.get('device_id', self.device_details['device_type']),
                 self.device_details.get('host_address')]
 
         if self.device_details['device_class'] == 'Phenometrics':
+            pump_args = [pump_state, self.device_details, self.log, OD_checker.average,
+                         experiment_details]
+
             args.append(self.device_details.get('host_port', 6161))
             args.append(self.device_details.get('encryption_key', 't2ih72c0husyrayh'))
+            args.append(pump_args)
 
         self.device = device_class(*args)
 
@@ -96,21 +100,14 @@ class BaseInterpreter:
         """
         is_ok = True    # pre-set the state of result to ok
         try:
-            # Phenometrics class must have individual pump management
-            if self.device_details["device_class"] == "Phenometrics" and command_id == 8:
-                if args[1]:     # if the pump is ot be turned on
-                    self.pump_manager.start_pumping()   # let the devoted pump manager handle the pumping
-                result = True   # describes that the command is being executed
-            else:
-                # connect to the device and execute the corresponding command
-                result = self.device_con(command_id, str(args))
+            result = self.device_con(command_id, str(args))
 
             # if the command was an instance of periodical measurement, stabilization must be executed
             if command_id == 19 and result[self.OD_checker.od_variant][0]:
                 self.OD_checker.stabilize(result)
                 if self.device_details["device_class"] == "Phenometrics":
-                    self.pump_manager.last_OD = self.OD_checker.average
-                    if self.pump_manager.last_OD != self.pump_manager.stored_OD:
+                    self.device.pump_manager.last_OD = self.OD_checker.average
+                    if self.device.pump_manager.last_OD != self.pump_manager.stored_OD:
                         self.pump_manager.od_changed.set()
         except Exception as exc:
             is_ok = False   # change the state of result to not ok
