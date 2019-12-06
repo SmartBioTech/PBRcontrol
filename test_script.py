@@ -41,7 +41,9 @@ def initialize_experiment():
                         'max_outliers' : 6,
                         'min_OD' : 0.1,
                         'max_OD' : 0.9,
-                        'pump_id' : 1
+                        'pump_id' : 1,
+                        'ft_channel' : 2,
+                        "OD_channel" : 3,
                             }
                             },
                 {
@@ -68,7 +70,10 @@ def initialize_experiment():
                     'min_OD' : 0.1,
                     'max_OD' : 0.9,
                     'pump_id' : 1,
-                            }
+                    'ft_channel': 2,
+                    "OD_channel": 3,
+
+                }
                         },
             {
                 'device_type': 'GMS',
@@ -82,7 +87,8 @@ def initialize_experiment():
         }
     }
 
-    requests.post('https://localhost:5000/initiate', str(my_dict), verify=False, auth=('BioArInEO', 'sybila'))
+    r = requests.post('https://localhost:5000/initiate', str(my_dict), verify=False, auth=('BioArInEO', 'sybila'))
+    print(r.status_code, r.text)
 
 def cmds_PBR():
     '''
@@ -156,27 +162,32 @@ def test_all():
     pbr = cmds_PBR()
     gas = cmds_GAS()
     gms = cmds_GMS()
-    while id < 23:
+    while id < 26:
         t = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         r = requests.post('https://localhost:5000/command?node_id=1&device_type=PBR', str([{'time': t, 'cmd_id': id, 'args': str(pbr[id]), 'source' : 'external'}]), verify=False, auth=('BioArInEO', 'sybila'))
-        print(r.status_code, r.text)
+        print(r.status_code, r.content)
         id+=1
         sleep(1)
+        get_log(1)
 
-    while id < 32:
+
+    while id < 35:
         t = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         r=requests.post('https://localhost:5000/command?node_id=1&device_type=GAS', str([{'time': t, 'cmd_id': id, 'args': str(gas[id]), 'source' : 'external'}]), verify=False, auth=('BioArInEO', 'sybila'))
         print(r.status_code, r.text)
         sleep(1)
+        get_log(1)
         id+=1
 
-    while id < 35:
+    while id < 38:
         t = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         r = requests.post('https://localhost:5000/command?node_id=2&device_type=GMS', str([{'time': t, 'cmd_id': id, 'args': str(gms[id]), 'source' : 'external'}]), verify=False, auth=('BioArInEO', 'sybila'))
         print(r.status_code, r.text)
 
         sleep(1)
         id+=1
+        get_log(1)
+
 
 
 def change_time(node, time_period):
@@ -190,8 +201,9 @@ def change_time(node, time_period):
     t = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
     requests.post('https://localhost:5000/command?node_id='+str(node), str({'time': t, 'cmd_id': 35, 'args': str([time_period]), 'source': 'external'}), verify=False, auth=('BioArInEO', 'sybila'))
 
-def get_log():
-    e = requests.get('https://localhost:5000/log?node_id=19&time=20191107150000', verify=False, auth=('BioArInEO', 'sybila'))
+
+def get_log(node_id):
+    e = requests.get('https://localhost:5000/log?node_id=' + str(node_id), verify=False, auth=('BioArInEO', 'sybila'))
     x = eval(e.text)
     for i in x:
         print(i)
@@ -268,7 +280,7 @@ def repeat_log():
         sleep(3)
 
 #repeat_log()
-#test_all()
+test_all()
 #add_node(2)
 #get_log()
 #sleep(2)
@@ -308,7 +320,7 @@ def real_test():
     x = requests.post('https://localhost:5000/initiate', str(my_dict), verify=False, auth=('BioArInEO', 'sybila'))
     print(x.text)
 
-real_test()
+#real_test()
 #r = requests.get('https://localhost:5000/ping', verify=False)
 #print(r.status_code, r.text)
 

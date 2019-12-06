@@ -296,8 +296,8 @@ class ApiInit:
 
     def __init__(self):
         self.app = Flask(__name__)
-        script_location = Path(__file__).absolute().parent
-        with open(str(script_location / 'server_config.json'), 'r') as config_file:
+        self.script_location = Path(__file__).absolute().parent
+        with open(str(self.script_location / 'server_config.json'), 'r') as config_file:
             config = load(config_file)
             # if no auth is specified in config, no auth will be required
             self.app.config['USERNAME'] = config.get('username', None)
@@ -320,7 +320,9 @@ class ApiInit:
         :return: None, process is stuck on app.run() 
         """
         context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-        context.load_cert_chain('MyCertificate.crt', 'MyKey.key')
+        context.load_cert_chain(str(self.script_location / 'MyCertificate.crt'),
+                                str(self.script_location / 'MyKey.key'))
+
         self.app.run(host='0.0.0.0', ssl_context=context)
 
     def run(self):

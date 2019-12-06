@@ -12,7 +12,7 @@ class Checker(Thread):
         """
         :param q: queue.Queue() object, commands are put in it
         :param q_new_item: queue.Event() object, is set when new commands are added to it, which triggers the checker
-        :param device_details:  dict, check documentation.txt
+        :param device_details:  dict, check wiki
         :param thread_name: name of the thread, used to identify and keep in tact active threads
         """
         thread_name = thread_name+'-checker'

@@ -19,7 +19,7 @@ class DeviceManager(base_interpreter.BaseInterpreter):
         while len(data) < 5:
             try:
                 data.append(self.device_con(5, '[1]'))
-            except Exception:
+            except Exception as e:
                 # in case of connection error, log it
                 time_issued = datetime.datetime.utcnow()
                 time_issued = time_issued.strftime("%Y-%m-%d %H:%M:%S")
@@ -54,19 +54,23 @@ class DeviceManager(base_interpreter.BaseInterpreter):
         self.q = q
         self.q_new_item = q_new_item
         self.pump_state = [False]
+        self.log = log
+        self.device_details = device_details
+        self.device_class = device_class
 
-        self.OD_checker = OD_Checker.ODcheck(self.device_details,
+        self.OD_checker = OD_Checker.ODcheck(device_details,
                                              self.q,
                                              self.q_new_item,
-                                             self.initial_od(),
+                                             0,
                                              self.pump_state)
 
-        super(DeviceManager, self).__init__(device_details,
-                                            device_class,
-                                            log,
+        super(DeviceManager, self).__init__(self.device_details,
+                                            self.device_class,
+                                            self.log,
                                             self.pump_state,
                                             self.OD_checker,
                                             experiment_details)
+
         self.commands = {
             1: self.device.get_temp_settings,
             2: self.device.get_temp,
@@ -92,6 +96,7 @@ class DeviceManager(base_interpreter.BaseInterpreter):
             22: self.device.get_hardware_address,
             23: self.device.get_cluster_name
         }
+
         try:
             self.device_con(8, str([device_details['setup']['pump_id'], False]))
         except Exception:
@@ -106,4 +111,11 @@ class DeviceManager(base_interpreter.BaseInterpreter):
             26: self.OD_checker.set_tolerance
         }
         )
+
+        initial_od = self.initial_od()
+        self.OD_checker.average = initial_od
+
+        if self.device_class == "Phenometrics":
+            self.device.pump_manager.last_OD = initial_od
+            self.device.pump_manager.stored_OD = initial_od
 

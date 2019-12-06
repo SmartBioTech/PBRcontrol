@@ -78,7 +78,8 @@ class BaseInterpreter:
                 return result
             except TypeError:
                 raise Exception('Invalid input')
-            except Exception:
+            except Exception as e:
+                print(e)
                 count += 1
                 sleep(0.1)
 

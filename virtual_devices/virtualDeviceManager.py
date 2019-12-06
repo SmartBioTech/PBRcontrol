@@ -9,7 +9,7 @@ class Node:
 
     def __init__(self, data):
         """
-        :param data: check documentation.txt for syntax
+        :param data: check wiki for syntax
         """
         self.devices = {}   # keep a dict of all devices on node
         self.node_id = data['node_id']
@@ -18,7 +18,7 @@ class Node:
 
     def initiate_device(self, device_data):
         """
-        :param device_data: check documentation.txt for syntax
+        :param device_data: check wiki for syntax
         :return: True if successfully initialized, False otherwise
         """
 
@@ -40,7 +40,7 @@ class Node:
         Processes the commands that affect all the devices on a certain node (currently used only to change the interval
         of periodical measurements.
 
-        :param cmd: dictionary, check documentation.txt
+        :param cmd: dictionary, check wiki
         :return: None
         """
         processed = (
@@ -75,13 +75,12 @@ class VirtualDevice:
 
     def __init__(self, data, experimental_details):
         """
-        :param data: dictionary, check documentation.txt
+        :param data: dictionary, check wiki
         """
         self.data = data
         self.experimental_details = experimental_details
         self.device_type = data['device_type']
         self.device_class = data['device_class']
-        self.device_id = data['device_id']
         self.thread_name = str(data['node_id']) + '-' + self.device_class + '-' + self.device_type
         self.device_id = data.get('device_id', self.thread_name)
 
@@ -96,7 +95,7 @@ class VirtualDevice:
         """
         Process the command and add id to the queue of the device.
 
-        :param cmd: dict, check documentation.txt
+        :param cmd: dict, check wiki
         :return: None
         """
         processed = [

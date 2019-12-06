@@ -32,11 +32,11 @@ class Protocol:
         for node in protocol:
             for node_key in self.node_keys:
                 if node_key not in protocol[node]:
-                    missing.append("Node %s is missing %s" % (node, node_key))
+                    missing.append("Node %s is missing %s. " % (node, node_key))
 
             for experiment_key in self.experiment_keys:
                 if experiment_key not in protocol[node].get('experiment_details', {}):
-                    missing.append("Node %s is missing %s in experiment_details" % (node, experiment_key))
+                    missing.append("Node %s is missing %s in experiment_details. " % (node, experiment_key))
 
             device_counter = 0
             for device in protocol[node].get('devices', {}):
@@ -44,17 +44,17 @@ class Protocol:
                 for device_key in self.device_keys:
                     if device_key not in device:
                         missing.append(
-                            "VirtualDevice %d on Node %s is missing %s" % (device_counter, node, device_key))
+                            "VirtualDevice %d on Node %s is missing %s. " % (device_counter, node, device_key))
 
                 if 'device_type' in device and device['device_type'] == 'PBR':
                     for setup_key in self.PBR_setup:
                         if setup_key not in device.get('setup', {}):
                             missing.append(
-                                "PBR on Node %s is missing %s in its setup" % (node, setup_key))
+                                "PBR on Node %s is missing %s in its setup. " % (node, setup_key))
                 if 'device_class' in device:
                     for key in self.device_variants[device['device_class']]:
                         if key not in device:
-                            missing.append("VirtualDevice of %s is missing %s" % (device['device_class'], key))
+                            missing.append("VirtualDevice of %s is missing %s. " % (device['device_class'], key))
                 device_counter += 1
 
         return missing
