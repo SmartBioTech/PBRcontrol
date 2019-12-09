@@ -3,7 +3,7 @@ from Adafruit_MotorHAT import Adafruit_MotorHAT
 import time
 
 class Connection:
-    def __init__(self, host_address, host_port, motors_address):
+    def __init__(self, host_address, host_port, motors_address=0x60):
         self.ser = serial.Serial(host_address, host_port)
 
         # load motors
