@@ -54,7 +54,7 @@ class PBR(AbstractPBR):
         :param initial_optical_density: TBA
         :return: Measured OD
         """
-        result = self.connection.execute_command(b'MeasureTemperature')
+        result = self.connection.execute_command(b'MeasureOpticalDensity')
         data = [float(s) for s in result.split(",")]
         initial_transmittance = data[0] / initial_optical_density
         calc_optical_density = (-math.log10(initial_transmittance))
