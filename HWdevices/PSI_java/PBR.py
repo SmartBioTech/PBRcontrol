@@ -257,7 +257,7 @@ class PBR(Device):
             channel {int} -- measuring light channel
 
         Returns:
-            qy {real} -- quantum yield claculated as (fm-ft)/fm
+            qy {real} -- quantum yield calculated as (fm-ft)/fm
             ft-flash {int} -- steady-state terminal fluorescence
             ft-background {int} -- steady-state terminal fluorescence background signal
             fm-flash{int} -- maximal fluorescence
@@ -270,7 +270,7 @@ class PBR(Device):
 
         return {
             # TODO: implement check for extreme / noisy measures that could possibly lead to crazy results in qy calculations
-            "qy": ((msg.getIntParam(2) - msg.getIntParam(3)) - msg.getIntParam(0) - msg.getIntParam(1)) / (msg.getIntParam(2) - msg.getIntParam(3)),
+            "qy": ((msg.getIntParam(2) - msg.getIntParam(3)) - (msg.getIntParam(0) - msg.getIntParam(1)) / (msg.getIntParam(2) - msg.getIntParam(3)),
             "flash-ft": msg.getIntParam(0),
             "background-ft": msg.getIntParam(1),
             "flash-fm": msg.getIntParam(2),
