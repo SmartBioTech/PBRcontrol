@@ -252,6 +252,8 @@ class PBR(Device):
     
     def measure_qy(self, channel):
         """ Measure steady-state terminal and maximal fluorescence and calculate quantum yield
+
+        !This measure NOT to be included with measure_all
         
         Arguments:
             channel {int} -- measuring light channel
@@ -270,7 +272,7 @@ class PBR(Device):
 
         return {
             # TODO: implement check for extreme / noisy measures that could possibly lead to crazy results in qy calculations
-            "qy": ((msg.getIntParam(2) - msg.getIntParam(3)) - (msg.getIntParam(0) - msg.getIntParam(1)) / (msg.getIntParam(2) - msg.getIntParam(3)),
+            "qy": ((msg.getIntParam(2) - msg.getIntParam(3)) - (msg.getIntParam(0) - msg.getIntParam(1))) / (msg.getIntParam(2) - msg.getIntParam(3)),
             "flash-ft": msg.getIntParam(0),
             "background-ft": msg.getIntParam(1),
             "flash-fm": msg.getIntParam(2),
