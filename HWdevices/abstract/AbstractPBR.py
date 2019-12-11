@@ -185,6 +185,15 @@ class AbstractPBR(Device):
         """
         raise NotImplementedError("The method not implemented")
 
+    def measure_qy(self, channel):
+        """
+        ???
+
+        :param channel: ???
+        :return: ???
+        """
+        raise NotImplementedError("The method not implemented")
+
     def get_co2(self, raw, repeats):
         """
         TBA

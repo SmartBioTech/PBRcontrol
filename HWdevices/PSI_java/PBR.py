@@ -249,6 +249,34 @@ class PBR(Device):
             "flash": msg.getIntParam(0),
             "background": msg.getIntParam(1)
         }
+    
+    def measure_qy(self, channel):
+        """ Measure steady-state terminal and maximal fluorescence and calculate quantum yield
+        
+        Arguments:
+            channel {int} -- measuring light channel
+
+        Returns:
+            qy {real} -- quantum yield claculated as (fm-ft)/fm
+            ft-flash {int} -- steady-state terminal fluorescence
+            ft-background {int} -- steady-state terminal fluorescence background signal
+            fm-flash{int} -- maximal fluorescence
+            fm-background {int} -- maximal fluorescence background signal
+            sp-delay-cycles {int} -- ?number of cycles before reaching stable signal?
+        """
+        msg = self.device.send("measure-qy", channel)
+        if msg.isError():
+            raise Exception(msg.getError())
+
+        return {
+            # TODO: implement check for extreme / noisy measures that could possibly lead to crazy results in qy calculations
+            "qy": ((msg.getIntParam(2) - msg.getIntParam(3)) - msg.getIntParam(0) - msg.getIntParam(1)) / (msg.getIntParam(2) - msg.getIntParam(3)),
+            "flash-ft": msg.getIntParam(0),
+            "background-ft": msg.getIntParam(1),
+            "flash-fm": msg.getIntParam(2),
+            "background-fm": msg.getIntParam(3),
+            "delay-cycles": msg.getIntParam(4)
+        }
 
     def get_co2(self, raw=True, repeats=5):
         """
