@@ -338,7 +338,8 @@ class PhenometricsPumpManager(threading.Thread):
         while not self.stop_request.isSet():    # if we set this flag but never set start_pumping_event_flag, will the thread truly exit?
             self.start_pumping_event.clear()
 
-            self.device_details['setup']['lower_outlier_tol'] *= 2
+            self.device_details['setup']['lower_outlier_tol'] *= \
+                self.device_details['setup']['pump_on_outlier_tolerance_factor']
 
             self.pump_state[0] = True  # is this necessary?
 
@@ -356,7 +357,8 @@ class PhenometricsPumpManager(threading.Thread):
                     continue
                 self.od_changed.wait()  # we wait until OD has changed
 
-            self.device_details['setup']['lower_outlier_tol'] /= 2
+            self.device_details['setup']['lower_outlier_tol'] /= \
+                self.device_details['setup']['pump_on_outlier_tolerance_factor']
 
             self.start_pumping_event.wait()
 

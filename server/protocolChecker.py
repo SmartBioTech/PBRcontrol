@@ -14,7 +14,8 @@ class Protocol:
                  'max_OD',
                  'pump_id',
                  'ft_channel',
-                 'OD_channel']
+                 'OD_channel',
+                 'pump_on_outlier_tolerance_factor']
 
     phenometrics_keys = ['device_id',
                          'host_port',
@@ -47,8 +48,12 @@ class Protocol:
                             "VirtualDevice %d on Node %s is missing %s. " % (device_counter, node, device_key))
 
                 if 'device_type' in device and device['device_type'] == 'PBR':
+
                     for setup_key in self.PBR_setup:
+
                         if setup_key not in device.get('setup', {}):
+                            if setup_key == 'pump_on_outlier_tolerance_factor' and device['class'] != 'Phenometrics':
+                                continue
                             missing.append(
                                 "PBR on Node %s is missing %s in its setup. " % (node, setup_key))
                 if 'device_class' in device:
