@@ -10,4 +10,4 @@ class Device:
         return "VirtualDevice(" + self.ID + ", " + str(self.address) + ")"
 
     def disconnect(self):
-        print('Test device disconnecting')
+        print('Test device ' + self.ID + ' is disconnecting')

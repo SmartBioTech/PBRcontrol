@@ -23,7 +23,8 @@ class DeviceManager(base_interpreter.BaseInterpreter):
                 # in case of connection error, log it
                 time_issued = datetime.datetime.utcnow()
                 time_issued = time_issued.strftime("%Y-%m-%d %H:%M:%S")
-                self.log.update_log(time_issued, self.device_details['node_id'], self.device_details['device_type'], 5, [], 'Waiting for connection...', 'internal')
+                self.log.update_log(time_issued, self.device_details['node_id'], self.device_details['device_type'], 5,
+                                    [], 'Waiting for connection...', 'internal')
                 sleep(2)
 
         data.sort()
@@ -104,7 +105,6 @@ class DeviceManager(base_interpreter.BaseInterpreter):
             # TODO: if there are problems with connection on initiation,
             #  conduct this info to BioArInEO and don't start the virtual device
 
-
         self.commands.update({
             24: self.OD_checker.set_max_outliers,
             25: self.OD_checker.set_od_bounds,
@@ -118,4 +118,3 @@ class DeviceManager(base_interpreter.BaseInterpreter):
         if self.device_class == "Phenometrics":
             self.device.pump_manager.last_OD = initial_od
             self.device.pump_manager.stored_OD = initial_od
-
