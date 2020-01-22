@@ -1,12 +1,12 @@
-from random import random
+from random import random, randint
 from HWdevices.abstract.AbstractPBR import AbstractPBR
 
 
 class PBR(AbstractPBR):
     def __init__(self, ID, address):
         super(PBR, self).__init__(ID, address)
-        self.last_value = 0.45
-        self.increasing = False
+        # od_0, od_1, increasing
+        self.od_values = [0.45, 0.8, False]
 
     def get_temp_settings(self):
         """
@@ -15,6 +15,8 @@ class PBR(AbstractPBR):
 
         :return: The current settings structured in a dictionary.
         """
+        if random() < 0.01:
+            raise Exception("Cannot measure value - some random error.")
         return {"temp_set": 25, "temp_min": 10, "temp_max": 35}
 
     def get_temp(self):
@@ -23,7 +25,12 @@ class PBR(AbstractPBR):
 
         :return: The current temperature.
         """
-        return 25
+        if random() < 0.01:
+            raise Exception("Cannot measure value - some random error.")
+        if random() < 0.1:
+            return 18
+        else:
+            return 19
 
     def set_temp(self, temp):
         """
@@ -32,6 +39,10 @@ class PBR(AbstractPBR):
         :param temp: The temperature.
         :return: True if was successful, False otherwise.
         """
+        if random() < 0.01:
+            raise Exception("Cannot set value - some random error.")
+        if random() < 0.3:
+            return False
         return True
 
     def get_ph(self):
@@ -42,7 +53,12 @@ class PBR(AbstractPBR):
         :param wait: waiting time between individual repeats
         :return: The current pH.
         """
-        return 7
+        if random() < 0.01:
+            raise Exception("Cannot measure value - some random error.")
+        if random() < 0.1:
+            return 7.2
+        else:
+            return 7.1
 
     def measure_od(self, channel=0):
         """
@@ -55,13 +71,13 @@ class PBR(AbstractPBR):
         if random() < 0.01:
             raise Exception("Cannot measure value - some random error.")
         step = 0.002
-        sign = 1 if self.increasing else -1
+        sign = -1 if self.od_values[2] else 1
         if random() < 0.05:
             step = random()
             if random() > 0.01:
-                return self.last_value + sign * step
-        self.last_value += sign * step
-        return self.last_value
+                return self.od_values[channel] + sign * step
+        self.od_values[channel] += sign * step
+        return self.od_values[channel]
 
     def get_pump_params(self, pump):
         """
@@ -70,6 +86,8 @@ class PBR(AbstractPBR):
         :param pump: Given pump
         :return: The current settings structured in a dictionary.
         """
+        if random() < 0.01:
+            raise Exception("Cannot measure value - some random error.")
         return {"pump_direction": 1, "pump_on": True, "pump_valves": 10,
                 "pump_flow": 0.3, "pump_min": 0, "pump_max": 100}
 
@@ -82,6 +100,10 @@ class PBR(AbstractPBR):
         :param flow: Desired flow rate
         :return:  True if was successful, False otherwise.
         """
+        if random() < 0.01:
+            raise Exception("Cannot set value - some random error.")
+        if random() < 0.3:
+            return False
         return True
 
     def set_pump_state(self, pump, on):
@@ -92,7 +114,11 @@ class PBR(AbstractPBR):
         :param on: True to turn on, False to turn off
         :return: True if was successful, False otherwise.
         """
-        self.increasing = not bool(on)
+        if random() < 0.01:
+            raise Exception("Cannot set value - some random error.")
+        if random() < 0.3:
+            return False
+        self.od_values[2] = bool(on)
         return True
 
     def get_light_intensity(self, channel):
@@ -106,6 +132,8 @@ class PBR(AbstractPBR):
         :param channel: Given channel ID
         :return: The current settings structured in a dictionary.
         """
+        if random() < 0.01:
+            raise Exception("Cannot measure value - some random error.")
         return {"light_intensity": 500, "light_max": 1000, "light_on": True}
 
     def set_light_intensity(self, channel, intensity):
@@ -116,6 +144,10 @@ class PBR(AbstractPBR):
         :param intensity: Desired intensity
         :return: True if was successful, False otherwise.
         """
+        if random() < 0.01:
+            raise Exception("Cannot set value - some random error.")
+        if random() < 0.3:
+            return False
         return True
 
     def turn_on_light(self, channel, on):
@@ -126,6 +158,10 @@ class PBR(AbstractPBR):
         :param on: True turns on, False turns off
         :return: True if was successful, False otherwise.
         """
+        if random() < 0.01:
+            raise Exception("Cannot set value - some random error.")
+        if random() < 0.3:
+            return False
         return True
 
     def get_pwm_settings(self):
@@ -139,6 +175,8 @@ class PBR(AbstractPBR):
 
         :return: The current settings structured in a dictionary.
         """
+        if random() < 0.01:
+            raise Exception("Cannot measure value - some random error.")
         return {"pwm_pulse": 1, "pwm_min": 0, "pwm_max": 100, "pwm_on": True}
 
     def set_pwm(self, value, on):
@@ -150,6 +188,10 @@ class PBR(AbstractPBR):
         :param on: True turns on, False turns off
         :return: True if was successful, False otherwise.
         """
+        if random() < 0.01:
+            raise Exception("Cannot set value - some random error.")
+        if random() < 0.3:
+            return False
         return True
 
     def get_o2(self, raw=True, repeats=5, wait=0):
@@ -166,6 +208,8 @@ class PBR(AbstractPBR):
         :param wait: waiting time between individual repeats
         :return: The current settings structured in a dictionary.
         """
+        if random() < 0.01:
+            raise Exception("Cannot measure value - some random error.")
         return 10
 
     def get_thermoregulator_settings(self):
@@ -179,6 +223,8 @@ class PBR(AbstractPBR):
 
         :return: The current settings structured in a dictionary.
         """
+        if random() < 0.01:
+            raise Exception("Cannot measure value - some random error.")
         return {"temp": 25, "temp_min": 0, "temp_max": 100, "temp_on": 1}
 
     def set_thermoregulator_state(self, on):
@@ -188,6 +234,10 @@ class PBR(AbstractPBR):
         :param on: 1 -> on, 0 -> freeze, -1 -> off
         :return: True if was successful, False otherwise.
         """
+        if random() < 0.01:
+            raise Exception("Cannot set value - some random error.")
+        if random() < 0.3:
+            return False
         return True
 
     def measure_ft(self, channel):
@@ -197,6 +247,8 @@ class PBR(AbstractPBR):
         :param channel: ???
         :return: ???
         """
+        if random() < 0.01:
+            raise Exception("Cannot measure value - some random error.")
         return {'flash': 2816, 'background': 0}
 
     def get_co2(self, raw=True, repeats=5):
@@ -207,6 +259,8 @@ class PBR(AbstractPBR):
         :param repeats: the number of measurement repeats
         :return:
         """
+        if random() < 0.01:
+            raise Exception("Cannot measure value - some random error.")
         return 5
 
     def measure_all(self, ft_channel=5, pump_id=5):
@@ -217,20 +271,63 @@ class PBR(AbstractPBR):
         :param pump_id: id of particular pump
         :return: dictionary of all measured values
         """
-        result = dict()
-        result["pwm_settings"] = True, self.get_pwm_settings()
-        result["light_0"] = True, self.get_light_intensity(0)
-        result["light_1"] = True, self.get_light_intensity(1)
-        result["od_0"] = True, self.measure_od(0)
-        result["od_1"] = True, self.measure_od(1)
-        result["ph"] = True, self.get_ph()
-        result["temp"] = True, self.get_temp()
-        result["pump"] = True, self.get_pump_params(pump_id)
-        result["o2"] = True, self.get_o2()
-        result["co2"] = False, "Cannot get co2"
-        result["ft"] = True, self.measure_ft(ft_channel)
+        measure_all_dictionary = dict()
+        try:
+            measure_all_dictionary["pwm_settings"] = True, self.get_pwm_settings()
+        except Exception:
+            measure_all_dictionary["pwm_settings"] = False, "Cannot get pwm settings"
 
-        return result
+        try:
+            measure_all_dictionary["light_0"] = True, self.get_light_intensity(0)
+        except Exception:
+            measure_all_dictionary["light_0"] = False, "Cannot get light_0"
+
+        try:
+            measure_all_dictionary["light_1"] = True, self.get_light_intensity(1)
+        except Exception:
+            measure_all_dictionary["light_1"] = False, "Cannot get light_1"
+
+        try:
+            measure_all_dictionary["od_0"] = True, self.measure_od(0)
+        except Exception:
+            measure_all_dictionary["od_0"] = False, "Cannot get od_0"
+
+        try:
+            measure_all_dictionary["od_1"] = True, self.measure_od(1)
+        except Exception:
+            measure_all_dictionary["od_1"] = False, "Cannot get od_1"
+
+        try:
+            measure_all_dictionary["ph"] = True, self.get_ph(),
+        except Exception:
+            measure_all_dictionary["ph"] = False, "Cannot get ph"
+
+        try:
+            measure_all_dictionary["temp"] = True, self.get_temp(),
+        except Exception:
+            measure_all_dictionary["temp"] = False, "Cannot get temp"
+
+        try:
+            measure_all_dictionary["pump"] = True, self.get_pump_params(pump_id),
+        except Exception:
+            measure_all_dictionary["pump"] = False, "Cannot get pump"
+
+        try:
+            measure_all_dictionary["o2"] = True, self.get_o2()
+        except Exception:
+            measure_all_dictionary["o2"] = False, "Cannot get o2"
+
+        try:
+            measure_all_dictionary["co2"] = True, self.get_co2()
+        except Exception:
+            measure_all_dictionary["co2"] = False, "Cannot get co2"
+
+        try:
+            measure_all_dictionary["ft"] = True, self.measure_ft(ft_channel)
+        except Exception:
+            measure_all_dictionary["ft"] = False, "Cannot measure ft"
+
+        return measure_all_dictionary
 
     def measure_AUX(self, channel):
         """
@@ -239,6 +336,8 @@ class PBR(AbstractPBR):
         :param channel: ???
         :return: ???
         """
+        if random() < 0.01:
+            raise Exception("Cannot measure value - some random error.")
         return 10
 
     def flash_LED(self):
@@ -247,6 +346,10 @@ class PBR(AbstractPBR):
 
         :return: True if was successful, False otherwise
         """
+        if random() < 0.01:
+            raise Exception("Cannot set value - some random error.")
+        if random() < 0.3:
+            return False
         return True
 
     def get_hardware_address(self):
@@ -255,6 +358,8 @@ class PBR(AbstractPBR):
 
         :return: the MAC address
         """
+        if random() < 0.01:
+            raise Exception("Cannot measure value - some random error.")
         return 21345
 
     def get_cluster_name(self):
@@ -263,4 +368,6 @@ class PBR(AbstractPBR):
 
         :return: the cluster name
         """
-        return "claster 1"
+        if random() < 0.01:
+            raise Exception("Cannot measure value - some random error.")
+        return "cluster 1"
