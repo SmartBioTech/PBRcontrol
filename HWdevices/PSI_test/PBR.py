@@ -71,7 +71,7 @@ class PBR(AbstractPBR):
         if random() < 0.01:
             raise Exception("Cannot measure value - some random error.")
         step = 0.002
-        sign = -1 if self.od_values[2] else 1
+        sign = 1 if self.od_values[2] else -1
         if random() < 0.05:
             step = random()
             if random() > 0.01:
@@ -114,11 +114,11 @@ class PBR(AbstractPBR):
         :param on: True to turn on, False to turn off
         :return: True if was successful, False otherwise.
         """
-        if random() < 0.01:
-            raise Exception("Cannot set value - some random error.")
-        if random() < 0.3:
-            return False
-        self.od_values[2] = bool(on)
+        # if random() < 0.01:
+        #     raise Exception("Cannot set value - some random error.")
+        # if random() < 0.3:
+        #     return False
+        self.od_values[2] = not bool(on)
         return True
 
     def get_light_intensity(self, channel):
