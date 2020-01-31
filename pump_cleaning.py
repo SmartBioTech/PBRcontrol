@@ -5,8 +5,12 @@ Please use it in the following format:
 
 python3 pump_cleaning.py '["ePBR_01", "ePBR_02"]' 5
 
+where ePBR_01, ePBR_02, etc. are ID of PBR and 5 is an integer 
+declaring how many time should be pump be turned on for a device.
+
+(" and ' can be interchanged)
+
 """
-from threading import Thread
 import sys
 import time
 
@@ -19,27 +23,16 @@ HOST_PORT = 6161
 ENCRYPTION_KEY = '29gkymoya3jm6r0b'
 
 
-ePBRs = eval(sys.argv[-2])
+devices = eval(sys.argv[-2])
 duration = int(sys.argv[-1])
 
-class PipeCleaner(Thread):
-    def __init__(self, pbr, steps):
-        super(PipeCleaner, self).__init__()
-        self.pbr = PBR(pbr, HOST_ADDRESS, HOST_PORT, ENCRYPTION_KEY)
-        self.steps = steps
+ePBRs = []
 
-    def run(self):
-        for i in range(self.steps):
-            self.pbr.set_pump_state(5, True)
-            time.sleep(30)
-
-threads = []
-print(ePBRs)
-
-for ePBR in ePBRs:
-    cleaner = PipeCleaner(ePBR, duration)
-    cleaner.start()
-    threads.append(cleaner)
-
-for cleaner in threads:
-    cleaner.join()
+for device in devices:
+	ePBRs.append(PBR(device, HOST_ADDRESS, HOST_PORT, ENCRYPTION_KEY))
+            
+for i in range(duration):
+	for pbr in ePBRs:
+		pbr.set_pump_state(5, True)
+		time.sleep(30)
+		print("Each pump was turned on {} times".format(i))
