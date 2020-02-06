@@ -1,12 +1,12 @@
 """
-A simple script for ePBR pipes cleaning.
+A simple script for ePBR tubes cleaning.
 
 Please use it in the following format:
 
 python3 pump_cleaning.py '["ePBR_01", "ePBR_02"]' 5
 
 where ePBR_01, ePBR_02, etc. are ID of PBR and 5 is an integer 
-declaring how many time should be pump be turned on for a device.
+declaring how many time should be turbidostat pump turned on for the specified device.
 
 (" and ' can be interchanged)
 
@@ -34,5 +34,10 @@ for device in devices:
 for i in range(duration):
 	for pbr in ePBRs:
 		pbr.set_pump_state(5, True)
+		time.sleep(1)
+		pbr.set_pump_state(5, False)
 		time.sleep(30)
-		print("Each pump was turned on {} times".format(i))
+
+		print("Each pump was turned on already {} times".format(i))
+
+print("Cleaning finished")
