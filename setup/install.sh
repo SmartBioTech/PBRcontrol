@@ -21,8 +21,10 @@ pip3 install JPype1
 pip3 install Flask
 pip3 install Flask-RESTful
 pip3 install pycrypto
+pip3 install pyserial
 
 apt-get -y install libatlas3-base
+apt-get install tmux
 
 echo "Installing Java dependencies..."
 
