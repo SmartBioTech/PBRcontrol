@@ -1,4 +1,4 @@
-from HWdevices.PSI_java.Device import Device
+from DeviceModule.HWdevices.PSI_java.Device import Device
 
 
 class GAS(Device):

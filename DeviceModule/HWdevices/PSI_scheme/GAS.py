@@ -1,7 +1,7 @@
-from HWdevices.abstract.AbstractGAS import AbstractGAS
-from HWdevices.PSI_scheme.libs.parsing import Parser
-from HWdevices.PSI_scheme.scheme.command import Command
-from HWdevices.PSI_scheme.scheme.scheme_manager import SchemeManager
+from DeviceModule.HWdevices.abstract.AbstractGAS import AbstractGAS
+from DeviceModule.HWdevices.PSI_scheme.libs.parsing import Parser
+from DeviceModule.HWdevices.PSI_scheme.scheme.command import Command
+from DeviceModule.HWdevices.PSI_scheme.scheme.scheme_manager import SchemeManager
 
 
 class GAS(AbstractGAS):

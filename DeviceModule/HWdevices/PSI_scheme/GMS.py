@@ -1,6 +1,6 @@
-from HWdevices.abstract.AbstractGMS import AbstractGMS
-from HWdevices.PSI_scheme.scheme.command import Command
-from HWdevices.PSI_scheme.scheme.scheme_manager import SchemeManager
+from DeviceModule.HWdevices.abstract.AbstractGMS import AbstractGMS
+from DeviceModule.HWdevices.PSI_scheme.scheme.command import Command
+from DeviceModule.HWdevices.PSI_scheme.scheme.scheme_manager import SchemeManager
 
 
 # Gas Mixer

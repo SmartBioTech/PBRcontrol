@@ -2,8 +2,8 @@ import threading
 import datetime
 from time import sleep
 
-from HWdevices.Phenometrics.libs.communication import Connection
-from HWdevices.abstract.AbstractPBR import AbstractPBR
+from DeviceModule.HWdevices.Phenometrics.libs.communication import Connection
+from DeviceModule.HWdevices.abstract.AbstractPBR import AbstractPBR
 
 
 class PBR(AbstractPBR):

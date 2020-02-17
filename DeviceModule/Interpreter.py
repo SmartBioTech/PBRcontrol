@@ -1,5 +1,5 @@
-from HWdevices.abstract.device import Device
-from virtual_devices.DeviceConfiguration import DeviceConfiguration
+from DeviceModule.HWdevices.abstract.device import Device
+from DeviceModule.DeviceConfiguration import DeviceConfiguration
 
 
 class Interpreter:

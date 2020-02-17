@@ -1,10 +1,10 @@
-from HWdevices.abstract.AbstractGAS import AbstractGAS
+from DeviceModule.HWdevices.abstract.device import Device
 
 
 # Abstract Gas Analyser
-class GAS(AbstractGAS):
+class AbstractGAS(Device):
     def __init__(self, ID, address):
-        super(GAS, self).__init__(ID, address)
+        super(AbstractGAS, self).__init__(ID, address)
 
     def get_co2_air(self):
         """
@@ -12,7 +12,7 @@ class GAS(AbstractGAS):
 
         :return: measured CO2 in air
         """
-        return 5.5
+        raise NotImplementedError("The method not implemented")
 
     def get_small_valves(self):
         """
@@ -24,7 +24,7 @@ class GAS(AbstractGAS):
 
         :return: byte representation of vents settings.
         """
-        return "11111111"
+        raise NotImplementedError("The method not implemented")
 
     def set_small_valves(self, mode):
         """
@@ -42,7 +42,7 @@ class GAS(AbstractGAS):
         :param mode: chosen mode (0 to 3)
         :return: True if was successful, False otherwise.
         """
-        return True
+        raise NotImplementedError("The method not implemented")
 
     def get_flow(self, repeats):
         """
@@ -51,7 +51,7 @@ class GAS(AbstractGAS):
         :param repeats: the number of measurement repeats
         :return: The current flow in L/min.
         """
-        return 0.2
+        raise NotImplementedError("The method not implemented")
 
     def get_flow_target(self):
         """
@@ -59,7 +59,7 @@ class GAS(AbstractGAS):
 
         :return: The desired flow in L/min.
         """
-        return 0.5
+        raise NotImplementedError("The method not implemented")
 
     def set_flow_target(self, flow):
         """
@@ -68,7 +68,7 @@ class GAS(AbstractGAS):
         :param flow: flow in L/min we want to achieve (max given by get_flow_max)
         :return: True if was successful, False otherwise.
         """
-        return True
+        raise NotImplementedError("The method not implemented")
 
     def get_flow_max(self):
         """
@@ -76,7 +76,7 @@ class GAS(AbstractGAS):
 
         :return: The maximal flow in L/min
         """
-        return 1.0
+        raise NotImplementedError("The method not implemented")
 
     def get_pressure(self, repeats=5, wait=0):
         """
@@ -86,17 +86,11 @@ class GAS(AbstractGAS):
         :param wait: waiting time between individual repeats
         :return: Current pressure in ???
         """
-        return 10
+        raise NotImplementedError("The method not implemented")
 
     def measure_all(self):
         """
         Measures all basic measurable values.
-
-        :return: dictionary of all measured values
         """
-        result = dict()
-        result["co2_air"] = True, self.get_co2_air()
-        result["flow"] = True, self.get_flow(5)
-        result["pressure"] = True, self.get_pressure(1)
+        raise NotImplementedError("The method not implemented")
 
-        return result

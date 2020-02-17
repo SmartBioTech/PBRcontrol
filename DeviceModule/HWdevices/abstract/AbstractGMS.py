@@ -1,11 +1,10 @@
-from HWdevices.abstract.AbstractGMS import AbstractGMS
+from DeviceModule.HWdevices.abstract.device import Device
 
 
 # Abstract Gas Mixer
-class GMS(AbstractGMS):
+class AbstractGMS(Device):
     def __init__(self, ID, address):
-        super(GMS, self).__init__(ID, address)
-        self.GAS_TYPES = ["CO2", "Air", "N2"]
+        super(AbstractGMS, self).__init__(ID, address)
 
     def get_valve_flow(self, valve):
         """
@@ -14,7 +13,7 @@ class GMS(AbstractGMS):
         :param valve: ID of the valve (0 for CO2, 1 for Air)
         :return: The current settings of the valve flow and actual value, both in (L/min).
         """
-        return True, {"valve_flow_current": 5, "valve_flow_set": 10}
+        raise NotImplementedError("The method not implemented")
 
     def set_valve_flow(self, valve, value):
         """
@@ -24,7 +23,7 @@ class GMS(AbstractGMS):
         :param value: desired value for valve flow in (L/min).
         :return: True if was successful, False otherwise.
         """
-        return True
+        raise NotImplementedError("The method not implemented")
 
     def get_valve_info(self, valve):
         """
@@ -33,4 +32,4 @@ class GMS(AbstractGMS):
         :param valve: ID of the valve (0 for CO2, 1 for Air)
         :return: A dictionary with gas type and maximal allowed flow.
         """
-        return True, {"valve_max_flow": 10, "valve_gas_type": self.GAS_TYPES[0]}
+        raise NotImplementedError("The method not implemented")

@@ -1,13 +1,10 @@
 import jpype
-from HWdevices.PSI_java import JVMController
+from DeviceModule.HWdevices.PSI_java import JVMController
 
 # Enable Java imports
 import jpype.imports
 
 # Pull in types
-from jpype.types import *
-
-from jpype import *
 
 
 class Device:

@@ -1,7 +1,7 @@
-from HWdevices.abstract.AbstractPBR import AbstractPBR
-from HWdevices.PSI_scheme.libs.parsing import Parser
-from HWdevices.PSI_scheme.scheme.command import Command
-from HWdevices.PSI_scheme.scheme.scheme_manager import SchemeManager
+from DeviceModule.HWdevices.abstract.AbstractPBR import AbstractPBR
+from DeviceModule.HWdevices.PSI_scheme.libs.parsing import Parser
+from DeviceModule.HWdevices.PSI_scheme.scheme.command import Command
+from DeviceModule.HWdevices.PSI_scheme.scheme.scheme_manager import SchemeManager
 
 
 class PBR(AbstractPBR):
