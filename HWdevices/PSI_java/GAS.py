@@ -3,7 +3,7 @@ from HWdevices.PSI_java.Device import Device
 
 class GAS(Device):
     def __init__(self, ID, address):
-        super(GAS, self).__init__(ID, address, "/home/pi/PBRcontrol/HWdevices/PSI_java/lib/config/device_GAS.config")
+        super(GAS, self).__init__(ID, address, "HWdevices/PSI_java/lib/config/device_GAS.config")
 
     def get_co2_air(self):
         """
