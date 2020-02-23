@@ -30,8 +30,6 @@ apt-get -y install tmux
 echo "Installing Java dependencies..."
 
 apt -y install default-jre
-mkdir -p ~/.jssc/linux
-cp ./libjSSC-2.9_armhf.so ~/.jssc/linux
 
 echo "PBRControl is ready to run!"
 
