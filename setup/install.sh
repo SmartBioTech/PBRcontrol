@@ -4,7 +4,7 @@ apt update
 
 echo "Setting up MySQL database..."
 
-apt-get -y install default-mysql-client
+apt-get -y install default-mysql-server
 service mysql start
 
 mysql < "database-setup.sql"
