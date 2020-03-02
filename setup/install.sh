@@ -1,17 +1,19 @@
 #!/bin/bash
 
+echo "Execute in /home/bioarineo as sudoer and in tmux only!!!"
+read -n 1 -s
+
 apt update
 
 echo "Setting up MySQL database..."
 
-apt-get -y install default-mysql-server
+apt -y install default-mysql-server
 service mysql start
 
 mysql < "database-setup.sql"
 
 echo "Setting up Python environment..."
 
-apt-get -y install python3
 apt -y install python3-pip
 
 pip3 install importlib
@@ -25,11 +27,9 @@ pip3 install pyserial
 pip3 install mettler_toledo_device
 
 apt-get -y install libatlas3-base
-apt-get -y install tmux
 
 echo "Installing Java dependencies..."
 
 apt -y install default-jre
 
 echo "PBRControl is ready to run!"
-
