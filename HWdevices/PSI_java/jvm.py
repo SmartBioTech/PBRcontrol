@@ -15,16 +15,16 @@ from utils.singleton import singleton
 
 @singleton
 class JVMController:
+    def __init__(self):
+        self.is_started = False
 
-    @staticmethod
-    def startJVM():
+    def startJVM(self):
+        self.is_started = True
         jpype.startJVM(jvmpath=jpype.getDefaultJVMPath(), convertStrings=False,
                        classpath="HWdevices/PSI_java/lib/jar/bioreactor-commander-0.8.7.jar")
 
-    @staticmethod
-    def shutdownJVM():
+    def shutdownJVM(self):
         jpype.shutdownJVM()
 
-    @staticmethod
-    def isJVMStarted():
-        return jpype.isJVMStarted()
+    def isJVMStarted(self):
+        return jpype.isJVMStarted() and self.is_started
