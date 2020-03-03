@@ -10,11 +10,11 @@ from jpype.types import *
 
 from jpype import *
 
+from utils.singleton import singleton
 
+
+@singleton
 class JVMController:
-
-    def __init__(self):
-        pass
 
     @staticmethod
     def startJVM():
