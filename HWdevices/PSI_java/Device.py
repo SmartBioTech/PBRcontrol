@@ -1,5 +1,5 @@
 import jpype
-from HWdevices.PSI_java import JVMController
+from HWdevices.PSI_java.jvm import JVMController
 
 # Enable Java imports
 import jpype.imports
@@ -17,9 +17,10 @@ class Device:
         self.device = self.connect(device_config)
 
     def connect(self, device_config):
-        if not JVMController.isJVMStarted():
+        jvm_controller = JVMController()
+        if not jvm_controller.isJVMStarted():
             jpype.addClassPath('HWdevices/PSI_java/lib/jar/bioreactor-commander-0.8.7.jar')
-            JVMController.startJVM()
+            jvm_controller.startJVM()
 
         CommanderConnector = jpype.JClass("psi.bioreactor.commander.CommanderConnector")
         device = CommanderConnector(device_config, self.address, 115200)
