@@ -1,8 +1,9 @@
+from importlib import import_module
 from threading import Event
 from DataManager import executioner
 import queue
 import datetime
-from DBmanager import measurement
+from DBmanager import measurement, localdb
 
 
 class Node:
@@ -88,9 +89,28 @@ class Device:
         self.q = queue.Queue()      # Queue object - all commands will be stacking here and waiting for execution
         self.q_new_item = Event()   # Event object - notifies that a new command has been added to queue
 
+        log = localdb.Database()
+
         # start the checker of the queue
+        device_type = self.data['device_type']
+
+        # import the right class for the specific device
+        hw_class = getattr(import_module('HWdevices.'+self.data['device_class']+'.'+device_type), device_type)
+
+        # import interpreter for the specific device type
+        interpreter = import_module('DataManager.interpreter' + device_type)
+
+        # PBRs need to work with the queue directly (to control the device's pumps)
+        # The queue of commands must be passed on the PBRs
+
+        if device_type == 'PBR':
+            arguments = [self.data, self.q, self.q_new_item, log, hw_class, self.experimental_details]
+        else:
+            arguments = [self.data, log, hw_class]
+
+        device = interpreter.DeviceManager(*arguments)  # initiate the physical device and its interpreter
         self.checker = executioner.Checker(self.q, self.q_new_item, self.data,
-                                           self.thread_name, self.experimental_details)
+                                           self.thread_name, self.experimental_details, device, log)
 
     def accept_command(self, cmd):
         """
