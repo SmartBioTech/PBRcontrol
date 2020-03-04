@@ -5,7 +5,7 @@ from DBmanager import localdb
 from multiprocessing import Event
 from json import load
 from pathlib import Path
-from HWdevices.PSI_java.JVMController import JVMController
+from HWdevices.PSI_java.jvm import JVMController
 import ssl
 from DBmanager import protocolChecker
 
