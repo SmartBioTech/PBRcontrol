@@ -17,10 +17,10 @@ class Device:
         self.device = self.connect(device_config)
 
     def connect(self, device_config):
-        """jvm_controller = JVMController()
+        jvm_controller = JVMController()
         if not jvm_controller.isJVMStarted():
             jpype.addClassPath('HWdevices/PSI_java/lib/jar/bioreactor-commander-0.8.7.jar')
-            jvm_controller.startJVM()"""
+            jvm_controller.startJVM()
 
         CommanderConnector = jpype.JClass("psi.bioreactor.commander.CommanderConnector")
         device = CommanderConnector(device_config, self.address, 115200)
