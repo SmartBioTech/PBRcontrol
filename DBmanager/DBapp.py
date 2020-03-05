@@ -93,7 +93,8 @@ class AddDevice(SecuredResource):
             data = request.get_data()
             data = eval(data)
 
-            checked = self.protocol.check_protocol(data)
+            # checked = self.protocol.check_protocol(data)
+            checked = []
             node_id = request.args.get('node_id')
             if node_id == None:  # if no node is specified
                 checked.append('Node number unspecified')   # add error to list of errors to return
