@@ -1,6 +1,12 @@
 from threading import Thread
+
+import jpype
+
 from DBmanager import localdb
 from importlib import import_module
+
+from DataManager.base_interpreter import BaseInterpreter
+from HWdevices.PSI_java.Device import Device
 
 
 class Checker(Thread):
@@ -21,8 +27,10 @@ class Checker(Thread):
         self.q_new_item = q_new_item
         self.device_details = device_details
         self.experimental_details = experimental_details
-        self.device = hw_device
+        self.device: BaseInterpreter = hw_device
         self.log = log
+        if isinstance(self.device.device, Device):
+            jpype.attachThreadToJVM()
 
     def run(self):
         """
