@@ -322,7 +322,7 @@ class ApiInit:
         """
         context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
         context.load_cert_chain('MyCertificate.crt', 'MyKey.key')
-        self.app.run(host='0.0.0.0', ssl_context=context)
+        self.app.run(host='0.0.0.0', ssl_context=context, threaded=False)
 
     def run(self):
         """
