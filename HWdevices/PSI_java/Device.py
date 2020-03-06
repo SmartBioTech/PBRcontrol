@@ -20,6 +20,8 @@ class Device:
         jvm_controller = JVMController()
         if not jvm_controller.isJVMStarted():
             jvm_controller.startJVM()
+        else:
+            jpype.attachThreadToJVM()
 
         if not jpype.isThreadAttachedToJVM():
             jpype.attachThreadToJVM()
