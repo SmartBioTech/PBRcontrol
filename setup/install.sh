@@ -1,6 +1,7 @@
 #!/bin/bash
 
 echo "Execute in /home/bioarineo as sudoer and in tmux only!!!"
+echo "Press any key to continue or Ctrl-C to cancel ..."
 read -n 1 -s
 
 apt update
@@ -26,7 +27,7 @@ pip3 install pycrypto
 pip3 install pyserial
 pip3 install mettler_toledo_device
 
-apt-get -y install libatlas3-base
+apt -y install libatlas3-base
 
 echo "Installing Java dependencies..."
 
