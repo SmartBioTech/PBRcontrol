@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Execute in /home/bioarineo as sudoer and in tmux only!!!"
+echo "Execute in /home/bioarineo/PBRcontrol/setup as sudoer and in tmux only!!!"
 echo "Press any key to continue or Ctrl-C to cancel ..."
 read -n 1 -s
 
