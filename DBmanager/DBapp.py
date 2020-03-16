@@ -286,7 +286,7 @@ class Ping(SecuredResource):
             for device_type in node.devices:
                 device = node.devices[device_type]
                 response[node.node_id].append([device.device_class, device.device_type, device.device_id])
-        response['jvm'] = JVMController.isJVMStarted()
+        response['jvm'] = JVMController().isJVMStarted()
         return response, 200
 
 
