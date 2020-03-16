@@ -1,3 +1,5 @@
+import math
+
 from HWdevices.Phenometrics.libs.communication import Connection
 from HWdevices.abstract.AbstractPBR import AbstractPBR
 
@@ -63,7 +65,10 @@ class PBR(AbstractPBR):
         success, result = self.connection.send_command(self.ID, variant[channel], [])
         if not success:
             raise Exception(result)
-        return float(result)
+        result = float(result)
+        if result == math.inf:
+            raise Exception("Measured OD had invalid value (inf)")
+        return result
 
     def get_pump_params(self, pump):
         """
