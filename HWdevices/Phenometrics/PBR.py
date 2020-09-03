@@ -314,5 +314,17 @@ class PBR(AbstractPBR):
             raise Exception(result)
         return result.lstrip()
 
+    def disableGUI(self):
+        success, result = self.connection.send_command(self.ID, "disableGUI", [])
+        if not success:
+            raise Exception(result)
+        return {'success': result.lstrip() == "disableGUI"}
+
+    def enableGUI(self):
+        success, result = self.connection.send_command(self.ID, "enableGUI", [])
+        if not success:
+            raise Exception(result)
+        return {'success': result.lstrip() == "enableGUI"}
+
     def disconnect(self):
         pass
