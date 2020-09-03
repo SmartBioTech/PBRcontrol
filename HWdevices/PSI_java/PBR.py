@@ -387,3 +387,9 @@ class PBR(Device):
         :return: the cluster name
         """
         raise NotImplementedError("The method not implemented")
+
+    def disableGUI(self):
+        raise NotImplementedError("The method not implemented")
+
+    def enableGUI(self):
+        raise NotImplementedError("The method not implemented")

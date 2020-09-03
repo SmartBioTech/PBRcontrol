@@ -264,3 +264,9 @@ class PBR(AbstractPBR):
         :return: the cluster name
         """
         return "claster 1"
+
+    def disableGUI(self):
+        return {'success': True}
+
+    def enableGUI(self):
+        return {'success': True}

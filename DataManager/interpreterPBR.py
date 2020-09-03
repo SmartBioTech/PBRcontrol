@@ -77,7 +77,9 @@ class DeviceManager(base_interpreter.BaseInterpreter):
             20: self.device.measure_AUX,
             21: self.device.flash_LED,
             22: self.device.get_hardware_address,
-            23: self.device.get_cluster_name
+            23: self.device.get_cluster_name,
+            39: self.device.disableGUI,
+            40: self.device.enableGUI
         }
         try:
             self.device_con(8, str([device_details['setup']['pump_id'], False]))
