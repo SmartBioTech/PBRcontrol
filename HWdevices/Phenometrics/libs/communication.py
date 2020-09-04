@@ -50,6 +50,7 @@ class Connection:
 
             self.disconnect(sock)
         except socket.timeout:
+            self.disconnect(sock)
             return False, "Error: socket timed out"
 
     @staticmethod
